@@ -16,15 +16,6 @@ local function updateCameraPosition()
     minimapWidget:setCrossPosition(pos)
 end
 
-local function toggle()
-    local minimapWindow = controller.widgets.minimapWindow
-
-    if controller.widgets.minimapButton:isOn() then
-        minimapWindow:close()
-    else
-        minimapWindow:open()
-    end
-end
 
 local function toggleFullMap()
     local minimapWindow = controller.widgets.minimapWindow
@@ -60,14 +51,12 @@ controller = Controller:new()
 controller:attachExternalEvent(localPlayerEvent)
 
 function controller:onInit()
-    local minimapButton = modules.client_topmenu.addRightGameToggleButton(
-                              'minimapButton', tr('Minimap') .. ' (Ctrl+M)',
-                              '/images/topbuttons/minimap', toggle)
-    minimapButton:setOn(true)
+    --local minimapButton = modules.client_topmenu.addRightGameToggleButton(
+                           --   'minimapButton', tr('Minimap') .. ' (Ctrl+M)',
+                            --  '/images/topbuttons/minimap', toggle)
+    --minimapButton:setOn(true)
 
-    local minimapWindow = g_ui.loadUI('minimap')
-
-    minimapWindow:setContentMinimumHeight(80)
+    local minimapWindow = g_ui.loadUI('minimap', modules.game_interface.getTopRightPanel())   
 
     local minimapWidget = minimapWindow:recursiveGetChildById('minimap')
 
@@ -81,14 +70,14 @@ function controller:onInit()
     self:bindKeyPress('Alt+Down', function() minimapWidget:move(0, -1) end,
                       gameRootPanel)
 
-    self:bindKeyDown('Ctrl+M', toggle)
-    self:bindKeyDown('Ctrl+Shift+M', toggleFullMap)
+    --self:bindKeyDown('Ctrl+M', toggle)
+    --self:bindKeyDown('Ctrl+Shift+M', toggleFullMap)
 
-    self:registerWidget('minimapButton', minimapButton)
+    --self:registerWidget('minimapButton', minimapButton)
     self:registerWidget('minimapWindow', minimapWindow)
     self:registerWidget('minimapWidget', minimapWidget)
 
-    minimapWindow:setup()
+    --minimapWindow:setup()
     localPlayerEvent:connect()
 end
 

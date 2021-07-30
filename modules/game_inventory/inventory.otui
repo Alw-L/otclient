@@ -80,68 +80,276 @@ PurseButton < Button
   icon-size: 24 24
   icon-offset: 1 1
 
-MiniWindow
+CombatBox < UICheckBox
+  size: 20 20
+  image-clip: 0 0 20 20
+  margin: 2 4
+
+  $checked:
+    image-clip: 0 20 20 20
+
+FightOffensiveBox < CombatBox
+  image-source: /images/game/combatmodes/fightoffensive
+FightBalancedBox < CombatBox
+  image-source: /images/game/combatmodes/fightbalanced
+FightDefensiveBox < CombatBox
+  image-source: /images/game/combatmodes/fightdefensive
+WalkModeBox < CombatBox
+  image-source: /images/game/combatmodes/walkmode
+ChaseModeBox < CombatBox
+  image-source: /images/game/combatmodes/chasemode
+SafeFightBox < CombatBox
+  image-source: /images/game/combatmodes/safefight
+
+WhiteDoveBox < CombatBox
+  image-source: /images/game/combatmodes/whitedovemode
+WhiteHandBox < CombatBox
+  image-source: /images/game/combatmodes/whitehandmode
+YellowHandBox < CombatBox
+  image-source: /images/game/combatmodes/yellowhandmode
+RedFistBox < CombatBox
+  image-source: /images/game/combatmodes/redfistmode
+
+CapLabel < GameLabel
+  id: capLabel
+  size: 34 21
+  image-source: /images/ui/capsoulpanel
+  text-align: center
+  text-offset: 0 6
+  color: #B8B8B8
+  font: verdana-11px-rounded
+  anchors.top: slot10.bottom
+  anchors.left: slot10.left
+  margin-top: 5
+  on: true
+
+  $!on:
+    visible: false
+    margin-top: 0
+    height: 0
+
+ConditionWidget < UIWidget
+  size: 8 8
+  $first:
+    margin-left: 0
+  $!first:
+    margin-left: 2
+
+HeadlessMiniWindow
   id: inventoryWindow
-  !text: tr('Inventory')
-  icon: /images/topbuttons/inventory
-  height: 175
-  @onClose: modules.game_inventory.onMiniWindowClose()
+  height: 187
   &save: true
 
-  MiniWindowContents
+  HeadlessMiniWindowContents
     HeadSlot
       anchors.top: parent.top
-      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.left: parent.left
+      margin-left:44
       margin-top: 3
 
     BodySlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     LegSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     FeetSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     NeckSlot
       anchors.top: slot1.top
       anchors.right: slot1.left
       margin-top: 10
-      margin-right: 5
+      margin-right: 4
 
     LeftSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     FingerSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     BackSlot
       anchors.top: slot1.top
       anchors.left: slot1.right
       margin-top: 10
-      margin-left: 5
+      margin-left: 4
 
     RightSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     AmmoSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 2
 
     PurseButton
-      margin-top: 3
+      margin-top: 2
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
+
+    Button
+      id: skillsButton
+      text: Skills
+      size: 34 20
+      anchors.left: parent.left
+      anchors.bottom: parent.bottom
+      margin-left: 7
+      margin-bottom: 4
+      @onClick: modules.game_skills.toggle()
+
+    Button
+      id: battleButton
+      text: Battle
+      size: 34 20
+      anchors.left: prev.right
+      anchors.bottom: parent.bottom
+      margin-left: 4
+      margin-bottom: 4
+      @onClick: modules.game_battle.toggle()
+
+    Button
+      id: vipButton
+      text: Vip
+      size: 34 20
+      anchors.left: prev.right
+      anchors.bottom: parent.bottom
+      margin-left: 4
+      margin-bottom: 4
+      @onClick: modules.game_viplist.toggle()
+
+    Button
+      id: logoutButton
+      text: Logout
+      size: 43 20
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-right: 4
+      margin-bottom: 4
+      @onClick: modules.game_interface.tryLogout(true)
+
+    FightOffensiveBox
+      id: fightOffensiveBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-right: 27
+      margin-top: 3
+
+    FightBalancedBox
+      id: fightBalancedBox
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+      margin-right: 27
+
+    FightDefensiveBox
+      id: fightDefensiveBox
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+      margin-right: 27
+
+    WalkModeBox
+      id: walkModeBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 3
+
+    ChaseModeBox
+      id: chaseModeBox
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+
+    SafeFightBox
+      id: safeFightBox
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+
+    Button
+      id: stopButton
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+      text: Stop
+      size: 43 20
+      margin-top: 4
+      margin-right: 4
+
+    Button
+      id: optionsButton
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+      text: Options
+      size: 43 20
+      margin-top: 4
+      margin-right: 4
+      @onClick: modules.client_options.toggle()
+
+    Button
+      id: questsButton
+      anchors.top: prev.bottom
+      anchors.right: parent.right
+      text: Quests
+      size: 43 20
+      margin-top: 4
+      margin-right: 4
+      @onClick: g_game.requestQuestLog()
+
+    Panel
+      id: pvpModesPanel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      height: 20
+      visible: false
+
+      WhiteDoveBox
+        id: whiteDoveBox
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        margin: 2 1
+
+      WhiteHandBox
+        id: whiteHandBox
+        anchors.left: prev.right
+        anchors.bottom: parent.bottom
+
+      YellowHandBox
+        id: yellowHandBox
+        anchors.left: prev.right
+        anchors.bottom: parent.bottom
+
+      RedFistBox
+        id: redFistBox
+        anchors.left: prev.right
+        anchors.bottom: parent.bottom
+
+    CapLabel
+
+    Panel
+      id: conditionPanel
+      image-source: /images/ui/conditionspanel
+      layout:
+        type: horizontalBox
+      size: 34 21
+      padding: 0
+      anchors.top: slot9.bottom
+      anchors.left: slot9.left
+      margin-top: 5
+      background-color: #ffffff11
+
+    UILabel
+      id:capTextLabel
+      anchors.top: capLabel.top
+      anchors.horizontalCenter: capLabel.horizontalCenter
+      margin-top: 2
+      font: cipsoftFont
+      text: Cap:

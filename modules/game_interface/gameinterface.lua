@@ -3,7 +3,8 @@ WALK_STEPS_RETRY = 10
 gameRootPanel = nil
 gameMapPanel = nil
 gameRightPanel = nil
-gameRightExtraPanel = nil
+gameTopRightPanel = nil
+--gameRightExtraPanel = nil
 gameLeftPanel = nil
 gameSelectedPanel = nil
 panelsList = {}
@@ -51,7 +52,8 @@ function init()
     bottomSplitter = gameRootPanel:getChildById('bottomSplitter')
     gameMapPanel = gameRootPanel:getChildById('gameMapPanel')
     gameRightPanel = gameRootPanel:getChildById('gameRightPanel')
-    gameRightExtraPanel = gameRootPanel:getChildById('gameRightExtraPanel')
+    gameTopRightPanel = gameRootPanel:getChildById('gameTopRightPanel')
+    --gameRightExtraPanel = gameRootPanel:getChildById('gameRightExtraPanel')
     gameLeftPanel = gameRootPanel:getChildById('gameLeftPanel')
     gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
 
@@ -59,9 +61,6 @@ function init()
         {
             panel = gameRightPanel,
             checkbox = gameRootPanel:getChildById('gameSelectRightColumn'),
-        },{
-            panel = gameRightExtraPanel,
-            checkbox = gameRootPanel:getChildById('gameSelectRightExtraColumn'),
         },{
             panel = gameLeftPanel,
             checkbox = gameRootPanel:getChildById('gameSelectLeftColumn'),
@@ -76,7 +75,7 @@ function init()
     panelsRadioGroup:selectWidget(panelsList[1].checkbox)
 
     connect(gameLeftPanel, {onVisibilityChange = onExtraPanelVisibilityChange})
-    connect(gameRightExtraPanel, { onVisibilityChange = onExtraPanelVisibilityChange })
+    --connect(gameRightExtraPanel, { onVisibilityChange = onExtraPanelVisibilityChange })
 
     logoutButton = modules.client_topmenu.addLeftButton('logoutButton',
                                                         tr('Exit'),
@@ -193,7 +192,7 @@ function terminate()
     })
 
     disconnect(gameLeftPanel, {onVisibilityChange = onExtraPanelVisibilityChange})
-    disconnect(gameRightExtraPanel, { onVisibilityChange = onExtraPanelVisibilityChange })
+   -- disconnect(gameRightExtraPanel, { onVisibilityChange = onExtraPanelVisibilityChange })
 
     for k,v in pairs(panelsList) do
         disconnect(v.checkbox, { onCheckChange = onSelectPanel })
@@ -205,7 +204,21 @@ end
 
 function onGameStart()
     show()
-
+    local vipWnd = gameRootPanel:recursiveGetChildById('vipWindow')
+    if vipWnd and vipWnd:isVisible() then
+      local vipButton = gameRootPanel:recursiveGetChildById('inventoryWindow'):getChildById('contentsPanel'):getChildById('vipButton')
+      vipButton:setOn(true)
+    end
+    local battleWnd = gameRootPanel:recursiveGetChildById('battleWindow')
+    if battleWnd and battleWnd:isVisible() then
+      local battleButton = gameRootPanel:recursiveGetChildById('inventoryWindow'):getChildById('contentsPanel'):getChildById('battleButton')
+      battleButton:setOn(true)
+    end
+    local skillsWnd = gameRootPanel:recursiveGetChildById('skillWindow')
+    if skillsWnd and skillsWnd:isVisible() then
+      local skillsButton = gameRootPanel:recursiveGetChildById('inventoryWindow'):getChildById('contentsPanel'):getChildById('skillsButton')
+      skillsButton:setOn(true)
+    end
     -- open tibia has delay in auto walking
     if not g_game.isOfficialTibia() then
         g_game.enableFeature(GameForceFirstAutoWalkStep)
@@ -1014,6 +1027,7 @@ function getRootPanel() return gameRootPanel end
 function getMapPanel() return gameMapPanel end
 
 function getRightPanel() return gameRightPanel end
+function getTopRightPanel() return gameTopRightPanel end
 
 function getLeftPanel() return gameLeftPanel end
 
@@ -1058,11 +1072,6 @@ function onExtraPanelVisibilityChange(extraPanel, visible)
                 v.checkbox:setVisible(false)
             end
         end
-
-        -- if there is only the right panel visible, hide its checkbox too
-        if not gameRightExtraPanel:isVisible() and not gameLeftPanel:isVisible() then
-            panelsList[1].checkbox:setVisible(false)
-        end
     else
         -- this means that, besided the right panel, there is another panel visible
         -- so we'll enable the checkboxes from the one at right, and the one being shown
@@ -1083,17 +1092,17 @@ function setupViewMode(mode)
     if currentViewMode == 2 then
         gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanel', AnchorRight)
         gameMapPanel:addAnchor(AnchorRight, 'gameRightPanel', AnchorLeft)
-        gameMapPanel:addAnchor(AnchorRight, 'gameRightExtraPanel', AnchorLeft)
+        --gameMapPanel:addAnchor(AnchorRight, 'gameRightExtraPanel', AnchorLeft)
         gameMapPanel:addAnchor(AnchorBottom, 'gameBottomPanel', AnchorTop)
         gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
         gameLeftPanel:setOn(modules.client_options.getOption('showLeftPanel'))
-        gameRightExtraPanel:setOn(modules.client_options.getOption('showRightExtraPanel'))
+       -- gameRightExtraPanel:setOn(modules.client_options.getOption('showRightExtraPanel'))
         gameLeftPanel:setImageColor('white')
         gameRightPanel:setImageColor('white')
-        gameRightExtraPanel:setImageColor('white')
+        --gameRightExtraPanel:setImageColor('white')
         gameLeftPanel:setMarginTop(0)
         gameRightPanel:setMarginTop(0)
-        gameRightExtraPanel:setMarginTop(0)
+        --gameRightExtraPanel:setMarginTop(0)
         gameBottomPanel:setImageColor('white')
         modules.client_topmenu.getTopMenu():setImageColor('white')
         g_game.changeMapAwareRange(18, 14)
@@ -1120,15 +1129,15 @@ function setupViewMode(mode)
         gameRootPanel:fill('parent')
         gameLeftPanel:setImageColor('alpha')
         gameRightPanel:setImageColor('alpha')
-        gameRightExtraPanel:setImageColor('alpha')
+        --gameRightExtraPanel:setImageColor('alpha')
         gameLeftPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanel:getPaddingTop())
         gameRightPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanel:getPaddingTop())
-        gameRightExtraPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightExtraPanel:getPaddingTop())
+        --gameRightExtraPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightExtraPanel:getPaddingTop())
         gameLeftPanel:setOn(true)
         gameLeftPanel:setVisible(true)
         gameRightPanel:setOn(true)
-        gameRightExtraPanel:setOn(true)
-        gameRightExtraPanel:setVisible(true)
+        --gameRightExtraPanel:setOn(true)
+        --gameRightExtraPanel:setVisible(true)
         gameMapPanel:setOn(true)
         gameBottomPanel:setImageColor('#ffffff88')
         modules.client_topmenu.getTopMenu():setImageColor('#ffffff66')

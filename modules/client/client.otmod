@@ -20,3 +20,5 @@ Module
     - client_modulemanager
     - client_serverlist
     - client_stats
+    - client_mainmenu
+    - client_information

@@ -101,81 +101,71 @@ function refreshContainerPages(container)
         end
     end
 end
-
 function onContainerOpen(container, previousContainer)
     local containerWindow
     if previousContainer then
-        containerWindow = previousContainer.window
-        previousContainer.window = nil
-        previousContainer.itemsPanel = nil
+      containerWindow = previousContainer.window
+      previousContainer.window = nil
+      previousContainer.itemsPanel = nil
     else
-        containerWindow = g_ui.createWidget('ContainerWindow')
+      containerWindow = g_ui.createWidget('ContainerWindow', modules.game_interface.getRightPanel())
     end
     containerWindow:setId('container' .. container:getId())
     local containerPanel = containerWindow:getChildById('contentsPanel')
-    local containerItemWidget = containerWindow:getChildById(
-                                    'containerItemWidget')
+    local containerItemWidget = containerWindow:getChildById('containerItemWidget')
     containerWindow.onClose = function()
-        g_game.close(container)
-        containerWindow:hide()
+      g_game.close(container)
+      containerWindow:hide()
     end
-
+  
     -- this disables scrollbar auto hiding
     local scrollbar = containerWindow:getChildById('miniwindowScrollBar')
-    scrollbar:mergeStyle({['$!on'] = {}})
-
+    scrollbar:mergeStyle({ ['$!on'] = { }})
+  
     local upButton = containerWindow:getChildById('upButton')
-    upButton.onClick = function() g_game.openParent(container) end
+    upButton.onClick = function()
+      g_game.openParent(container)
+    end
     upButton:setVisible(container:hasParent())
-
+  
     local name = container:getName()
-    name = name:sub(1, 1):upper() .. name:sub(2)
+    name = name:sub(1,1):upper() .. name:sub(2)
     containerWindow:setText(name)
-
+  
     containerItemWidget:setItem(container:getContainerItem())
     containerItemWidget:setPhantom(true)
-
+  
     containerPanel:destroyChildren()
-    for slot = 0, container:getCapacity() - 1 do
-        local itemWidget = g_ui.createWidget('Item', containerPanel)
-        itemWidget:setId('item' .. slot)
-        itemWidget:setItem(container:getItem(slot))
-        itemWidget:setMargin(0)
-        itemWidget.position = container:getSlotPosition(slot)
-
-        if not container:isUnlocked() then
-            itemWidget:setBorderColor('red')
-        end
+    for slot=0,container:getCapacity()-1 do
+      local itemWidget = g_ui.createWidget('Item', containerPanel)
+      itemWidget:setId('item' .. slot)
+      itemWidget:setItem(container:getItem(slot))
+      itemWidget:setMargin(0)
+      itemWidget.position = container:getSlotPosition(slot)
+  
+      if not container:isUnlocked() then
+        itemWidget:setBorderColor('red')
+      end
     end
-
+  
     container.window = containerWindow
     container.itemsPanel = containerPanel
-
+  
     toggleContainerPages(containerWindow, container:hasPages())
     refreshContainerPages(container)
-
+  
     local layout = containerPanel:getLayout()
     local cellSize = layout:getCellSize()
     containerWindow:setContentMinimumHeight(cellSize.height)
-    containerWindow:setContentMaximumHeight(cellSize.height *
-                                                layout:getNumLines())
-
+    containerWindow:setContentMaximumHeight((cellSize.height + 3)*layout:getNumLines())
+  
     if not previousContainer then
-        local panel = modules.game_interface.findContentPanelAvailable(containerWindow, cellSize.height)
-        panel:addChild(containerWindow)
-
-        if modules.client_options.getOption('openMaximized') then
-            containerWindow:setContentHeight(cellSize.height*layout:getNumLines())
-        else
-            local filledLines = math.max(math.ceil(
-                                             container:getItemsCount() /
-                                                 layout:getNumColumns()), 1)
-            containerWindow:setContentHeight(filledLines * cellSize.height)
-        end
+      local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)
+      containerWindow:setContentHeight(filledLines * (cellSize.height + 3))
     end
-
+  
     containerWindow:setup()
-end
+  end
 
 function onContainerClose(container) destroy(container) end
 

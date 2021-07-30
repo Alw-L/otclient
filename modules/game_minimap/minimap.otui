@@ -1,29 +1,61 @@
-MiniWindow
+HeadlessMiniWindow
   id: minimapWindow
-  !text: tr('Minimap')
-  height: 150
-  icon: /images/topbuttons/minimap
+  height: 120
   @onOpen: onMiniWindowOpen()
   @onClose: onMiniWindowClose()
   &save: true
 
-  Label
-    text: ?
-    text-align: center
-    phantom: false
-    !tooltip: tr('Hold left mouse button to navigate\nScroll mouse middle button to zoom\nRight mouse button to create map marks\nPress Ctrl+Shift+M to view the entire game map')
-    anchors.top: minimizeButton.top
-    anchors.right: minimizeButton.left
-    margin-right: 3
-    size: 14 14
-
-  MiniWindowContents
+  HeadlessMiniWindowContents
     Minimap
       id: minimap
-      anchors.fill: parent
+      anchors.top: parent.top
+      anchors.left: parent.left
+      size: 106 106
+      margin-top: 6
+      margin-left: 9
 
-  ResizeBorder
-    anchors.right: parent.right
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    enabled: true
+    Panel
+      id: windRose
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 6
+      margin-right: 4
+      image-source: /images/ui/windrose
+      size: 43 43
+
+    ZoomOutMapButton
+      id: zoomOutButton
+      anchors.top: windRose.bottom
+      anchors.left: windRose.left
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):zoomOut()
+
+    ZoomInMapButton
+      id: zoomInButton
+      anchors.top: prev.bottom
+      anchors.left: prev.left
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):zoomIn()
+
+    UpMapButton
+      id: floorUpButton
+      anchors.top: windRose.bottom
+      anchors.right: windRose.right
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):floorUp(1)
+
+    DownMapButton
+      id: floorDownButton
+      anchors.top: prev.bottom
+      anchors.right: prev.right
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):floorDown(1)
+
+    Button
+      id: centerButton
+      size: 43 20
+      text: Center
+      anchors.top: prev.bottom
+      anchors.right: prev.right
+      margin-top: 2
+      @onClick: self:getParent():getChildById('minimap'):reset()

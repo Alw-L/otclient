@@ -42,7 +42,7 @@ TopMenuButtonsPanel < Panel
 
 TopMenuPanel < Panel
   height: 36
-  image-source: /images/ui/panel_top
+  image-source: /images/ui/panel_container
   image-repeated: true
   focusable: false
 

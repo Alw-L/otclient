@@ -122,11 +122,11 @@ function EnterGame.init()
 
     local account = g_settings.get('account')
     local password = g_settings.get('password')
-    local host = g_settings.get('host')
-    local port = g_settings.get('port')
+    local host = '127.0.0.1' --g_settings.get('host')
+    local port = '7171' --g_settings.get('port')
     local stayLogged = g_settings.getBoolean('staylogged')
     local autologin = g_settings.getBoolean('autologin')
-    local clientVersion = g_settings.getInteger('client-version')
+    local clientVersion = 860--g_settings.getInteger('client-version')
     if clientVersion == 0 then clientVersion = 1074 end
 
     if port == nil or port == 0 then port = 7171 end
@@ -134,24 +134,25 @@ function EnterGame.init()
     EnterGame.setAccountName(account)
     EnterGame.setPassword(password)
 
-    enterGame:getChildById('serverHostTextEdit'):setText(host)
-    enterGame:getChildById('serverPortTextEdit'):setText(port)
+   -- enterGame:getChildById('serverHostTextEdit'):setText(host)
+   -- enterGame:getChildById('serverPortTextEdit'):setText(port)
     enterGame:getChildById('autoLoginBox'):setChecked(autologin)
     enterGame:getChildById('stayLoggedBox'):setChecked(stayLogged)
-
+    --[[
     clientBox = enterGame:getChildById('clientComboBox')
     for _, proto in pairs(g_game.getSupportedClients()) do
         clientBox:addOption(proto)
     end
     clientBox:setCurrentOption(clientVersion)
+]]--
 
-    EnterGame.toggleAuthenticatorToken(clientVersion, true)
+    --EnterGame.toggleAuthenticatorToken(clientVersion, true)
     EnterGame.toggleStayLoggedBox(clientVersion, true)
-    connect(clientBox, {onOptionChange = EnterGame.onClientVersionChange})
+    --connect(clientBox, {onOptionChange = EnterGame.onClientVersionChange})
 
     enterGame:hide()
 
-    if g_app.isRunning() and not g_game.isOnline() then enterGame:show() end
+    --if g_app.isRunning() and not g_game.isOnline() then enterGame:show() end
 end
 
 function EnterGame.firstShow()
@@ -167,6 +168,7 @@ function EnterGame.firstShow()
             EnterGame.doLogin()
         end)
     end
+    --enterGame:hide()
 end
 
 function EnterGame.terminate()
@@ -299,9 +301,9 @@ function EnterGame.doLogin()
     G.authenticatorToken = enterGame:getChildById('authenticatorTokenTextEdit')
                                :getText()
     G.stayLogged = enterGame:getChildById('stayLoggedBox'):isChecked()
-    G.host = enterGame:getChildById('serverHostTextEdit'):getText()
-    G.port = tonumber(enterGame:getChildById('serverPortTextEdit'):getText())
-    local clientVersion = tonumber(clientBox:getText())
+    G.host = '127.0.0.1'--enterGame:getChildById('serverHostTextEdit'):getText()
+    G.port = '7171'--tonumber(enterGame:getChildById('serverPortTextEdit'):getText())
+    local clientVersion = 860-- tonumber(clientBox:getText())
     EnterGame.hide()
 
     if g_game.isOnline() then

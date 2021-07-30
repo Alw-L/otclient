@@ -4,6 +4,7 @@ PageButton < Button
 
 
 ContainerWindow < MiniWindow
+  color: #8F8F8F
   height: 150
 
   UIItem
@@ -12,7 +13,7 @@ ContainerWindow < MiniWindow
     size: 16 16
     anchors.top: parent.top
     anchors.left: parent.left
-    margin-top: 4
+    margin-top: 1
     margin-left: 4
 
   UIButton
@@ -22,13 +23,13 @@ ContainerWindow < MiniWindow
     margin-right: 3
     size: 14 14
     image-source: /images/ui/miniwindow_buttons
-    image-clip: 42 0 14 14
+    image-clip: 42 0 12 12
 
     $hover:
-      image-clip: 42 14 14 14
+      image-clip: 42 14 12 12
 
     $pressed:
-      image-clip: 42 28 14 14
+      image-clip: 42 28 12 12
 
   Panel
     id: pagePanel
@@ -60,8 +61,15 @@ ContainerWindow < MiniWindow
       anchors.right: parent.right
 
   MiniWindowContents
-    padding-right: 0
+    margin-left: 10
     layout:
       type: grid
       cell-size: 34 34
+      cell-spacing: 3
       flow: true
+
+  MiniBorder
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    margin-left: 2

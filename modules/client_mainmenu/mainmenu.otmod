@@ -1,0 +1,9 @@
+Module
+  name: client_mainmenu
+  description: Displays classic Tibia menu
+  author: Qbazzz
+  website: https://github.com/edubart/otclient
+  sandboxed: true
+  scripts: [ mainmenu ]
+  @onLoad: init()
+  @onUnload: terminate()

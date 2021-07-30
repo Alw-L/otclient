@@ -1,0 +1,58 @@
+MainMenuButton < Button
+  font: cipsoftFont
+  size: 86 20
+
+Panel
+  id: mainmenuWindow
+  anchors.left: parent.left
+  anchors.bottom: parent.bottom
+  margin-left: 60
+  margin-bottom: 50
+  size: 126 176
+  image-source: /images/ui/panel
+  padding: 10 10 10 10
+  image-border-top: 10
+  image-border-right: 10
+  image-border-bottom: 10
+  image-border-left: 10
+
+  MainMenuButton
+    id: enterGameButton
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-left: 10
+    margin-top:10
+    text: Enter Game
+    @onClick: modules.client_entergame.EnterGame.firstShow()
+
+  MainMenuButton
+    id: accessAccountButton
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top:10
+    text: Access Account
+    @onClick: g_platform.openUrl("google.com") 
+
+  MainMenuButton
+    id: enterGameButton
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top:10
+    text: Options
+    @onClick: modules.client_options.show()
+
+  MainMenuButton
+    id: infoButton
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top:10
+    text: Info
+    @onClick: modules.client_information.toggle()
+
+  MainMenuButton
+    id: exitGameButton
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top:10
+    text: Exit
+    @onClick: exit()

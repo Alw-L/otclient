@@ -1,9 +1,10 @@
 EnterGameWindow < MainWindow
   !text: tr('Enter Game')
-  size: 236 298
+  color: #BFBFBF
+  size: 241 205
 
 EnterGameButton < Button
-  width: 64
+  width: 45
 
 ServerListButton < UIButton
   size: 17 17
@@ -28,31 +29,62 @@ EnterGameWindow
   @onEnter: EnterGame.doLogin()
 
   MenuLabel
-    !text: tr('Account name')
+    id: accountLabel
+    !text: tr('Account name:')
+    color:#BFBFBF
     anchors.left: parent.left
     anchors.top: parent.top
+    margin-top: 2
     text-auto-resize: true
 
   PasswordTextEdit
     id: accountNameTextEdit
-    anchors.left: parent.left
     anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 2
+    anchors.top: parent.top
+    margin-top: 3
+    margin-left: 20
+    margin-right: 2
+    height: 16
 
   MenuLabel
-    !text: tr('Password')
-    anchors.left: prev.left
-    anchors.top: prev.bottom
-    margin-top: 8
+    id: passwordLabel
+    !text: tr('Password:')
+    color:#BFBFBF
+    anchors.left: parent.left
+    anchors.top: accountPasswordTextEdit.top
     text-auto-resize: true
 
   PasswordTextEdit
     id: accountPasswordTextEdit
+    anchors.left: accountNameTextEdit.left
+    anchors.right: accountNameTextEdit.right
+    anchors.top: accountNameTextEdit.bottom
+    margin-top: 15
+    height: 16
+
+  MenuLabel
+    !text: tr("If you don't have")
+    color:#BFBFBF
     anchors.left: parent.left
-    anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 2
+    margin-top: 10
+    text-auto-resize: true
+
+  MenuLabel
+    !text: tr("an account yet:")
+    color:#BFBFBF
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    text-auto-resize: true
+
+  Button
+    id: createAccount
+    !text: tr('Create Account')
+    anchors.top: accountPasswordTextEdit.bottom
+    anchors.left: accountPasswordTextEdit.left
+    anchors.right: accountPasswordTextEdit.right
+    margin-top: 15
+    @onClick: EnterGame.goWebsite()
 
   MenuLabel
     id: authenticatorTokenLabel
@@ -94,74 +126,6 @@ EnterGameWindow
       visible: true
       margin-top: 8
 
-  HorizontalSeparator
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 8
-
-  MenuLabel
-    id: serverLabel
-    !text: tr('Server')
-    anchors.left: prev.left
-    anchors.top: prev.bottom
-    margin-top: 8
-    text-auto-resize: true
-
-  ServerListButton
-    id: serverListButton
-    !tooltip: tr('Server list')
-    anchors.right: parent.right
-    anchors.top: serverLabel.bottom
-    margin-top: 3
-    @onClick: ServerList.show()
-
-  TextEdit
-    id: serverHostTextEdit
-    !tooltip: tr('Make sure that your client uses\nthe correct game client version')
-    anchors.left: parent.left
-    anchors.right: serverListButton.left
-    anchors.top: serverLabel.bottom
-    margin-top: 2
-    margin-right: 4
-
-  MenuLabel
-    id: clientLabel
-    !text: tr('Client Version')
-    anchors.left: parent.left
-    anchors.top: serverHostTextEdit.bottom
-    text-auto-resize: true
-    margin-right: 10
-    margin-top: 8
-
-  ComboBox
-    id: clientComboBox
-    anchors.left: parent.left
-    anchors.right: parent.horizontalCenter
-    anchors.top: clientLabel.bottom
-    margin-top: 2
-    margin-right: 3
-    width: 90
-    menu-scroll: true
-    menu-height: 125
-    menu-scroll-step: 25
-
-  MenuLabel
-    id: portLabel
-    !text: tr('Port')
-    anchors.left: serverPortTextEdit.left
-    anchors.top: serverHostTextEdit.bottom
-    margin-top: 8
-    text-auto-resize: true
-
-  TextEdit
-    id: serverPortTextEdit
-    text: 7171
-    anchors.right: parent.right
-    anchors.left: parent.horizontalCenter
-    anchors.top: clientComboBox.top
-    margin-left: 3
-
   CheckBox
     id: rememberPasswordBox
     !text: tr('Remember password')
@@ -169,7 +133,7 @@ EnterGameWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 10
+    margin-top: 20
     @onCheckChange: self:getParent():getChildById('autoLoginBox'):setEnabled(self:isChecked())
 
   CheckBox
@@ -186,13 +150,22 @@ EnterGameWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 6
+    margin-top: 8
 
-  EnterGameButton
-    !text: tr('Ok')
+  Button
+    width: 43
+    !text: tr('Cancel')
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 4
+    margin-top: 8
+    @onClick: EnterGame.hide()
+
+  EnterGameButton
+    width: 43
+    !text: tr('Ok')
+    anchors.right: prev.left
+    anchors.top: prev.top
+    margin-right:10
     @onClick: EnterGame.doLogin()
 
   Label

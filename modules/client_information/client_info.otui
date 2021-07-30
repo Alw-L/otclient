@@ -1,0 +1,85 @@
+ClientInfoWindow < MainWindow
+  !text: tr('Info')
+  size: 245 220
+
+ClientInfoWindow
+  id: infoBox
+  @onEscape: toggle()
+
+  OptionsBorder
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 20
+
+  HorizontalSeparator
+    anchors.bottom: next.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 10
+
+  Button
+    !text: tr('Ok')
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: -5
+    width: 45
+    @onClick: modules.client_info.hide()
+
+  Label
+    id: infoLabel1
+    color: #A8A8A8
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    margin-top: 8
+
+  Label
+    id: infoLabel2
+    color: #A8A8A8
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+
+  Label
+    id: infoLabel3
+    color: #A8A8A8
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+
+  Label
+    id: infoLabel4
+    color: #A8A8A8
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+
+  Label
+    id: infoLabel5
+    color: #A8A8A8
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: prev.bottom
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    margin-left: 10
+    margin-right: 10
+
+  Label
+    id: infoLabel6
+    color: #A8A8A8
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 17
+    margin-left: 10
+
+  Button
+    id: infoLabel7
+    color: white
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-left: 15
+    margin-top: -3
+    width: 85
+    @onClick: openWebsite()
