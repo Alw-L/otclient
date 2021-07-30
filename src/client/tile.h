@@ -62,12 +62,10 @@ public:
 
     Tile(const Position& position);
 
-    void drawStart(const MapViewPtr& mapView);
-    void drawEnd(const MapViewPtr& mapView);
     void onAddVisibleTileList(const MapViewPtr& mapView);
-    void draw(const MapViewPtr& mapView, const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawGround(const MapViewPtr& mapView, const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawGroundBorder(const MapViewPtr& mapView, const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
+    void draw(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
+    void drawGround(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
+    void drawGroundBorder(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
     void drawBottom(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
     void drawTop(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
     void drawThing(const ThingPtr& thing, const Point& dest, float scaleFactor, bool animate, int frameFlag, LightView* lightView);
@@ -195,7 +193,12 @@ private:
     void checkTranslucentLight();
 
     void clearCompletelyCoveredCacheListIfPossible(const ThingPtr& thing);
-    void setCompletelyCoveredCache(const uint8_t state) { if(m_currentFirstVisibleFloor != UINT8_MAX) m_completelyCoveredCache[m_currentFirstVisibleFloor] = state; }
+    void setCompletelyCoveredCache(const uint8_t state)
+    {
+        if(state == 0) m_completelyCoveredCache.fill(0);
+        else if(m_currentFirstVisibleFloor != UINT8_MAX)
+            m_completelyCoveredCache[m_currentFirstVisibleFloor] = state;
+    }
 
     Position m_position;
     uint8 m_drawElevation, m_minimapColor,
