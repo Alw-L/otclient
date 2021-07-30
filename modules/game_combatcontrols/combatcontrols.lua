@@ -145,7 +145,7 @@ function check()
 end
 
 function online()
-    combatControlsWindow:setupOnStart() -- load character window configuration
+    --combatControlsWindow:setupOnStart() -- load character window configuration
     local player = g_game.getLocalPlayer()
     if player then
         local char = g_game.getCharacterName()

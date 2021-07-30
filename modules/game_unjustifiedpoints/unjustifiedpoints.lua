@@ -78,7 +78,7 @@ end
 
 function online()
     if g_game.getFeature(GameUnjustifiedPoints) then
-        unjustifiedPointsWindow:setupOnStart() -- load character window configuration
+        --unjustifiedPointsWindow:setupOnStart() -- load character window configuration
         unjustifiedPointsButton:show()
     else
         unjustifiedPointsButton:hide()

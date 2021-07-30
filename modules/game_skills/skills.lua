@@ -1,6 +1,5 @@
 skillsWindow = nil
-skillsButton = nil
-skillsSettings = nil
+--skillsButton = nil
 
 function init()
     connect(LocalPlayer, {
@@ -26,18 +25,14 @@ function init()
         onGameEnd = offline
     })
 
-    skillsButton = modules.client_topmenu.addRightGameToggleButton(
-                       'skillsButton', tr('Skills') .. ' (Alt+S)',
-                       '/images/topbuttons/skills', toggle)
-    skillsButton:setOn(true)
+    --skillsButton = modules.client_topmenu.addRightGameToggleButton(
+                       ---'skillsButton', tr('Skills') .. ' (Alt+S)',
+                      -- '/images/topbuttons/skills', toggle)
+    --skillsButton:setOn(true)
     skillsWindow = g_ui.loadUI('skills')
 
     g_keyboard.bindKeyDown('Alt+S', toggle)
 
-    skillSettings = g_settings.getNode('skills-hide')
-    if not skillSettings then
-        skillSettings = {}
-    end
 
     refresh()
     skillsWindow:setup()
@@ -69,10 +64,10 @@ function terminate()
 
     g_keyboard.unbindKeyDown('Alt+S')
     skillsWindow:destroy()
-    skillsButton:destroy()
+    --skillsButton:destroy()
 
     skillsWindow = nil
-    skillsButton = nil
+    --skillsButton = nil
 end
 
 function expForLevel(level)
@@ -193,7 +188,6 @@ function update()
 end
 
 function online()
-    skillsWindow:setupOnStart() -- load character window configuration
     refresh()
 end
 
@@ -235,10 +229,6 @@ function refresh()
     if g_game.isOnline() then
         local char = g_game.getCharacterName()
 
-        if not skillSettings[char] then
-            skillSettings[char] = {}
-        end
-
         local skillsButtons = skillsWindow:recursiveGetChildById('experience'):getParent():getChildren()
 
         for _, skillButton in pairs(skillsButtons) do
@@ -246,16 +236,10 @@ function refresh()
 
             if skillButton:isVisible() then
                 maximumHeight = maximumHeight + 16
-                if percentBar then
-                    showPercentBar(skillButton, skillSettings[char][skillButton:getId()] ~= 1)
-                    if percentBar:isVisible() then
-                        maximumHeight = maximumHeight + 6
-                    end
-                end
             end
         end
 
-        skillsWindow:setupOnStart()
+
     else
         maximumHeight = 390
     end
@@ -266,19 +250,22 @@ function refresh()
 end
 
 function offline()
-    skillsWindow:setParent(nil, true)
+    --skillsWindow:setParent(nil, true)
     if expSpeedEvent then
         expSpeedEvent:cancel()
         expSpeedEvent = nil
     end
-    g_settings.setNode('skills-hide', skillSettings)
+    --g_settings.setNode('skills-hide', skillSettings)
 end
 
 function toggle()
+    local skillsButton = modules.game_interface.getRootPanel():recursiveGetChildById('inventoryWindow'):getChildById('contentsPanel'):getChildById('skillsButton')
     if skillsButton:isOn() then
+        print('isOn?')
         skillsWindow:close()
         skillsButton:setOn(false)
     else
+        print('isOf')
         skillsWindow:open()
         skillsButton:setOn(true)
     end
@@ -301,23 +288,26 @@ function checkExpSpeed()
     if #player.lastExps > 30 then table.remove(player.lastExps, 1) end
 end
 
-function onMiniWindowClose() skillsButton:setOn(false) end
+function onMiniWindowClose()
+    if g_game.isOnline() then
+      local skillsButton = modules.game_interface.getRootPanel():recursiveGetChildById('inventoryWindow'):getChildById('contentsPanel'):getChildById('skillsButton')
+      if skillsButton:isOn() then
+        skillsButton:setOn(false)
+      end
+    end
+end
 
 function onSkillButtonClick(button)
     local percentBar = button:getChildById('percent')
     if percentBar then
-        showPercentBar(button, not percentBar:isVisible())
-
-        local char = g_game.getCharacterName()
-        if percentBar:isVisible() then
-            skillsWindow:modifyMaximumHeight(6)
-            skillSettings[char][button:getId()] = 0
-        else
-            skillsWindow:modifyMaximumHeight(-6)
-            skillSettings[char][button:getId()] = 1
-        end
+      percentBar:setVisible(not percentBar:isVisible())
+      if percentBar:isVisible() then
+        button:setHeight(21)
+      else
+        button:setHeight(21 - 6)
+      end
     end
-end
+  end
 
 function showPercentBar(button, show)
     local percentBar = button:getChildById('percent')

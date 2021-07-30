@@ -65,7 +65,7 @@ function saveVipInfo()
 end
 
 function online()
-    vipWindow:setupOnStart() -- load character window configuration
+    --vipWindow:setupOnStart() -- load character window configuration
     refresh()
 end
 

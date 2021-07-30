@@ -299,7 +299,7 @@ return true
 end
 
 function onGameStart()
-	battleWindow:setupOnStart() -- load character window configuration
+	--battleWindow:setupOnStart() -- load character window configuration
 
 	-- Temp fix
 	scheduleEvent(checkCreatures, 200)

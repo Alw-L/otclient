@@ -86,7 +86,7 @@ end
 
 function online()
     if g_game.getFeature(GameSpellList) then
-        cooldownWindow:setupOnStart() -- load character window configuration
+        --cooldownWindow:setupOnStart() -- load character window configuration
         cooldownButton:show()
     else
         cooldownButton:hide()
