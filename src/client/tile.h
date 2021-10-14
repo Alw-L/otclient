@@ -56,19 +56,11 @@ enum tileflags_t : uint32
 class Tile : public LuaObject
 {
 public:
-    enum {
-        MAX_THINGS = 10
-    };
-
     Tile(const Position& position);
 
     void onAddVisibleTileList(const MapViewPtr& mapView);
-    void draw(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
+    void drawSurface(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
     void drawGround(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawGroundBorder(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawBottom(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawTop(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    void drawThing(const ThingPtr& thing, const Point& dest, float scaleFactor, bool animate, int frameFlag, LightView* lightView);
 
     void clean();
 
@@ -122,10 +114,9 @@ public:
     bool limitsFloorsView(bool isFreeView = false);
     bool canErase();
 
-    bool hasGroundBorderToDraw() const { return m_countFlag.hasGroundBorder && (!m_ground || !m_ground->isTopGround()); }
-    bool hasBottomOrTopToDraw() const { return m_countFlag.hasTopItem || !m_effects.empty() || m_countFlag.hasBottomItem || m_countFlag.hasCommonItem || m_countFlag.hasCreature || !m_walkingCreatures.empty() || (m_ground && m_ground->isTopGround()); }
-    bool hasGround() { return m_ground && !m_ground->isTopGround(); };
-    bool hasAnyGround() { return m_ground != nullptr; };
+    bool hasGround() { return (m_ground && m_ground->isSingleGround()) || m_countFlag.hasGroundBorder; };
+    bool hasTopGround() { return (m_ground && m_ground->isTopGround()) || m_countFlag.hasTopGroundBorder; }
+    bool hasSurface() { return m_countFlag.hasTopItem || !m_effects.empty() || m_countFlag.hasBottomItem || m_countFlag.hasCommonItem || m_countFlag.hasCreature || !m_walkingCreatures.empty() || hasTopGround(); }
 
     std::vector<Otc::Direction> getBorderDirections() { return m_borderDirections; };
 
@@ -153,8 +144,8 @@ public:
 
     bool hasDisplacement() { return m_countFlag.hasDisplacement > 0; }
     bool hasLight();
-    bool isTopGround() const { return m_countFlag.hasTopGround > 0; }
-    bool isCovered() { return m_coveredCache[m_currentFirstVisibleFloor] == 1; };
+    bool isTopGround() const { return m_ground && m_ground->isTopGround(); }
+    bool isCovered() { return m_covered; };
 
     void analyzeThing(const ThingPtr& thing, bool add);
 
@@ -178,31 +169,30 @@ private:
         int hasWall = 0;
         int hasHookEast = 0;
         int hasHookSouth = 0;
-        int hasTopGround = 0;
         int hasNoWalkableEdge = 0;
         int hasCreature = 0;
         int hasCommonItem = 0;
         int hasTopItem = 0;
         int hasBottomItem = 0;
         int hasGroundBorder = 0;
+        int hasTopGroundBorder = 0;
     };
 
-    bool canRender(const bool drawViewportEdge, const Position& cameraPosition, const AwareRange viewPort, LightView* lightView);
+    void drawTop(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
+    void drawBottom(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
     void drawCreature(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView = nullptr);
-    bool checkForDetachableThing();
+    void drawThing(const ThingPtr& thing, const Point& dest, float scaleFactor, bool animate, int frameFlag, LightView* lightView);
+
     void checkTranslucentLight();
 
-    void clearCompletelyCoveredCacheListIfPossible(const ThingPtr& thing);
-    void setCompletelyCoveredCache(const uint8_t state)
-    {
-        if(state == 0) m_completelyCoveredCache.fill(0);
-        else if(m_currentFirstVisibleFloor != UINT8_MAX)
-            m_completelyCoveredCache[m_currentFirstVisibleFloor] = state;
-    }
+    bool canRender(const bool drawViewportEdge, const Position& cameraPosition, const AwareRange viewPort, LightView* lightView);
+    bool checkForDetachableThing();
 
     Position m_position;
+
     uint8 m_drawElevation, m_minimapColor,
         m_currentFirstVisibleFloor{ UINT8_MAX };
+
     uint32 m_flags, m_houseId;
 
     std::array<Position, 8> m_positionsAround;
@@ -217,9 +207,10 @@ private:
     CountFlag m_countFlag;
     Highlight m_highlight;
 
-    bool m_highlightWithoutFilter{ false };
-
-    std::array<uint8_t, Otc::MAX_Z + 1> m_coveredCache, m_completelyCoveredCache;
+    bool m_highlightWithoutFilter{ false },
+        m_covered{ false },
+        m_completelyCovered{ false },
+        m_ignoreCompletelyCoveredCheck{ false };
 };
 
 #endif

@@ -55,11 +55,9 @@ public:
 
 protected:
     void onGlobalLightChange(const Light& light);
-    void onFloorDrawingStart(const uint8 floor);
-    void onFloorDrawingEnd(const uint8 floor);
     void onFloorChange(const uint8 floor, const uint8 previousFloor);
     void onTileUpdate(const Position& pos, const ThingPtr& thing, const Otc::Operation operation);
-    void onMapCenterChange(const Position& pos);
+    void onMapCenterChange(const Position& newPos, const Position& oldPos);
     void onCameraMove(const Point& offset);
 
     friend class Map;
@@ -146,7 +144,6 @@ public:
 
     void setCrosshairTexture(const std::string& texturePath);
 
-    void onPositionChange(const Position& newPos, const Position& oldPos);
     void onMouseMove(const Position& mousePos, const bool isVirtualMove = false);
     void onKeyRelease(const InputEvent& inputEvent);
 
@@ -160,8 +157,8 @@ public:
 
 private:
     struct MapList {
-        std::vector<TilePtr> grounds, allGrounds, borders, bottomTops;
-        void clear() { grounds.clear(); allGrounds.clear(); borders.clear(); bottomTops.clear(); }
+        std::vector<TilePtr> shades, grounds, surfaces;
+        void clear() { shades.clear(); grounds.clear(); surfaces.clear(); }
     };
 
     struct Pools {
@@ -205,8 +202,8 @@ private:
     bool canRenderTile(const TilePtr& tile, LightView* lightView);
 
     uint8 m_lockedFirstVisibleFloor{ UINT8_MAX },
-        m_cachedFirstVisibleFloor{ Otc::SEA_FLOOR },
-        m_cachedLastVisibleFloor{ Otc::SEA_FLOOR },
+        m_cachedFirstVisibleFloor{ SEA_FLOOR },
+        m_cachedLastVisibleFloor{ SEA_FLOOR },
         m_renderScale{ 100 },
         m_tileSize,
         m_floorMin{ 0 },
@@ -257,7 +254,7 @@ private:
 
     std::vector<CreaturePtr> m_visibleCreatures;
 
-    std::array<MapList, Otc::MAX_Z + 1> m_cachedVisibleTiles;
+    std::array<MapList, MAX_Z + 1> m_cachedVisibleTiles;
 
     PainterShaderProgramPtr m_shader, m_nextShader;
     LightViewPtr m_lightView;

@@ -127,6 +127,9 @@ function init() -- Initiating the module (load)
 	-- Determining Height and Setting up!
 	battleWindow:setContentMinimumHeight(80)
 	battleWindow:setup()
+	if g_game.isOnline() then
+		battleWindow:setupOnStart()
+	end
 end
 
 -- Binary Search, Insertion and Resort functions
@@ -435,7 +438,13 @@ local function canBeSeen(creature)
 end
 
 local function getDistanceBetween(p1, p2) -- Calculate distance
-    return math.max(math.abs(p1.x - p2.x), math.abs(p1.y - p2.y))
+	local xd = math.abs(p1.x - p2.x);
+	local yd = math.abs(p1.y - p2.y);
+
+	if xd > 0 then xd = xd - 1 end
+	if yd > 0 then yd = yd - 1 end
+
+	return xd+yd
 end
 
 -- Adding and Removing creatures

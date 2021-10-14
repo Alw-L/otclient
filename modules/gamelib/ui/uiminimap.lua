@@ -85,6 +85,7 @@ function UIMinimap:save()
 end
 
 local function onFlagMouseRelease(widget, pos, button)
+<<<<<<< HEAD
   if button == MouseRightButton then
     local menu = g_ui.createWidget('PopupMenu')
     menu:setGameMenu(true)
@@ -93,6 +94,27 @@ local function onFlagMouseRelease(widget, pos, button)
     return true
   end
   return false
+=======
+    if button == MouseLeftButton then
+        local player = g_game.getLocalPlayer()
+        if Position.distance(player:getPosition(), widget.pos) > 250 then
+            modules.game_textmessage.displayStatusMessage(tr(
+                                                              "Destination is out of range."))
+            return false
+        end
+
+        if widget:getParent().autowalk then player:autoWalk(widget.pos) end
+        return true
+
+    elseif button == MouseRightButton then
+        local menu = g_ui.createWidget('PopupMenu')
+        menu:setGameMenu(true)
+        menu:addOption(tr('Delete mark'), function() widget:destroy() end)
+        menu:display(pos)
+        return true
+    end
+    return false
+>>>>>>> origin/new-version
 end
 
 function UIMinimap:setCrossPosition(pos)
@@ -187,10 +209,15 @@ function UIMinimap:removeFlag(pos, icon, description)
 end
 
 function UIMinimap:reset()
+<<<<<<< HEAD
   self:setZoom(0)
   if self.cross then
     self:setCameraPosition(self.cross.pos)
   end
+=======
+    local player = g_game.getLocalPlayer()
+    if player then self:setCameraPosition(player:getPosition()) end
+>>>>>>> origin/new-version
 end
 
 function UIMinimap:move(x, y)
@@ -223,6 +250,7 @@ function UIMinimap:onMousePress(pos, button)
 end
 
 function UIMinimap:onMouseRelease(pos, button)
+<<<<<<< HEAD
   if not self.allowNextRelease then return true end
   self.allowNextRelease = false
 
@@ -238,6 +266,31 @@ function UIMinimap:onMouseRelease(pos, button)
 
     if self.autowalk then
       player:autoWalk(mapPos)
+=======
+    if not self.allowNextRelease then return true end
+    self.allowNextRelease = false
+
+    local mapPos = self:getTilePosition(pos)
+    if not mapPos then return false end
+
+    if button == MouseLeftButton then
+        local player = g_game.getLocalPlayer()
+        if Position.distance(player:getPosition(), mapPos) > 250 then
+            modules.game_textmessage.displayStatusMessage(tr(
+                                                              "Destination is out of range."))
+            return false
+        end
+
+        if self.autowalk then player:autoWalk(mapPos) end
+        return true
+    elseif button == MouseRightButton then
+        local menu = g_ui.createWidget('PopupMenu')
+        menu:setGameMenu(true)
+        menu:addOption(tr('Create mark'),
+                       function() self:createFlagWindow(mapPos) end)
+        menu:display(pos)
+        return true
+>>>>>>> origin/new-version
     end
     return true
   elseif button == MouseRightButton then

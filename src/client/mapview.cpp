@@ -52,7 +52,7 @@ enum {
 
 MapView::MapView()
 {
-    m_optimizedSize = Size(g_map.getAwareRange().horizontal(), g_map.getAwareRange().vertical()) * Otc::TILE_PIXELS;
+    m_optimizedSize = Size(g_map.getAwareRange().horizontal(), g_map.getAwareRange().vertical()) * SPRITE_SIZE;
 
     m_pools.map = g_drawPool.createPoolF(PoolType::MAP);
     m_pools.creatureInformation = g_drawPool.createPool(PoolType::CREATURE_INFORMATION);
@@ -152,7 +152,7 @@ void MapView::drawFloor()
                 const int8 nextFloor = z - 1;
                 if(nextFloor >= m_floorMin) {
                     lightView->setFloor(nextFloor);
-                    for(const auto& tile : m_cachedVisibleTiles[nextFloor].allGrounds) {
+                    for(const auto& tile : m_cachedVisibleTiles[nextFloor].shades) {
                         const auto& ground = tile->getGround();
                         if(ground && !ground->isTranslucent()) {
                             auto pos2D = transformPositionTo2D(tile->getPosition(), cameraPosition);
@@ -169,18 +169,13 @@ void MapView::drawFloor()
                                 pos2D -= m_tileSize;
                                 lightView->setShade(pos2D);
                                 continue;
-                            }/* else if(tile->isBorder() && tile->hasWall()) {
-                                lightView->clearShade(pos2D);
-                                continue;
-                            }*/
+                            }
 
                             lightView->setShade(pos2D, std::vector<Otc::Direction>() /*tile->hasTallItems() || tile->hasWideItems() ? tile->getBorderDirections() : std::vector<Otc::Direction>()*/);
                         }
                     }
                 }
             }
-
-            onFloorDrawingStart(z);
 
             if(lightView) lightView->setFloor(z);
 
@@ -191,11 +186,8 @@ void MapView::drawFloor()
                 for(const auto& tile : map.grounds)
                     tile->drawGround(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
 
-                for(const auto& tile : map.borders)
-                    tile->drawGroundBorder(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
-
-                for(const auto& tile : map.bottomTops)
-                    tile->draw(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
+                for(const auto& tile : map.surfaces)
+                    tile->drawSurface(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
             }
 
             g_drawPool.startPosition();
@@ -208,8 +200,6 @@ void MapView::drawFloor()
                 g_drawPool.addFilledRect(m_rectDimension, Color::black);
                 g_drawPool.setOpacity(m_shadowFloorIntensity, g_drawPool.size());
             }
-
-            onFloorDrawingEnd(z);
         }
 
         if(m_crosshairTexture && m_mousePosition.isValid()) {
@@ -296,8 +286,6 @@ void MapView::updateVisibleTilesCache()
             onMouseMove(m_mousePosition, true);
         }
 
-        onPositionChange(cameraPosition, m_lastCameraPosition);
-
         if(m_lastCameraPosition.z != cameraPosition.z) {
             onFloorChange(cameraPosition.z, m_lastCameraPosition.z);
         }
@@ -306,7 +294,7 @@ void MapView::updateVisibleTilesCache()
     const uint8 cachedFirstVisibleFloor = calcFirstVisibleFloor();
     uint8 cachedLastVisibleFloor = calcLastVisibleFloor();
 
-    assert(cachedFirstVisibleFloor <= Otc::MAX_Z && cachedLastVisibleFloor <= Otc::MAX_Z);
+    assert(cachedFirstVisibleFloor <= MAX_Z && cachedLastVisibleFloor <= MAX_Z);
 
     if(cachedLastVisibleFloor < cachedFirstVisibleFloor)
         cachedLastVisibleFloor = cachedFirstVisibleFloor;
@@ -358,18 +346,14 @@ void MapView::updateVisibleTilesCache()
                     if(tile->isCompletelyCovered(m_cachedFirstVisibleFloor) && !tile->hasLight())
                         continue;
 
+                    if(isDrawingLights() && (tile->isFullyOpaque() || (tile->getGround() && tile->getGround()->isTopGround())))
+                        floor.shades.push_back(tile);
+
                     if(tile->hasGround())
                         floor.grounds.push_back(tile);
 
-                    if(isDrawingLights() && tile->hasAnyGround()) {
-                        floor.allGrounds.push_back(tile);
-                    }
-
-                    if(tile->hasGroundBorderToDraw())
-                        floor.borders.push_back(tile);
-
-                    if(tile->hasBottomOrTopToDraw())
-                        floor.bottomTops.push_back(tile);
+                    if(tile->hasSurface())
+                        floor.surfaces.push_back(tile);
 
                     tile->onAddVisibleTileList(this);
 
@@ -388,7 +372,7 @@ void MapView::updateVisibleTilesCache()
 
 void MapView::updateGeometry(const Size& visibleDimension, const Size& optimizedSize)
 {
-    const uint8 tileSize = Otc::TILE_PIXELS * (static_cast<float>(m_renderScale) / 100);
+    const uint8 tileSize = SPRITE_SIZE * (static_cast<float>(m_renderScale) / 100);
     const Size drawDimension = visibleDimension + Size(3),
         bufferSize = drawDimension * tileSize;
 
@@ -402,7 +386,7 @@ void MapView::updateGeometry(const Size& visibleDimension, const Size& optimized
 
     ViewMode viewMode = m_viewMode;
     if(m_autoViewMode) {
-        if(tileSize >= Otc::TILE_PIXELS && visibleDimension.area() <= NEAR_VIEW_AREA)
+        if(tileSize >= SPRITE_SIZE && visibleDimension.area() <= NEAR_VIEW_AREA)
             viewMode = NEAR_VIEW;
         else if(tileSize >= 16 && visibleDimension.area() <= MID_VIEW_AREA)
             viewMode = MID_VIEW;
@@ -431,7 +415,7 @@ void MapView::updateGeometry(const Size& visibleDimension, const Size& optimized
 
     m_rectDimension = Rect(0, 0, bufferSize);
 
-    m_scaleFactor = m_tileSize / static_cast<float>(Otc::TILE_PIXELS);
+    m_scaleFactor = m_tileSize / static_cast<float>(SPRITE_SIZE);
 
     m_pools.map->resize(bufferSize);
     if(m_drawLights) m_lightView->resize();
@@ -470,7 +454,7 @@ void MapView::updateLight()
 
     const auto cameraPosition = getCameraPosition();
 
-    Light ambientLight = cameraPosition.z > Otc::SEA_FLOOR ? Light() : g_map.getLight();
+    Light ambientLight = cameraPosition.z > SEA_FLOOR ? Light() : g_map.getLight();
     ambientLight.intensity = std::max<uint8>(m_minimumAmbientLight * 255, ambientLight.intensity);
 
     m_lightView->setGlobalLight(ambientLight);
@@ -482,9 +466,6 @@ void MapView::onFloorChange(const uint8 /*floor*/, const uint8 /*previousFloor*/
     updateLight();
 }
 
-void MapView::onFloorDrawingStart(const uint8 /*floor*/) {}
-void MapView::onFloorDrawingEnd(const uint8 /*floor*/) {}
-
 void MapView::onTileUpdate(const Position&, const ThingPtr& thing, const Otc::Operation)
 {
     if(thing && thing->isCreature())
@@ -492,8 +473,6 @@ void MapView::onTileUpdate(const Position&, const ThingPtr& thing, const Otc::Op
 
     requestVisibleTilesCacheUpdate();
 }
-
-void MapView::onPositionChange(const Position& /*newPos*/, const Position& /*oldPos*/) {}
 
 // isVirtualMove is when the mouse is stopped, but the camera moves,
 // so the onMouseMove event is triggered by sending the new tile position that the mouse is in.
@@ -521,7 +500,7 @@ void MapView::onKeyRelease(const InputEvent& inputEvent)
     }
 }
 
-void MapView::onMapCenterChange(const Position&)
+void MapView::onMapCenterChange(const Position& /*newPos*/, const Position& /*oldPos*/)
 {
     requestVisibleTilesCacheUpdate();
 }
@@ -636,18 +615,18 @@ void MapView::move(int32 x, int32 y)
     m_moveOffset.x += x;
     m_moveOffset.y += y;
 
-    int32_t tmp = m_moveOffset.x / Otc::TILE_PIXELS;
+    int32_t tmp = m_moveOffset.x / SPRITE_SIZE;
     bool requestTilesUpdate = false;
     if(tmp != 0) {
         m_customCameraPosition.x += tmp;
-        m_moveOffset.x %= Otc::TILE_PIXELS;
+        m_moveOffset.x %= SPRITE_SIZE;
         requestTilesUpdate = true;
     }
 
-    tmp = m_moveOffset.y / Otc::TILE_PIXELS;
+    tmp = m_moveOffset.y / SPRITE_SIZE;
     if(tmp != 0) {
         m_customCameraPosition.y += tmp;
-        m_moveOffset.y %= Otc::TILE_PIXELS;
+        m_moveOffset.y %= SPRITE_SIZE;
         requestTilesUpdate = true;
     }
 
@@ -678,7 +657,7 @@ Rect MapView::calcFramebufferSource(const Size& destSize)
 
 uint8 MapView::calcFirstVisibleFloor()
 {
-    uint8 z = Otc::SEA_FLOOR;
+    uint8 z = SEA_FLOOR;
     // return forced first visible floor
     if(m_lockedFirstVisibleFloor != UINT8_MAX) {
         z = m_lockedFirstVisibleFloor;
@@ -695,8 +674,8 @@ uint8 MapView::calcFirstVisibleFloor()
                 uint8 firstFloor = 0;
 
                 // limits to underground floors while under sea level
-                if(cameraPosition.z > Otc::SEA_FLOOR)
-                    firstFloor = std::max<uint8>(cameraPosition.z - Otc::AWARE_UNDEGROUND_FLOOR_RANGE, Otc::UNDERGROUND_FLOOR);
+                if(cameraPosition.z > SEA_FLOOR)
+                    firstFloor = std::max<uint8>(cameraPosition.z - AWARE_UNDEGROUND_FLOOR_RANGE, UNDERGROUND_FLOOR);
 
                 // loop in 3x3 tiles around the camera
                 for(int_fast32_t ix = -1; ix <= 1 && firstFloor < cameraPosition.z; ++ix) {
@@ -734,7 +713,7 @@ uint8 MapView::calcFirstVisibleFloor()
     }
 
     // just ensure the that the floor is in the valid range
-    z = stdext::clamp<int>(z, 0, static_cast<int>(Otc::MAX_Z));
+    z = stdext::clamp<int>(z, 0, static_cast<int>(MAX_Z));
     return z;
 }
 
@@ -743,23 +722,23 @@ uint8 MapView::calcLastVisibleFloor()
     if(!m_multifloor)
         return calcFirstVisibleFloor();
 
-    uint8 z = Otc::SEA_FLOOR;
+    uint8 z = SEA_FLOOR;
 
     const Position cameraPosition = getCameraPosition();
     // this could happens if the player is not known yet
     if(cameraPosition.isValid()) {
         // view only underground floors when below sea level
-        if(cameraPosition.z > Otc::SEA_FLOOR)
-            z = cameraPosition.z + Otc::AWARE_UNDEGROUND_FLOOR_RANGE;
+        if(cameraPosition.z > SEA_FLOOR)
+            z = cameraPosition.z + AWARE_UNDEGROUND_FLOOR_RANGE;
         else
-            z = Otc::SEA_FLOOR;
+            z = SEA_FLOOR;
     }
 
     if(m_lockedFirstVisibleFloor != UINT8_MAX)
         z = std::max<int>(m_lockedFirstVisibleFloor, z);
 
     // just ensure the that the floor is in the valid range
-    z = stdext::clamp<int>(z, 0, static_cast<int>(Otc::MAX_Z));
+    z = stdext::clamp<int>(z, 0, static_cast<int>(MAX_Z));
     return z;
 }
 

@@ -1,11 +1,11 @@
 # OTCLient "1.0"
 ![#6ff791](https://via.placeholder.com/15/6ff791/000000?text=+) `Tested on Tibia 10.98`
 
-### Based on [edubart/otclient](https://github.com/edubart/otclient) Rev: 2.747
+### Based on [edubart/otclient](https://github.com/edubart/otclient) Rev: 2.755
 
 ### Features
 
-- C++17
+- C++20
 - Refactored/Optimized Rendering System
 - New Light System
 - Render Scale System (FAKE ONE)
@@ -24,7 +24,7 @@
 - Health&Mana Circle by [@EgzoT](https://github.com/EgzoT), [@GustavoBlaze](https://github.com/GustavoBlaze), [@Tekadon58](https://github.com/Tekadon58) ([GITHUB Project](https://github.com/EgzoT/-OTClient-Mod-health_and_mana_circle))
 - Tibia Theme 1.2 by Zews ([Forum Thread](https://otland.net/threads/otc-tibia-theme-v1-2.230988/))
 - Some bugs fixed contained in [edubart/otclient](https://github.com/edubart/otclient)
-- Custom Feature Definitions in [features.h](https://github.com/mehah/otclient/blob/cache-for-all/src/client/features.h)
+- Client Config in [config.h](https://github.com/mehah/otclient/blob/cache-for-all/src/client/config.h)
 
 <h2>
 
@@ -43,7 +43,7 @@ for that it uses LUA scripting for all game interface functionality and configur
 similar to CSS for the client interface design. Otclient works with a modular system, this means
 that each functionality is a separated module, giving the possibility to users modify and customize
 anything easily. Users can also create new mods and extend game interface for their own purposes.
-Otclient is written in C++17 and heavily scripted in lua.
+Otclient is written in C++20 and heavily scripted in lua.
 
 For a server to connect to, you can build your own with the [forgottenserver](https://github.com/otland/forgottenserver)
 or connect to one listed on [otservlist](https://otservlist.org/).#

@@ -37,10 +37,6 @@
 class Creature : public Thing
 {
 public:
-    enum {
-        SHIELD_BLINK_TICKS = 500,
-        VOLATILE_SQUARE_DURATION = 1000
-    };
 
     static double speedA, speedB, speedC;
 
@@ -48,7 +44,7 @@ public:
 
     static bool hasSpeedFormula() { return speedA != 0 && speedB != 0 && speedC != 0; }
 
-    virtual void draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, int frameFlags, LightView* lightView = nullptr) override;
+    void draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, int frameFlags, LightView* lightView = nullptr) override;
 
     void internalDrawOutfit(Point dest, float scaleFactor, bool animateWalk, TextureType textureType, Otc::Direction direction, Color color);
 
@@ -92,7 +88,7 @@ public:
     Otc::Direction getDirection() { return m_direction; }
     Outfit getOutfit() { return m_outfit; }
     Light getLight() override;
-    bool hasLight() override { return Thing::hasLight() || getLight().color > 0; }
+    bool hasLight() override { return Thing::hasLight() || getLight().intensity > 0; }
     uint16 getSpeed() { return m_speed; }
     double getBaseSpeed() { return m_baseSpeed; }
     uint8 getSkull() { return m_skull; }
@@ -108,13 +104,13 @@ public:
     Position getLastStepFromPosition() { return m_lastStepFromPosition; }
     Position getLastStepToPosition() { return m_lastStepToPosition; }
     float getStepProgress() { return m_walkTimer.ticksElapsed() / getStepDuration(); }
-    float getStepTicksLeft() { return getStepDuration() - m_walkTimer.ticksElapsed(); }
+    float getStepTicksLeft() { return (float)getStepDuration() - m_walkTimer.ticksElapsed(); }
     ticks_t getWalkTicksElapsed() { return m_walkTimer.ticksElapsed(); }
     std::array<double, Otc::LastSpeedFormula> getSpeedFormulaArray() { return m_speedFormula; }
     Point getDisplacement() override;
     int getDisplacementX() override;
     int getDisplacementY() override;
-    int getExactSize(int layer = 0, int xPattern = 0, int yPattern = 0, int zPattern = 0, int animationPhase = 0) override;
+    int getExactSize() override;
 
     int getTotalAnimationPhase();
     int getCurrentAnimationPhase(bool mount = false);
@@ -132,6 +128,7 @@ public:
     bool isRemoved() { return m_removed; }
     bool isInvisible() { return m_outfit.getCategory() == ThingCategoryEffect && m_outfit.getAuxId() == 13; }
     bool isDead() { return m_healthPercent <= 0; }
+    bool isFullHealth() { return m_healthPercent == 100; }
     bool canBeSeen() { return !isInvisible() || isPlayer(); }
     bool isCreature() override { return true; }
     bool isParalyzed() const { return m_speed < 10; }

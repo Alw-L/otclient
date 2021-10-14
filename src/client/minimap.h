@@ -26,11 +26,9 @@
 #include <framework/graphics/declarations.h>
 #include "declarations.h"
 
-enum {
-    MMBLOCK_SIZE = 64,
-    OTMM_SIGNATURE = 0x4D4d544F,
-    OTMM_VERSION = 1
-};
+constexpr uint8 MMBLOCK_SIZE = 64;
+constexpr uint8 OTMM_VERSION = 1;
+constexpr uint32 OTMM_SIGNATURE = 0x4D4d544F;
 
 enum MinimapTileFlags {
     MinimapTileWasSeen = 1,
@@ -110,7 +108,7 @@ private:
                         (index / (65536 / MMBLOCK_SIZE)) * MMBLOCK_SIZE, z);
     }
     uint getBlockIndex(const Position& pos) { return ((pos.y / MMBLOCK_SIZE) * (65536 / MMBLOCK_SIZE)) + (pos.x / MMBLOCK_SIZE); }
-    std::unordered_map<uint, MinimapBlock> m_tileBlocks[Otc::MAX_Z + 1];
+    std::unordered_map<uint, MinimapBlock> m_tileBlocks[MAX_Z + 1];
 };
 
 extern Minimap g_minimap;

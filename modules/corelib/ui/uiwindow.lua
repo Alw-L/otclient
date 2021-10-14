@@ -18,6 +18,16 @@ function UIWindow:onKeyDown(keyCode, keyboardModifiers)
     end
   end
 end
+function UIWindow:onKeyPress(keyCode, keyboardModifiers)
+    if keyboardModifiers == KeyboardNoModifier then
+        if keyCode == KeyEnter then
+            signalcall(self.onEnter, self)
+        elseif keyCode == KeyEscape then
+            signalcall(self.onEscape, self)
+        end
+    end
+  end
+end
 
 function UIWindow:onFocusChange(focused)
   if focused then self:raise() end

@@ -133,6 +133,28 @@ function init()
     if healthInfoWindow and healthInfoWindow:hasChildren() then
       healthInfoWindow:destroyChildren()
     end
+
+    healthInfoWindow:setup()
+    if g_game.isOnline() then
+        healthInfoWindow:setupOnStart()
+    end
+end
+
+function terminate()
+    disconnect(LocalPlayer, {
+        onHealthChange = onHealthChange,
+        onManaChange = onManaChange,
+        onLevelChange = onLevelChange,
+        onStatesChange = onStatesChange,
+        onSoulChange = onSoulChange,
+        onFreeCapacityChange = onFreeCapacityChange
+    })
+
+    disconnect(g_game, {
+        onGameStart = online,
+        onGameEnd = offline
+    })
+
     healthInfoWindow:destroy()
     --healthInfoButton:destroy()
   

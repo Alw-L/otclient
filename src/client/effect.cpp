@@ -38,10 +38,10 @@ void Effect::drawEffect(const Point& dest, float scaleFactor, int frameFlag, Lig
 
     if(g_game.getFeature(Otc::GameEnhancedAnimations)) {
         // This requires a separate getPhaseAt method as using getPhase would make all magic effects use the same phase regardless of their appearance time
-        animationPhase = rawGetThingType()->getAnimator()->getPhaseAt(m_animationTimer.ticksElapsed());
+        animationPhase = rawGetThingType()->getIdleAnimator()->getPhaseAt(m_animationTimer.ticksElapsed());
     } else {
         // hack to fix some animation phases duration, currently there is no better solution
-        int ticks = Otc::EFFECT_TICKS_PER_FRAME;
+        int ticks = EFFECT_TICKS_PER_FRAME;
         if(m_id == 33) {
             ticks <<= 2;
         }
@@ -60,9 +60,9 @@ void Effect::onAppear()
     m_animationTimer.restart();
 
     if(g_game.getFeature(Otc::GameEnhancedAnimations)) {
-        m_duration = getThingType()->getAnimator()->getTotalDuration();
+        m_duration = getThingType()->getIdleAnimator()->getTotalDuration();
     } else {
-        m_duration = Otc::EFFECT_TICKS_PER_FRAME;
+        m_duration = EFFECT_TICKS_PER_FRAME;
 
         // hack to fix some animation phases duration, currently there is no better solution
         if(m_id == 33) {

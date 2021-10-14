@@ -25,6 +25,7 @@
 
  //#include <boost/regex.hpp>
 #include <framework/core/resourcemanager.h>
+#include <framework/core/asyncdispatcher.h>
 
 #ifdef FW_GRAPHICS
 #include <framework/platform/platformwindow.h>
@@ -84,7 +85,7 @@ void Logger::log(Fw::LogLevel level, const std::string& message)
 
     if(m_onLog) {
         // schedule log callback, because this callback can run lua code that may affect the current state
-        g_dispatcher.addEvent([=] {
+        g_dispatcher.addEvent([this, level, outmsg, now] {
             if(m_onLog)
                 m_onLog(level, outmsg, now);
         });
@@ -95,6 +96,10 @@ void Logger::log(Fw::LogLevel level, const std::string& message)
         g_window.displayFatalError(message);
 #endif
         s_ignoreLogs = true;
+
+        // NOTE: Threads must finish before the process can exit.
+        g_asyncDispatcher.terminate();
+
         exit(-1);
     }
 }

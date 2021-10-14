@@ -47,48 +47,38 @@ Tile::Tile(const Position& position) :
     }
 
     m_positionsAround = position.getPositionsAround();
-    m_completelyCoveredCache.fill(0);
-    m_coveredCache.fill(0);
 }
 
 void Tile::onAddVisibleTileList(const MapViewPtr& /*mapView*/)
 {
-    uint8 cntBorder = 0;
     m_borderDirections.clear();
     for(const auto& pos : m_positionsBorder) {
         const TilePtr& tile = g_map.getTile(pos.second);
         if(!tile || (!tile->isFullyOpaque() && tile->isWalkable(true))) {
             m_borderDirections.push_back(pos.first);
-            ++cntBorder;
         }
     }
 }
 
 bool Tile::isCompletelyCovered(int8 firstFloor)
 {
-    if(firstFloor > -1) {
-        m_currentFirstVisibleFloor = firstFloor;
-        auto completelyCoveredN = m_completelyCoveredCache[firstFloor];
-        if(completelyCoveredN == 0) {
-            m_completelyCoveredCache[firstFloor] = g_map.isCompletelyCovered(m_position, firstFloor) ? 1 : 2;
-        }
+    if(m_ignoreCompletelyCoveredCheck)
+        return false;
 
-        auto coveredN = m_coveredCache[firstFloor];
-        if(coveredN == 0) {
-            m_coveredCache[firstFloor] = g_map.isCovered(m_position, firstFloor) ? 1 : 2;
+    if(firstFloor > -1) {
+        m_completelyCovered = g_map.isCompletelyCovered(m_position, firstFloor);
+        if((m_covered = m_completelyCovered) == false) {
+            m_covered = g_map.isCovered(m_position, firstFloor);
         }
     }
 
-    return m_completelyCoveredCache[m_currentFirstVisibleFloor] == 1;
+    return m_completelyCovered;
 }
 
 void Tile::drawThing(const ThingPtr& thing, const Point& dest, float scaleFactor, bool animate, int frameFlag, LightView* lightView)
 {
     if(isCompletelyCovered()) {
-        frameFlag = 0;
-
-        if(lightView && hasLight())
-            frameFlag = Otc::FUpdateLight;
+        frameFlag = lightView && hasLight() ? (int)Otc::FUpdateLight : 0;
     }
 
     if(thing->isEffect()) {
@@ -97,53 +87,34 @@ void Tile::drawThing(const ThingPtr& thing, const Point& dest, float scaleFactor
         thing->draw(dest, scaleFactor, animate, m_highlight, TextureType::NONE, Color::white, frameFlag, lightView);
 
         m_drawElevation += thing->getElevation();
-        if(m_drawElevation > Otc::MAX_ELEVATION)
-            m_drawElevation = Otc::MAX_ELEVATION;
+        if(m_drawElevation > MAX_ELEVATION)
+            m_drawElevation = MAX_ELEVATION;
     }
 }
 
 void Tile::drawGround(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
 {
-    if(!m_ground) return;
-
     m_drawElevation = 0;
-    drawThing(m_ground, dest - m_drawElevation * scaleFactor, scaleFactor, true, frameFlags, lightView);
-}
-
-void Tile::drawGroundBorder(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
-{
-    if(!m_countFlag.hasGroundBorder) return;
-
-    if(!hasGround())
-        m_drawElevation = 0;
 
     for(const auto& ground : m_things) {
-        if(!ground->isGroundBorder()) continue;
-        drawThing(ground, dest - m_drawElevation * scaleFactor, scaleFactor, true, frameFlags, lightView);
+        if(ground->isSingleGround() || ground->isSingleGroundBorder())
+            drawThing(ground, dest - m_drawElevation * scaleFactor, scaleFactor, true, frameFlags, lightView);
     }
 }
 
-void Tile::draw(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
+void Tile::drawSurface(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
 {
-    if(m_ground && m_ground->isTopGround()) {
-        drawGround(dest, scaleFactor, frameFlags, lightView);
-        drawGroundBorder(dest, scaleFactor, frameFlags, lightView);
-    }
-
-    if(!hasGround() && !hasGroundBorderToDraw())
-        m_drawElevation = 0;
-
     drawBottom(dest, scaleFactor, frameFlags, lightView);
     drawTop(dest, scaleFactor, frameFlags, lightView);
 }
 
 void Tile::drawCreature(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
 {
-#if RENDER_CREATURE_BEHIND == 1
+#if RENDER_WALKING_CREATURES_BEHIND == 1
     for(const auto& creature : m_walkingCreatures) {
         drawThing(creature, Point(
-            dest.x + ((creature->getPosition().x - m_position.x) * Otc::TILE_PIXELS - m_drawElevation) * scaleFactor,
-            dest.y + ((creature->getPosition().y - m_position.y) * Otc::TILE_PIXELS - m_drawElevation) * scaleFactor
+            dest.x + ((creature->getPosition().x - m_position.x) * SPRITE_SIZE - m_drawElevation) * scaleFactor,
+            dest.y + ((creature->getPosition().y - m_position.y) * SPRITE_SIZE - m_drawElevation) * scaleFactor
         ), scaleFactor, true, frameFlags, lightView);
     }
 
@@ -165,8 +136,8 @@ void Tile::drawCreature(const Point& dest, float scaleFactor, int frameFlags, Li
 
     for(const auto& creature : m_walkingCreatures) {
         drawThing(creature, Point(
-            dest.x + ((creature->getPosition().x - m_position.x) * Otc::TILE_PIXELS - m_drawElevation) * scaleFactor,
-            dest.y + ((creature->getPosition().y - m_position.y) * Otc::TILE_PIXELS - m_drawElevation) * scaleFactor
+            dest.x + ((creature->getPosition().x - m_position.x) * SPRITE_SIZE - m_drawElevation) * scaleFactor,
+            dest.y + ((creature->getPosition().y - m_position.y) * SPRITE_SIZE - m_drawElevation) * scaleFactor
         ), scaleFactor, true, frameFlags, lightView);
     }
 #endif
@@ -174,6 +145,15 @@ void Tile::drawCreature(const Point& dest, float scaleFactor, int frameFlags, Li
 
 void Tile::drawBottom(const Point& dest, float scaleFactor, int frameFlags, LightView* lightView)
 {
+    if(!hasGround()) m_drawElevation = 0;
+
+    if(hasTopGround()) {
+        for(const auto& ground : m_things) {
+            if(ground->isTopGround() || ground->isTopGroundBorder())
+                drawThing(ground, dest - m_drawElevation * scaleFactor, scaleFactor, true, frameFlags, lightView);
+        }
+    }
+
     if(m_countFlag.hasBottomItem) {
         for(const auto& item : m_things) {
             if(!item->isOnBottom()) continue;
@@ -200,18 +180,15 @@ void Tile::drawBottom(const Point& dest, float scaleFactor, int frameFlags, Ligh
 
     // after we render 2x2 lying corpses, we must redraw previous creatures/ontop above them
     if(redrawPreviousTopH > 0 || redrawPreviousTopW > 0) {
-        // after we render 2x2 lying corpses, we must redraw previous creatures/ontop above them
-        if(redrawPreviousTopH > 0 || redrawPreviousTopW > 0) {
-            for(int x = -redrawPreviousTopW; x <= 0; ++x) {
-                for(int y = -redrawPreviousTopH; y <= 0; ++y) {
-                    if(x == 0 && y == 0)
-                        continue;
-                    const TilePtr& tile = g_map.getTile(m_position.translated(x, y));
-                    if(tile) {
-                        const auto& newDest = dest + (Point(x, y) * Otc::TILE_PIXELS) * scaleFactor;
-                        tile->drawCreature(newDest, scaleFactor, frameFlags);
-                        tile->drawTop(newDest, scaleFactor, frameFlags);
-                    }
+        for(int x = -redrawPreviousTopW; x <= 0; ++x) {
+            for(int y = -redrawPreviousTopH; y <= 0; ++y) {
+                if(x == 0 && y == 0)
+                    continue;
+                const TilePtr& tile = g_map.getTile(m_position.translated(x, y));
+                if(tile) {
+                    const auto& newDest = dest + (Point(x, y) * SPRITE_SIZE) * scaleFactor;
+                    tile->drawCreature(newDest, scaleFactor, frameFlags);
+                    tile->drawTop(newDest, scaleFactor, frameFlags);
                 }
             }
         }
@@ -236,6 +213,7 @@ void Tile::drawTop(const Point& dest, float scaleFactor, int frameFlags, LightVi
 
 void Tile::clean()
 {
+    m_countFlag.opaque = 0;
     while(!m_things.empty())
         removeThing(m_things.front());
 }
@@ -243,10 +221,8 @@ void Tile::clean()
 void Tile::addWalkingCreature(const CreaturePtr& creature)
 {
     m_walkingCreatures.push_back(creature);
+    m_ignoreCompletelyCoveredCheck = true;
     analyzeThing(creature, true);
-
-    if(!creature->isSingleDimension())
-        setCompletelyCoveredCache(2);
 }
 
 void Tile::removeWalkingCreature(const CreaturePtr& creature)
@@ -255,9 +231,7 @@ void Tile::removeWalkingCreature(const CreaturePtr& creature)
     if(it != m_walkingCreatures.end()) {
         analyzeThing(creature, false);
         m_walkingCreatures.erase(it);
-
-        if(!creature->isSingleDimension())
-            setCompletelyCoveredCache(0);
+        m_ignoreCompletelyCoveredCheck = false;
     }
 }
 
@@ -328,8 +302,6 @@ void Tile::addThing(const ThingPtr& thing, int stackPos)
 
     if(thing->isGround()) m_ground = thing->static_self_cast<Item>();
 
-    clearCompletelyCoveredCacheListIfPossible(thing);
-
     analyzeThing(thing, true);
     if(checkForDetachableThing() && m_highlight.enabled) {
         select();
@@ -369,8 +341,6 @@ bool Tile::removeThing(const ThingPtr thing)
     if(thing->isGround()) m_ground = nullptr;
 
     analyzeThing(thing, false);
-
-    clearCompletelyCoveredCacheListIfPossible(thing);
 
     m_things.erase(it);
 
@@ -716,7 +686,7 @@ bool Tile::hasLight()
 
 void Tile::checkTranslucentLight()
 {
-    if(m_position.z != Otc::SEA_FLOOR)
+    if(m_position.z != SEA_FLOOR)
         return;
 
     Position downPos = m_position;
@@ -810,8 +780,11 @@ void Tile::analyzeThing(const ThingPtr& thing, bool add)
     if(thing->isCreature())
         m_countFlag.hasCreature += value;
 
-    if(thing->isGroundBorder())
+    if(thing->isSingleGroundBorder())
         m_countFlag.hasGroundBorder += value;
+
+    if(thing->isTopGroundBorder())
+        m_countFlag.hasTopGroundBorder += value;
 
     // Creatures and items
     if(thing->isOnBottom()) {
@@ -826,8 +799,8 @@ void Tile::analyzeThing(const ThingPtr& thing, bool add)
 
     // best option to have something more real, but in some cases as a custom project,
     // the developers are not defining crop size
-    //if(thing->getRealSize() > Otc::TILE_PIXELS)
-    if(!thing->isSingleDimension())
+    //if(thing->getRealSize() > SPRITE_SIZE)
+    if(!thing->isSingleDimension() || thing->hasElevation() || thing->hasDisplacement())
         m_countFlag.notSingleDimension += value;
 
     if(thing->getHeight() > 1)
@@ -867,19 +840,8 @@ void Tile::analyzeThing(const ThingPtr& thing, bool add)
     if(thing->isOpaque())
         m_countFlag.opaque += value;
 
-    if(thing->isTopGround())
-        m_countFlag.hasTopGround += value;
-
     if(thing->isGroundBorder() && thing->isNotWalkable())
         m_countFlag.hasNoWalkableEdge += value;
-}
-
-void Tile::clearCompletelyCoveredCacheListIfPossible(const ThingPtr& thing)
-{
-    // Verifies that the new item being added is not single dimensional, if so,
-    // clear the cache that verifies that the tile is completely covered.
-    if(isSingleDimension() && !thing->isSingleDimension())
-        setCompletelyCoveredCache(0);
 }
 
 void Tile::select(const bool noFilter)
@@ -895,12 +857,16 @@ void Tile::select(const bool noFilter)
     m_highlight.enabled = true;
     m_highlight.invertedColorSelection = false;
     m_highlight.fadeLevel = HIGHTLIGHT_FADE_START;
-    m_highlight.listeningEvent = g_dispatcher.cycleEvent([=]() {
-        m_highlight.fadeLevel += 10 * (m_highlight.invertedColorSelection ? 1 : -1);
-        m_highlight.rgbColor = Color(static_cast<uint8>(255), static_cast<uint8>(255), static_cast<uint8>(0), static_cast<uint8>(m_highlight.fadeLevel));
 
-        if(m_highlight.invertedColorSelection ? m_highlight.fadeLevel > HIGHTLIGHT_FADE_END : m_highlight.fadeLevel < HIGHTLIGHT_FADE_START) {
-            m_highlight.invertedColorSelection = !m_highlight.invertedColorSelection;
+    const auto self = this->static_self_cast<Tile>();
+    m_highlight.listeningEvent = g_dispatcher.cycleEvent([self]() {
+        auto& highLight = self->m_highlight;
+
+        highLight.fadeLevel += 10 * (highLight.invertedColorSelection ? 1 : -1);
+        highLight.rgbColor = Color(static_cast<uint8>(255), static_cast<uint8>(255), static_cast<uint8>(0), static_cast<uint8>(highLight.fadeLevel));
+
+        if(highLight.invertedColorSelection ? highLight.fadeLevel > HIGHTLIGHT_FADE_END : highLight.fadeLevel < HIGHTLIGHT_FADE_START) {
+            highLight.invertedColorSelection = !highLight.invertedColorSelection;
         }
     }, 40);
 }

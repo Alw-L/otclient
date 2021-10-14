@@ -167,6 +167,14 @@ void UIWidget::addChild(const UIWidgetPtr& child)
     // update new child states
     child->updateStates();
 
+    // add access to child via widget.childId
+    if(child->m_customId) {
+        std::string widgetId = child->getId();
+        if(!hasLuaField(widgetId)) {
+            setLuaField(widgetId, child->static_self_cast<UIWidget>());
+        }
+    }
+
     // update old child index states
     if(oldLastChild) {
         oldLastChild->updateState(Fw::MiddleState);
@@ -236,6 +244,14 @@ void UIWidget::removeChild(const UIWidgetPtr& child)
         child->setParent(nullptr);
 
         m_layout->removeWidget(child);
+
+        // remove access to child via widget.childId
+        if(child->m_customId) {
+            std::string widgetId = child->getId();
+            if(hasLuaField(widgetId)) {
+                setLuaField(widgetId, nullptr);
+            }
+        }
 
         // update child states
         child->updateStates();
@@ -807,10 +823,18 @@ void UIWidget::destroyChildren()
 
 void UIWidget::setId(const std::string& id)
 {
-    if(id != m_id) {
-        m_id = id;
-        callLuaField("onIdChange", id);
+    if(id == m_id)
+        return;
+
+    m_customId = true;
+
+    if(m_parent) {
+        m_parent->setLuaField(m_id, nullptr);
+        m_parent->setLuaField(id, static_self_cast<UIWidget>());
     }
+
+    m_id = id;
+    callLuaField("onIdChange", id);
 }
 
 void UIWidget::setParent(const UIWidgetPtr& parent)
