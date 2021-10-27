@@ -19,7 +19,7 @@ CharacterWidget < UIWidget
     color: #bbbbbb
     anchors.top: parent.top
     anchors.left: parent.left
-    font: verdana-11px-monochrome
+    font: verdana-11px-antialised
     text-auto-resize: true
     background-color: alpha
     text-offset: 2 0
@@ -33,9 +33,8 @@ CharacterWidget < UIWidget
     anchors.top: parent.top
     anchors.right: parent.right
     margin-right: 5
-    font: verdana-11px-monochrome
+    font: verdana-11px-antialised
     text-auto-resize: true
-    background-color: alpha
     &baseText: '(%s)'
 
     $on:
@@ -43,8 +42,8 @@ CharacterWidget < UIWidget
 
 MainWindow
   id: charactersWindow
-  !text: tr('Character List')
-  visible: false
+  !text: tr('Select Character')
+  size: 235 295
   @onEnter: CharacterList.doLogin()
   @onEscape: CharacterList.hide(true)
   @onSetup: |
@@ -56,14 +55,22 @@ MainWindow
       self:setSize({width = 250, height = 248})
     end
 
+  Label
+    !text: tr('Select Character:')
+    anchors.top: parent.top
+    anchors.left: parent.left
+
   TextList
     id: characters
-    background-color: #565656
+    background-color: #404040
+    text-color: red
+    color: red
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: characterListScrollBar.left
     anchors.bottom: accountStatusCaption.top
-    margin-bottom: 5
+    margin-bottom: 24
+    margin-top: 16
     padding: 1
     focusable: false
     vertical-scrollbar: characterListScrollBar
@@ -74,7 +81,8 @@ MainWindow
     anchors.top: parent.top
     anchors.bottom: accountStatusCaption.top
     anchors.right: parent.right
-    margin-bottom: 5
+    margin-top: 16
+    margin-bottom: 24
     step: 14
     pixels-scroll: true
 
@@ -84,7 +92,6 @@ MainWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: next.top
-    margin-bottom: 1
 
   Label
     id: accountStatusLabel
@@ -119,7 +126,7 @@ MainWindow
   Button
     id: buttonOk
     !text: tr('Ok')
-    width: 64
+    width: 45
     anchors.right: next.left
     anchors.bottom: parent.bottom
     margin-right: 10
@@ -128,7 +135,7 @@ MainWindow
   Button
     id: buttonCancel
     !text: tr('Cancel')
-    width: 64
+    width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     @onClick: CharacterList.hide(true)

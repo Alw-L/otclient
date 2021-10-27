@@ -1,7 +1,7 @@
 local defaultOptions = {
     vsync = true,
-    showFps = false,
-    showPing = false,
+    showFps = true,
+    showPing = true,
     fullscreen = false,
     classicControl = false,
     smartWalk = false,
@@ -20,8 +20,8 @@ local defaultOptions = {
     openMaximized = false,
     backgroundFrameRate = 201,
     painterEngine = 0,
-    enableAudio = true,
-    enableMusicSound = true,
+    enableAudio = false,
+    enableMusicSound = false,
     musicSoundVolume = 100,
     enableLights = true,
     drawViewportEdge = false,
@@ -32,28 +32,41 @@ local defaultOptions = {
     displayMana = true,
     displayText = true,
     dontStretchShrink = false,
-    turnDelay = 50,
-    hotkeyDelay = 70,
+    turnDelay = 30,
+    hotkeyDelay = 30,
     crosshair = 'default',
     enableHighlightMouseTarget = true,
     antiAliasing = true,
     renderScale = 100,
-    shadowFloorIntensity = 15
+    shadowFloorIntensity = 15,
+    hpmpHealthCircle = true,
+    hpmpManaCircle = true,
+    hpmpExpCircle = false,
+    hpmpSkillCircle = false,
+    hpmpChooseSkill = 'magic',
+    hpmpDistanceCenter = 0,
+    hpmpCircleOpacity = 0.35,
+    walkingKeysRepeatDelay = 10,
+    smoothWalk = true,
+    precisionWalk = false
 }
 
 local optionsWindow
 local optionsButton
 local optionsTabBar
 local options = {}
+local miscPanel
 local generalPanel
-local controlPanel
 local consolePanel
 local graphicsPanel
-local soundPanel
-local audioButton
+-- local soundPanel
+-- local audioButton
 
 local crosshairCombobox
 local renderScaleCombobox
+local chooseSkillComboBox
+
+skillsLoaded = false
 
 local function setupGraphicsEngines()
     local enginesRadioGroup = UIRadioGroup.create()
@@ -77,6 +90,10 @@ local function setupGraphicsEngines()
             enginesRadioGroup:selectWidget(ogl2)
         else
             enginesRadioGroup:selectWidget(ogl1)
+        end
+
+        if not dx9:isEnabled() then
+            dx9:hide()
         end
 
         if g_app.getOs() ~= 'windows' then dx9:hide() end
@@ -105,52 +122,61 @@ function init()
     optionsTabBar:setContentWidget(optionsWindow:getChildById(
                                        'optionsTabContent'))
 
-    g_keyboard.bindKeyDown('Ctrl+Shift+F',
+    g_keyboard.bindKeyDown('Ctrl+F',
                            function() toggleOption('fullscreen') end)
     g_keyboard.bindKeyDown('Ctrl+N', toggleDisplays)
 
     generalPanel = g_ui.loadUI('general')
-    optionsTabBar:addTab(tr('General'), generalPanel, '/images/optionstab/game')
-
-    controlPanel = g_ui.loadUI('control')
-    optionsTabBar:addTab(tr('Control'), controlPanel,
-                         '/images/optionstab/controls')
-
-    consolePanel = g_ui.loadUI('console')
-    optionsTabBar:addTab(tr('Console'), consolePanel,
-                         '/images/optionstab/console')
+    optionsTabBar:addTab(tr('General'), generalPanel, '/images/optionstab/option_button')
 
     graphicsPanel = g_ui.loadUI('graphics')
     optionsTabBar:addTab(tr('Graphics'), graphicsPanel,
-                         '/images/optionstab/graphics')
+                         '/images/optionstab/option_button')
 
-    soundPanel = g_ui.loadUI('audio')
-    optionsTabBar:addTab(tr('Audio'), soundPanel, '/images/optionstab/audio')
+    consolePanel = g_ui.loadUI('console')
+    optionsTabBar:addTab(tr('Console'), consolePanel,
+                         '/images/optionstab/option_button')
+
+    miscPanel = g_ui.loadUI('misc')
+    optionsTabBar:addTab(tr('Misc'), miscPanel, '/images/optionstab/option_button')
+
+    -- soundPanel = g_ui.loadUI('audio')
+    -- optionsTabBar:addTab(tr('Audio'), soundPanel, '/images/optionstab/option_button')
+
+    --optionsTabBar:addSeparator()
+    
+    --optionsTabBar:addButton(tr('Export Map'), nil, '/images/optionstab/option_button')
+    
+    optionsTabBar:addSeparator()
+    
+    circlePanel = g_ui.loadUI('hpmpcircle')
+    optionsTabBar:addTab(tr('Health/Mana Circle'), circlePanel, '/images/optionstab/option_button')
 
     optionsButton = modules.client_topmenu.addLeftButton('optionsButton',
                                                          tr('Options'),
                                                          '/images/topbuttons/options',
                                                          toggle)
-    audioButton = modules.client_topmenu.addLeftButton('audioButton',
-                                                       tr('Audio'),
-                                                       '/images/topbuttons/audio',
-                                                       function()
-        toggleOption('enableAudio')
-    end)
+    -- audioButton = modules.client_topmenu.addLeftButton('audioButton',
+    --                                                    tr('Audio'),
+    --                                                    '/images/topbuttons/audio',
+    --                                                    function()
+    --     toggleOption('enableAudio')
+    -- end)
 
     addEvent(function() setup() end)
 end
 
 function terminate()
-    g_keyboard.unbindKeyDown('Ctrl+Shift+F')
+    g_keyboard.unbindKeyDown('Ctrl+F')
     g_keyboard.unbindKeyDown('Ctrl+N')
     optionsWindow:destroy()
     optionsButton:destroy()
-    audioButton:destroy()
+    -- audioButton:destroy()
+    circlePanel:destroy()
 end
 
 function setupComboBox()
-    crosshairCombobox = generalPanel:recursiveGetChildById('crosshair')
+    crosshairCombobox = miscPanel:recursiveGetChildById('crosshair')
 
     crosshairCombobox:addOption('Disabled', 'disabled')
     crosshairCombobox:addOption('Default', 'default')
@@ -174,9 +200,28 @@ function setupComboBox()
         end
 end
 
+function setupCirclePanel()
+    -- UI values
+    chooseSkillComboBox = circlePanel:recursiveGetChildById(
+                              'hpmpChooseSkill')
+
+    -- ComboBox start values
+    chooseSkillComboBox:addOption('magic')
+    chooseSkillComboBox:addOption('fist')
+    chooseSkillComboBox:addOption('club')
+    chooseSkillComboBox:addOption('sword')
+    chooseSkillComboBox:addOption('axe')
+    chooseSkillComboBox:addOption('distance')
+    chooseSkillComboBox:addOption('shielding')
+    chooseSkillComboBox:addOption('fishing')
+    -- Prevent skill overwritten before initialize
+    skillsLoaded = true
+end
+
 function setup()
     setupComboBox()
     setupGraphicsEngines()
+    setupCirclePanel()
 
     -- load options
     for k, v in pairs(defaultOptions) do
@@ -233,18 +278,18 @@ function setOption(key, value, force)
     if key == 'vsync' then
         g_window.setVerticalSync(value)
     elseif key == 'showFps' then
-        modules.client_topmenu.setFpsVisible(value)
+        modules.game_interface.setFpsVisible(value)
     elseif key == 'showPing' then
-        modules.client_topmenu.setPingVisible(value)
+        modules.game_interface.setPingVisible(value)
     elseif key == 'fullscreen' then
         g_window.setFullscreen(value)
     elseif key == 'enableAudio' then
         if g_sounds then g_sounds.setAudioEnabled(value) end
-        if value then
-            audioButton:setIcon('/images/topbuttons/audio')
-        else
-            audioButton:setIcon('/images/topbuttons/audio_mute')
-        end
+        -- if value then
+        --     audioButton:setIcon('/images/topbuttons/audio')
+        -- else
+        --     audioButton:setIcon('/images/topbuttons/audio_mute')
+        -- end
     elseif key == 'enableMusicSound' then
         if g_sounds then
             g_sounds.getChannel(SoundChannels.Music):setEnabled(value)
@@ -253,9 +298,9 @@ function setOption(key, value, force)
         if g_sounds then
             g_sounds.getChannel(SoundChannels.Music):setGain(value / 100)
         end
-        soundPanel:getChildById('musicSoundVolumeLabel'):setText(tr(
-                                                                     'Music volume: %d',
-                                                                     value))
+        -- soundPanel:getChildById('musicSoundVolumeLabel'):setText(tr(
+                                                                    --  'Music volume: %d',
+                                                                    --  value))
     elseif key == 'showLeftPanel' then
         modules.game_interface.getLeftPanel():setOn(value)
     elseif key == 'showRightExtraPanel' then
@@ -304,13 +349,49 @@ function setOption(key, value, force)
     elseif key == 'preciseControl' then
         g_game.setScheduleLastWalk(not value)
     elseif key == 'turnDelay' then
-        controlPanel:getChildById('turnDelayLabel'):setText(tr(
+        generalPanel:getChildById('turnDelayLabel'):setText(tr(
                                                                 'Turn delay: %sms',
                                                                 value))
     elseif key == 'hotkeyDelay' then
-        controlPanel:getChildById('hotkeyDelayLabel'):setText(tr(
+        generalPanel:getChildById('hotkeyDelayLabel'):setText(tr(
                                                                   'Hotkey delay: %sms',
                                                                   value))
+    elseif key == 'walkingKeysRepeatDelay' then
+        local text, v = value, value
+        if value < 0 or value >= 250 then v = 250 end
+        generalPanel:getChildById('walkingKeysRepeatDelayLabel'):setText(tr('Walking keys auto repeat delay: %s ms', text))
+        if(g_settings.getBoolean('precisionWalk')) then
+            local gameRootPanel = modules.game_interface.getRootPanel()
+            gameRootPanel:setAutoRepeatDelay(value)
+        end
+    elseif key == 'smoothWalk' then
+        local gameRootPanel = modules.game_interface.getRootPanel()
+        local precButton = generalPanel:getChildById('precisionWalk')
+        if value then
+            gameRootPanel:setAutoRepeatDelay(200)
+            if precButton:isChecked() then
+                precButton:setChecked(false)
+            end
+        else
+            if not precButton:isChecked() then
+                precButton:setChecked(true)
+                gameRootPanel:setAutoRepeatDelay(g_settings.getNumber('walkingKeysRepeatDelay'))
+            end
+        end
+    elseif key == 'precisionWalk' then
+        local smoothButton = generalPanel:getChildById('smoothWalk')
+        local gameRootPanel = modules.game_interface.getRootPanel()
+        if value then
+            gameRootPanel:setAutoRepeatDelay(g_settings.getNumber('walkingKeysRepeatDelay'))
+            if smoothButton:isChecked() then
+                smoothButton:setChecked(false)
+            end
+        else
+            gameRootPanel:setAutoRepeatDelay(200)
+            if not smoothButton:isChecked() then
+                smoothButton:setChecked(true)
+            end
+        end
     elseif key == 'crosshair' then
         local crossPath = '/images/game/crosshair/'
         local newValue = value
@@ -332,6 +413,26 @@ function setOption(key, value, force)
             displayInfoBox(tr('Warning'), tr(
                                'Rendering scale above 100%% will drop performance and visual bugs may occur.'))
         end
+    elseif key == 'hpmpHealthCircle' then
+        modules.game_healthcircle.setHealthCircle(value)
+    elseif key == 'hpmpManaCircle' then
+        modules.game_healthcircle.setManaCircle(value)
+    elseif key == 'hpmpExpCircle' then
+        modules.game_healthcircle.setExpCircle(value)
+    elseif key == 'hpmpSkillCircle' then
+        modules.game_healthcircle.setSkillCircle(value)
+    elseif key == 'hpmpChooseSkill' then
+        modules.game_healthcircle.setSkillType(value)
+    elseif key == 'hpmpDistanceCenter' then
+        circlePanel:getChildById('distFromCenLabel'):setText(
+            tr('Distance: %s', value)
+        )
+        modules.game_healthcircle.setDistanceFromCenter(value)
+    elseif key == 'hpmpCircleOpacity' then
+        circlePanel:getChildById('opacityLabel'):setText(
+            tr('Opacity: %s%%', value)
+        )
+        modules.game_healthcircle.setCircleOpacity(value / 100)
     end
 
     -- change value for keybind updates
@@ -362,3 +463,8 @@ function removeTab(v)
 end
 
 function addButton(name, func, icon) optionsTabBar:addButton(name, func, icon) end
+
+function openOnTab(tab)
+    show()
+    optionsTabBar:selectTab(optionsTabBar:getTab(tab)) 
+end

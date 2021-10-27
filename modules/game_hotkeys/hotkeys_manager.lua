@@ -16,7 +16,7 @@ HotkeyActions = {
 }
 
 HotkeyColors = {
-    text = '#888888',
+    text = '#AFAFAF',
     textAutoSend = '#FFFFFF',
     itemUse = '#8888FF',
     itemUseSelf = '#00FF00',
@@ -66,16 +66,22 @@ function init()
 
     currentHotkeys = hotkeysWindow:getChildById('currentHotkeys')
     currentItemPreview = hotkeysWindow:getChildById('itemPreview')
+    currentItemPreview:hide()
     addHotkeyButton = hotkeysWindow:getChildById('addHotkeyButton')
     removeHotkeyButton = hotkeysWindow:getChildById('removeHotkeyButton')
     hotkeyText = hotkeysWindow:getChildById('hotkeyText')
     hotKeyTextLabel = hotkeysWindow:getChildById('hotKeyTextLabel')
     sendAutomatically = hotkeysWindow:getChildById('sendAutomatically')
     selectObjectButton = hotkeysWindow:getChildById('selectObjectButton')
+    selectObjectButton:hide()
     clearObjectButton = hotkeysWindow:getChildById('clearObjectButton')
+    clearObjectButton:hide()
     useOnSelf = hotkeysWindow:getChildById('useOnSelf')
+    useOnSelf:hide()
     useOnTarget = hotkeysWindow:getChildById('useOnTarget')
+    useOnTarget:hide()
     useWith = hotkeysWindow:getChildById('useWith')
+    useWith:hide()
 
     useRadioGroup = UIRadioGroup.create()
     useRadioGroup:addWidget(useOnSelf)
@@ -159,7 +165,6 @@ function offline()
 end
 
 function show()
-    if not g_game.isOnline() then return end
     hotkeysWindow:show()
     hotkeysWindow:raise()
     hotkeysWindow:focus()
@@ -270,6 +275,7 @@ end
 function loadDefautComboKeys()
     if not defaultComboKeys then
         for i = 1, 12 do addKeyCombo('F' .. i) end
+        for i = 1, 12 do addKeyCombo('Ctrl+F' .. i) end
         for i = 1, 4 do addKeyCombo('Shift+F' .. i) end
     else
         for keyCombo, keySettings in pairs(defaultComboKeys) do
@@ -446,7 +452,7 @@ function doKeyCombo(keyCombo)
         elseif hotKey.action == HOTKEY_ACTION_ATTACK_PREV then
             modules.game_battle.attackNext(true)
         elseif hotKey.action == HOTKEY_ACTION_TOGGLE_CHASE then
-            modules.game_combatcontrols.toggleChaseMode()
+            modules.game_inventory.toggleChaseMode()
         end
 
     elseif hotKey.itemId == nil then
@@ -713,7 +719,7 @@ end
 -- Even if hotkeys are enabled, only the hotkeys containing Ctrl or Alt or F1-F12 will be enabled when
 -- chat is opened (no WASD mode). This is made to prevent executing hotkeys while typing...
 function canPerformKeyCombo(keyCombo)
-    return disableHotkeysCount == 0 and (not modules.game_console:isChatEnabled() or
+    return disableHotkeysCount == 0 and (modules.game_console.consoleToggleChat:isChecked() or
         string.match(keyCombo, "F%d%d?") or
         string.match(keyCombo, "Ctrl%+") or
         string.match(keyCombo, "Shift%+..+") or

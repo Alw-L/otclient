@@ -2,10 +2,10 @@ function UIMinimap:onCreate() self.autowalk = true end
 
 function UIMinimap:onSetup()
     self.flagWindow = nil
-    self.floorUpWidget = self:getChildById('floorUpButton')
-    self.floorDownWidget = self:getChildById('floorDownButton')
-    self.zoomInWidget = self:getChildById('zoomInButton')
-    self.zoomOutWidget = self:getChildById('zoomOutButton')
+    self.floorUpWidget = self:getChildById('floorUp')
+    self.floorDownWidget = self:getChildById('floorDown')
+    self.zoomInWidget = self:getChildById('zoomIn')
+    self.zoomOutWidget = self:getChildById('zoomOut')
     self.flags = {}
     self.fullMapView = false
     self.zoomMinimap = 0
@@ -89,8 +89,7 @@ local function onFlagMouseRelease(widget, pos, button)
     if button == MouseLeftButton then
         local player = g_game.getLocalPlayer()
         if Position.distance(player:getPosition(), widget.pos) > 250 then
-            modules.game_textmessage.displayStatusMessage(tr(
-                                                              "Destination is out of range."))
+            modules.game_textmessage.displayStatusMessage(tr("Destination is out of range."))
             return false
         end
 
@@ -203,7 +202,9 @@ end
 
 function UIMinimap:reset()
     local player = g_game.getLocalPlayer()
-    if player then self:setCameraPosition(player:getPosition()) end
+    if player then
+        self:setCameraPosition(player:getPosition())
+    end
 end
 
 function UIMinimap:move(x, y)
@@ -246,8 +247,7 @@ function UIMinimap:onMouseRelease(pos, button)
     if button == MouseLeftButton then
         local player = g_game.getLocalPlayer()
         if Position.distance(player:getPosition(), mapPos) > 250 then
-            modules.game_textmessage.displayStatusMessage(tr(
-                                                              "Destination is out of range."))
+            modules.game_textmessage.displayStatusMessage(tr("Destination is out of range."))
             return false
         end
 
@@ -256,8 +256,7 @@ function UIMinimap:onMouseRelease(pos, button)
     elseif button == MouseRightButton then
         local menu = g_ui.createWidget('PopupMenu')
         menu:setGameMenu(true)
-        menu:addOption(tr('Create mark'),
-                       function() self:createFlagWindow(mapPos) end)
+        menu:addOption(tr('Set mark'), function() self:createFlagWindow(mapPos) end)
         menu:display(pos)
         return true
     end
@@ -297,12 +296,9 @@ function UIMinimap:createFlagWindow(pos)
 
     self.flagWindow = g_ui.createWidget('MinimapFlagWindow', rootWidget)
 
-    local positionLabel = self.flagWindow:getChildById('position')
     local description = self.flagWindow:getChildById('description')
     local okButton = self.flagWindow:getChildById('okButton')
     local cancelButton = self.flagWindow:getChildById('cancelButton')
-
-    positionLabel:setText(string.format('%i, %i, %i', pos.x, pos.y, pos.z))
 
     local flagRadioGroup = UIRadioGroup.create()
     for i = 0, 19 do

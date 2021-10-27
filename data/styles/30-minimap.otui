@@ -35,22 +35,20 @@ MinimapFloorDownButton < Button
     icon-clip: 0 16 16 16
 
 MinimapZoomInButton < Button
-  text: +
   size: 20 20
   margin-right: 4
   margin-bottom: 28
   anchors.right: parent.right
   anchors.bottom: parent.bottom
-  //icon-source: /images/game/minimap/zoom_in
+  icon-source: /images/game/minimap/zoom_in
 
 MinimapZoomOutButton < Button
-  text: -
   size: 20 20
   margin-right: 4
   margin-bottom: 4
   anchors.right: parent.right
   anchors.bottom: parent.bottom
-  //icon-source: /images/game/minimap/zoom_out
+  icon-source: /images/game/minimap/zoom_out
 
 MinimapResetButton < Button
   !text: tr('Center')
@@ -60,6 +58,10 @@ MinimapResetButton < Button
   margin: 4
 
 Minimap < UIMinimap
+  border: 1 #787878
+  border-color-top: #666666
+  border-color-left: #666666
+  padding: 1
   draggable: true
   focusable: false
   cross: true
@@ -89,14 +91,14 @@ Minimap < UIMinimap
 
 
 MinimapFlagCheckBox < CheckBox
-  size: 15 15
-  margin-left: 2
+  size: 16 16
+  margin-left: 5
   image-source: /images/game/minimap/flagcheckbox
-  image-size: 15 15
+  image-size: 16 16
   image-border: 3
   icon-source: /images/game/minimap/mapflags
   icon-size: 11 11
-  icon-offset: 2 4
+  icon-offset: 2 2
   anchors.left: prev.right
   anchors.top: prev.top
   $!checked:
@@ -109,28 +111,14 @@ MinimapFlagCheckBox < CheckBox
     image-clip: 52 0 26 26
 
 MinimapFlagWindow < MainWindow
-  !text: tr('Create Map Mark')
-  size: 196 185
+  !text: tr('Edit Mark')
+  size: 286 189
 
   Label
-    !text: tr('Position') .. ':'
-    text-auto-resize: true
-    anchors.top: parent.top
+    !text: tr('Enter a short description') .. ':'
+    color: #BFBFBF
     anchors.left: parent.left
-    margin-top: 2
-
-  Label
-    id: position
-    text-auto-resize: true
     anchors.top: parent.top
-    anchors.right: parent.right
-    margin-top: 2
-
-  Label
-    !text: tr('Description') .. ':'
-    anchors.left: parent.left
-    anchors.top: prev.bottom
-    margin-top: 7
 
   TextEdit
     id: description
@@ -138,6 +126,13 @@ MinimapFlagWindow < MainWindow
     anchors.left: parent.left
     anchors.top: prev.bottom
     anchors.right: parent.right
+
+  Label
+    !text: tr('Select a type') .. ':'
+    color: #BFBFBF
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
 
   MinimapFlagCheckBox
     id: flag0

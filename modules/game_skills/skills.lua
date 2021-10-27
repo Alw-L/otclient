@@ -1,5 +1,4 @@
 skillsWindow = nil
-skillsButton = nil
 skillsSettings = nil
 
 function init()
@@ -32,17 +31,17 @@ function init()
     skillsButton:setOn(true)
     skillsWindow = g_ui.loadUI('skills')
 
-    g_keyboard.bindKeyDown('Alt+S', toggle)
+    g_keyboard.bindKeyDown('Ctrl+S', toggle)
 
-    skillSettings = g_settings.getNode('skills-hide')
-    if not skillSettings then
-        skillSettings = {}
+    skillsSettings = g_settings.getNode('skills-hide')
+    if not skillsSettings then
+        skillsSettings = {}
     end
 
     refresh()
     skillsWindow:setup()
     if g_game.isOnline() then
-        skillsWindow:setupOnStart()
+        online()
     end
 end
 
@@ -70,7 +69,7 @@ function terminate()
         onGameEnd = offline
     })
 
-    g_keyboard.unbindKeyDown('Alt+S')
+    g_keyboard.unbindKeyDown('Ctrl+S')
     skillsWindow:destroy()
     skillsButton:destroy()
 
@@ -238,8 +237,8 @@ function refresh()
     if g_game.isOnline() then
         local char = g_game.getCharacterName()
 
-        if not skillSettings[char] then
-            skillSettings[char] = {}
+        if not skillsSettings[char] then
+            skillsSettings[char] = {}
         end
 
         local skillsButtons = skillsWindow:recursiveGetChildById('experience'):getParent():getChildren()
@@ -248,22 +247,20 @@ function refresh()
             local percentBar = skillButton:getChildById('percent')
 
             if skillButton:isVisible() then
-                maximumHeight = maximumHeight + 16
+                maximumHeight = maximumHeight + 15
                 if percentBar then
-                    showPercentBar(skillButton, skillSettings[char][skillButton:getId()] ~= 1)
+                    showPercentBar(skillButton, skillsSettings[char][skillButton:getId()] ~= 1)
                     if percentBar:isVisible() then
                         maximumHeight = maximumHeight + 6
                     end
                 end
             end
         end
-    else
-        maximumHeight = 390
     end
 
     local contentsPanel = skillsWindow:getChildById('contentsPanel')
     skillsWindow:setContentMinimumHeight(44)
-    skillsWindow:setContentMaximumHeight(maximumHeight)
+    skillsWindow:setContentMaximumHeight(maximumHeight ~= 25 and maximumHeight or 300)
 end
 
 function offline()
@@ -272,16 +269,23 @@ function offline()
         expSpeedEvent:cancel()
         expSpeedEvent = nil
     end
-    g_settings.setNode('skills-hide', skillSettings)
+    g_settings.setNode('skills-hide', skillsSettings)
 end
 
 function toggle()
+    if(not g_game.isOnline()) then
+        return
+    end
     if skillsButton:isOn() then
-        skillsWindow:close()
         skillsButton:setOn(false)
     else
-        skillsWindow:open()
         skillsButton:setOn(true)
+    end
+
+    if skillsWindow:isVisible() then
+        closeWindow()
+    else
+        openWindow()
     end
 end
 
@@ -302,7 +306,24 @@ function checkExpSpeed()
     if #player.lastExps > 30 then table.remove(player.lastExps, 1) end
 end
 
-function onMiniWindowClose() skillsButton:setOn(false) end
+function onMiniWindowOpen()
+    modules.game_playerbars.skillsButton:setChecked(true)
+end
+
+function onMiniWindowClose()
+    modules.game_playerbars.skillsButton:setChecked(false)
+end
+
+function closeWindow()
+    modules.game_playerbars.skillsButton:setChecked(false)
+    skillsWindow:close()
+end
+
+function openWindow()
+    modules.game_playerbars.skillsButton:setChecked(1)
+    skillsWindow:open()
+    refresh()
+end
 
 function onSkillButtonClick(button)
     local percentBar = button:getChildById('percent')
@@ -312,10 +333,10 @@ function onSkillButtonClick(button)
         local char = g_game.getCharacterName()
         if percentBar:isVisible() then
             skillsWindow:modifyMaximumHeight(6)
-            skillSettings[char][button:getId()] = 0
+            skillsSettings[char][button:getId()] = 0
         else
             skillsWindow:modifyMaximumHeight(-6)
-            skillSettings[char][button:getId()] = 1
+            skillsSettings[char][button:getId()] = 1
         end
     end
 end
@@ -333,7 +354,18 @@ function showPercentBar(button, show)
 end
 
 function onExperienceChange(localPlayer, value)
-    setSkillValue('experience', comma_value(value))
+    local postFix = ""
+    if value > 1e15 then
+      postFix = "B"
+      value = math.floor(value / 1e9)
+    elseif value > 1e12 then
+      postFix = "M"
+      value = math.floor(value / 1e6)
+    elseif value > 1e9 then
+      postFix = "K"
+      value = math.floor(value / 1e3)
+    end
+    setSkillValue('experience', comma_value(value) .. postFix)
 end
 
 function onLevelChange(localPlayer, value, percent)
@@ -352,7 +384,7 @@ function onLevelChange(localPlayer, value, percent)
                                     (hoursLeft - math.floor(hoursLeft)) * 60)
             hoursLeft = math.floor(hoursLeft)
             text = text .. '\n' ..
-                       tr('%s of experience per hour', comma_value(expPerHour))
+                       tr('%s experience per hour', comma_value(expPerHour))
             text = text .. '\n' ..
                        tr('Next level in %d hours and %d minutes', hoursLeft,
                           minutesLeft)
@@ -396,20 +428,20 @@ function onStaminaChange(localPlayer, stamina)
         localPlayer:isPremium() then
         local text =
             tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
-                tr("Now you will gain 50%% more experience")
+                tr("Premium bonus of 50%% more experience is enabled.")
         setSkillPercent('stamina', percent, text, 'green')
     elseif stamina > 2400 and g_game.getClientVersion() >= 1038 and
         not localPlayer:isPremium() then
         local text =
             tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
                 tr(
-                    "You will not gain 50%% more experience because you aren't premium player, now you receive only 1x experience points")
+                    "You will not gain 50%% as a free account player.")
         setSkillPercent('stamina', percent, text, '#89F013')
     elseif stamina >= 2400 and g_game.getClientVersion() < 1038 then
         local text =
             tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
                 tr(
-                    "If you are premium player, you will gain 50%% more experience")
+                    "Premium accounts gain 50%% more experience.")
         setSkillPercent('stamina', percent, text, 'green')
     elseif stamina < 2400 and stamina > 840 then
         setSkillPercent('stamina', percent, tr(
@@ -419,12 +451,12 @@ function onStaminaChange(localPlayer, stamina)
         local text =
             tr("You have %s hours and %s minutes left", hours, minutes) .. "\n" ..
                 tr(
-                    "You gain only 50%% experience and you don't may gain loot from monsters")
+                    "Your stamina is low. You're gaining less exp and no loot.")
         setSkillPercent('stamina', percent, text, 'red')
     elseif stamina == 0 then
         local text =
             tr("You have %s hours and %s minutes left", hours, minutes) .. "\n" ..
-                tr("You don't may receive experience and loot from monsters")
+                tr("Your stamina is empty. You need rest.")
         setSkillPercent('stamina', percent, text, 'black')
     end
 end
@@ -434,11 +466,14 @@ function onOfflineTrainingChange(localPlayer, offlineTrainingTime)
     local hours = math.floor(offlineTrainingTime / 60)
     local minutes = offlineTrainingTime % 60
     if minutes < 10 then minutes = '0' .. minutes end
-    local percent = 100 * offlineTrainingTime / (12 * 60) -- max is 12 hours
+    local percent = math.floor(100 * offlineTrainingTime / (12 * 60)) -- max is 12 hours
 
     setSkillValue('offlineTraining', hours .. ":" .. minutes)
-    setSkillPercent('offlineTraining', percent,
-                    tr('You have %s percent', percent))
+    if hours > 0 then
+        setSkillPercent('offlineTraining', percent, tr('You have %d hours and %d minutes left of offline training.', hours, minutes))
+    else
+        setSkillPercent('offlineTraining', percent, tr('You have %d minutes left of offline training.', minutes))
+    end
 end
 
 function onRegenerationChange(localPlayer, regenerationTime)

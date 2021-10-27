@@ -3,6 +3,8 @@ Panel
     id: opengl1
     anchors.left: parent.left
     anchors.top: parent.top
+    margin-top: 10
+    margin-left: -7
     text: OpenGL 1
     size: 80 20
 
@@ -12,7 +14,7 @@ Panel
     anchors.verticalCenter: prev.verticalCenter
     text: OpenGL 2
     size: 80 20
-    margin-left: 4
+    margin-left: 13
 
   ButtonBox
     id: directx9
@@ -20,41 +22,97 @@ Panel
     anchors.verticalCenter: prev.verticalCenter
     text: DirectX 9
     size: 80 20
-    margin-left: 4
+    margin-left: 13
 
   OptionCheckBox
     id: vsync
     !text: tr('Enable vertical synchronization')
     !tooltip: tr('Limits FPS to 60')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: showFps
     !text: tr('Show frame rate')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: enableLights
     !text: tr('Enable lights')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: drawViewportEdge
     !text: tr('Draw Viewport Edge')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: floatingEffect
     !text: tr('Draw Floating Effects')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: fullscreen
     !text: tr('Fullscreen')
     tooltip: Ctrl+Shift+F
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: dontStretchShrink
     !text: tr('Don\'t stretch/shrink Game Window')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+    
   OptionCheckBox
     id: antiAliasing
     !text: tr('Anti-Aliasing')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   Label
     id: renderScaleLabel
@@ -77,8 +135,8 @@ Panel
     id: ambientLightLabel
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.top: renderScaleLabel.top
-    margin-top: 25
+    anchors.top: renderScaleLabel.bottom
+    margin-top: 12
     @onSetup: |
       local value = modules.client_options.getOption('ambientLight')
       self:setText(tr('Ambient light: %s%%', value))
@@ -125,7 +183,7 @@ Panel
         text = 'max'
       end
 
-      self:setText(tr('Game framerate limit: %s', text))
+      self:setText(tr('Adjust framerate limit: %s', text))
 
   OptionScrollbar
     id: backgroundFrameRate

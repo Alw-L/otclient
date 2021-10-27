@@ -25,6 +25,8 @@ function UIMiniWindow:close(dontSave)
 end
 
 function UIMiniWindow:minimize(dontSave)
+    if (self.notMinimize) then return end
+    
     self:setOn(true)
     self:getChildById('contentsPanel'):hide()
     self:getChildById('miniwindowScrollBar'):hide()
@@ -56,6 +58,31 @@ function UIMiniWindow:maximize(dontSave)
     signalcall(self.onMaximize, self)
 end
 
+function UIMiniWindow:lock(dontSave)
+  local lockButton = self:getChildById('lockButton')
+  if lockButton then
+    lockButton:setOn(true)
+  end
+  self:setDraggable(false)
+  if not dontsave then
+    self:setSettings({locked = true})
+  end
+
+  signalcall(self.onLockChange, self)
+end
+
+function UIMiniWindow:unlock(dontSave)
+  local lockButton = self:getChildById('lockButton')
+  if lockButton then
+    lockButton:setOn(false)
+  end
+  self:setDraggable(true)
+  if not dontsave then
+    self:setSettings({locked = false})
+  end
+  signalcall(self.onLockChange, self)
+end
+
 function UIMiniWindow:setup()
     self:getChildById('closeButton').onClick = function() self:close() end
 
@@ -64,6 +91,30 @@ function UIMiniWindow:setup()
             self:maximize()
         else
             self:minimize()
+        end
+    end
+
+    local lockButton = self:getChildById('lockButton')
+    if lockButton then
+      lockButton.onClick = 
+        function ()
+          if self:isDraggable() then
+            self:lock()
+          else
+            self:unlock()
+          end
+        end
+    end
+
+    local extraButton = self:getChildById('extraButton')
+    print(extraButton)
+    if extraButton then
+        if(self.onExtra ~= nil) then
+            extraButton.onClick = function ()
+                signalcall(self.onExtra, self)
+            end
+        else
+            extraButton:hide()
         end
     end
 
@@ -127,7 +178,15 @@ function UIMiniWindow:setupOnStart()
             end
         end
 
-        if selfSettings.closed then self:close(true) else self:open(true) end
+        if selfSettings.closed then
+            self:close(true)
+        else
+            self:open(true)
+        end
+    else
+        if self.autoOpen ~= nil and self.autoOpen == false then
+            self:close()
+        end
     end
 
     local newParent = self:getParent()
@@ -176,6 +235,29 @@ function UIMiniWindow:onDragEnter(mousePos)
 end
 
 function UIMiniWindow:onDragLeave(droppedWidget, mousePos)
+    if --[[g_settings.getBoolean('moveWindowsToPanel')--]] true then
+		local children = rootWidget:recursiveGetChildrenByMarginPos(mousePos)
+		local dropInPanel = 0
+		for i=1,#children do
+			local child = children[i]
+			if child:getId() == 'gameLeftPanel' or child:getId() == 'gameRightExtraPanel' or child:getId() == 'gameRightPanel' then
+			  dropInPanel = 1
+			end
+		end
+		if dropInPanel == 0 then
+			tmpp = self
+			if(modules.game_interface.getLeftPanel():isVisible()) then
+				if modules.game_interface.getRootPanel():getWidth() / 2 < mousePos.x then
+				   addEvent(function() tmpp:setParent(modules.game_interface.getRightPanel()) end)
+				else
+				   addEvent(function() tmpp:setParent(modules.game_interface.getLeftPanel()) end)
+				end
+			else
+				addEvent(function() tmpp:setParent(modules.game_interface.getRightPanel()) end)
+			end
+		end
+	end
+
     if self.movedWidget then
         self.setMovedChildMargin(self.movedOldMargin or 0)
         self.movedWidget = nil
@@ -184,6 +266,7 @@ function UIMiniWindow:onDragLeave(droppedWidget, mousePos)
         self.movedIndex = nil
     end
 
+    UIWindow:onDragLeave(self, droppedWidget, mousePos)
     self:saveParent(self:getParent())
 end
 
@@ -229,6 +312,14 @@ function UIMiniWindow:onDragMove(mousePos, mouseMoved)
         self.setMovedChildMargin(self.movedOldMargin or 0)
         self.movedWidget = nil
     end
+
+    -- local pos = {
+    --     --x = self:getX(),
+    --     x = mousePos.x - self.movingReference.x,
+    --     y = mousePos.y - self.movingReference.y
+    -- }
+    -- self:setPosition(pos)
+    -- self:bindRectToParent()
 
     return UIWindow.onDragMove(self, mousePos, mouseMoved)
 end
@@ -351,6 +442,10 @@ end
 function UIMiniWindow:setHeight(height)
     UIWidget.setHeight(self, height)
     signalcall(self.onHeightChange, self, height)
+end
+
+function UIMiniWindow:getContentHeight()
+  return self:getChildById('contentsPanel'):getHeight()
 end
 
 function UIMiniWindow:setContentHeight(height)

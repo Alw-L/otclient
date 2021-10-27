@@ -1,0 +1,144 @@
+MainWindow
+  id: optionsWindow
+  !text: tr('Options')
+  size: 286 293
+  padding-bottom: 9
+  padding-right: 18
+  padding-top: 32
+  padding-left: 18
+
+  @onEnter: modules.client_options_revamp.hide()
+  @onEscape: modules.client_options_revamp.hide()
+
+  Button
+    id: btnGeneral
+    !text: tr('General')
+    width: 88
+    height: 20
+    anchors.left: parent.left
+    anchors.top: parent.top
+    @onClick: modules.client_options_revamp.openOnTab('General')
+
+  Label
+    !text: tr('Change general') .. '\n' .. tr('game options')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -4
+    color: #bfbfbf
+    height: 30
+
+  Button
+    id: btnGraphics
+    !text: tr('Graphics')
+    width: 88
+    height: 20
+    anchors.left: btnGeneral.left
+    anchors.top: btnGeneral.bottom
+    margin-top: 13
+    @onClick: modules.client_options_revamp.openOnTab('Graphics')
+
+  Label
+    !text: tr('Change graphics and') .. '\n' .. tr('performance settings')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -4
+    color: #bfbfbf
+    height: 30
+
+  Button
+    id: btnConsole
+    !text: tr('Console')
+    width: 88
+    height: 20
+    anchors.left: btnGraphics.left
+    anchors.top: btnGraphics.bottom
+    margin-top: 13
+    @onClick: modules.client_options_revamp.openOnTab('Console')
+
+  Label
+    !text: tr('Customize the console')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -1
+    color: #bfbfbf
+    height: 30
+
+  Button
+    id: btnHotkeys
+    !text: tr('Hotkeys')
+    width: 88
+    height: 20
+    anchors.left: btnConsole.left
+    anchors.top: btnConsole.bottom
+    margin-top: 13
+    @onClick: modules.game_hotkeys.toggle()
+
+  Label
+    !text: tr('Edit your hotkey texts')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -1
+    color: #bfbfbf
+    height: 30
+    
+  HorizontalSeparator
+    anchors.top: btnHotkeys.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 15
+
+  Button
+    id: btnDiscord
+    !text: tr('Discord')
+    width: 88
+    height: 20
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 18
+    @onClick: modules.client_options_revamp.openDiscord()
+
+  Label
+    !text: tr('Join the discord channel')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -1
+    color: #bfbfbf
+    height: 30
+
+  Button
+    id: btnMotd
+    !text: tr('Motd')
+    width: 88
+    height: 20
+    anchors.left: btnDiscord.left
+    anchors.top: btnDiscord.bottom
+    margin-top: 13
+    @onClick: modules.client_entergame.EnterGame.displayMotd()
+
+  Label
+    !text: tr('Show the most recent') .. '\n' .. tr('Message of the Day')
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 11
+    margin-top: -4
+    color: #bfbfbf
+    height: 30
+    
+  HorizontalSeparator
+    anchors.top: btnMotd.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 20
+
+  Button
+    !text: tr('Ok')
+    width: 45
+    height: 22
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.client_options_revamp.toggle()

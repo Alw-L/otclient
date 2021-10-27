@@ -138,7 +138,7 @@ controller:gameEvent('onOpenOutfitWindow',
             local colorId = j * 19 + i
 
             local colorBox = g_ui.createWidget('ColorBox', colorBoxPanel)
-            colorBox:setImageColor(getOutfitColor(colorId))
+            colorBox:getChildById('colorBoxInner'):setImageColor(getOutfitColor(colorId))
             colorBox:setId('colorBox' .. colorId)
             colorBox.colorId = colorId
 

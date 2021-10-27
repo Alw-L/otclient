@@ -1,4 +1,4 @@
-HOTKEY = 'Ctrl+Y'
+HOTKEY = 'Ctrl+U'
 MAP_SHADERS = {
     {name = 'Map - Default', frag = nil},
     {name = 'Fog', frag = 'shaders/fragment/fog.frag', tex1 = 'images/clouds'},

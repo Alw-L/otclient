@@ -69,6 +69,19 @@ function UITabBar:addButton(text, func, icon)
     return button
 end
 
+function UITabBar:addSeparator()
+    local separator = g_ui.createWidget('HorizontalSeparator', self.buttonsPanel)
+    separator:addAnchor(AnchorTop, 'prev', AnchorBottom)
+    separator:addAnchor(AnchorLeft, 'parent', AnchorLeft)
+    separator:addAnchor(AnchorRight, 'parent', AnchorRight)
+    separator:setMargin(12, 6, 0, 6)
+
+    local style = {}
+    separator:mergeStyle(style)
+
+    return separator
+end
+
 function UITabBar:removeTab(tab)
     local index = table.find(self.tabs, tab)
     if index == nil then return end
@@ -142,4 +155,10 @@ function UITabBar:getTabs() return self.tabs end
 
 function UITabBar:getTabsPanel()
     return table.collect(self.tabs, function(_, tab) return tab.tabPanel end)
+end
+
+function UITabBar:clearTabs()
+  while #self.tabs > 0 do
+    self:removeTab(self.tabs[#self.tabs])
+  end
 end

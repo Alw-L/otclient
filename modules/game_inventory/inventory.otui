@@ -80,68 +80,319 @@ PurseButton < Button
   icon-size: 24 24
   icon-offset: 1 1
 
-MiniWindow
+CombatBox < UICheckBox
+  size: 20 20
+  image-clip: 0 0 20 20
+  margin: 2 4
+
+  $checked:
+    image-clip: 0 20 20 20
+
+StandModeBox < CombatBox
+  image-source: /images/game/combatmodes/standmode
+FightOffensiveBox < CombatBox
+  image-source: /images/game/combatmodes/fightoffensive
+FightBalancedBox < CombatBox
+  image-source: /images/game/combatmodes/fightbalanced
+FightDefensiveBox < CombatBox
+  image-source: /images/game/combatmodes/fightdefensive
+ChaseModeBox < CombatBox
+  image-source: /images/game/combatmodes/chasemode
+SafeFightBox < CombatBox
+  image-source: /images/game/combatmodes/safefight
+
+MountButton < CombatBox
+  image-source: /images/game/combatmodes/mount
+
+WhiteDoveBox < CombatBox
+  image-source: /images/game/combatmodes/whitedovemode
+WhiteHandBox < CombatBox
+  image-source: /images/game/combatmodes/whitehandmode
+YellowHandBox < CombatBox
+  image-source: /images/game/combatmodes/yellowhandmode
+RedFistBox < CombatBox
+  image-source: /images/game/combatmodes/redfistmode
+
+SoulLabel < GameLabel
+  id: soulLabel
+  text-align: center
+  color: #AFAFAF
+  font: verdana-11px-antialised
+  anchors.bottom: soulPanel.bottom
+  anchors.right: soulPanel.right
+  anchors.left: soulPanel.left
+  margin-bottom: -1
+  margin-left: -1
+  on: true
+
+  $!on:
+    visible: false
+    margin-top: 0
+    height: 0
+
+CapLabel < GameLabel
+  id: capLabel
+  text-align: center
+  color: #AFAFAF
+  font: verdana-11px-antialised
+  anchors.bottom: capPanel.bottom
+  anchors.right: capPanel.right
+  anchors.left: capPanel.left
+  margin-bottom: -1
+  margin-left: -1
+  on: true
+
+  $!on:
+    visible: false
+    margin-top: 0
+    height: 0
+
+SoulTitle < GameLabel
+  id: soulTitle
+  text: Soul:
+  text-align: center
+  color: white
+  font: classicfont
+  anchors.bottom: soulLabel.bottom
+  anchors.right: soulLabel.right
+  anchors.left: soulLabel.left
+  margin-bottom: 9
+  margin-left: 1
+  on: true
+
+  $!on:
+    visible: false
+    margin-top: 0
+    height: 0
+
+CapTitle < GameLabel
+  id: capTitle
+  text: Cap:
+  text-align: center
+  color: white
+  font: classicfont
+  anchors.bottom: capLabel.bottom
+  anchors.right: capLabel.right
+  anchors.left: capLabel.left
+  margin-bottom: 9
+  margin-left: 1
+  on: true
+
+  $!on:
+    visible: false
+    margin-top: 0
+    height: 0
+
+ConditionWidget < UIWidget
+  size: 8 8
+
+  $!first:
+    margin-left: 1
+
+SpecialMiniWindow
   id: inventoryWindow
-  !text: tr('Inventory')
-  icon: /images/topbuttons/inventory
-  height: 175
+  height: 168
   @onClose: modules.game_inventory.onMiniWindowClose()
   &save: true
 
   MiniWindowContents
-    HeadSlot
-      anchors.top: parent.top
-      anchors.horizontalCenter: parent.horizontalCenter
-      margin-top: 3
-
-    BodySlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
-
-    LegSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
-
-    FeetSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+    padding-top: 1
+    margin-left: 8
 
     NeckSlot
-      anchors.top: slot1.top
-      anchors.right: slot1.left
-      margin-top: 10
-      margin-right: 5
+      margin-top: 14
+      anchors.top: parent.top
+      anchors.left: parent.left
 
     LeftSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 4
 
     FingerSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 4
+
+    ConditionPanel
+      id: conditionPanel
       margin-top: 3
+      anchors.top: prev.bottom
+      anchors.left: prev.left
+      UIWidget
+        id: conditionHolder
+        margin-left: 1
+        margin-top: 1
+        anchors.fill: parent
+        layout:
+          type: grid
+          cell-size: 8 8
+          cell-spacing: 1
+          flow: true
+
+    //SoulPanel
+      //id: soulPanel
+      //anchors.top: prev.bottom
+      //anchors.left: prev.left
+      //margin-top: 3
+
+    HeadSlot
+      anchors.top: parent.top
+      anchors.left: prev.right
+      margin-left: 4
+
+    BodySlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 4
+
+    LegSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 4
+
+    FeetSlot
+      anchors.top: prev.bottom
+      anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 4
 
     BackSlot
-      anchors.top: slot1.top
-      anchors.left: slot1.right
-      margin-top: 10
-      margin-left: 5
+      margin-top: 14
+      anchors.top: parent.top
+      anchors.left: prev.right
+      margin-left: 4
 
     RightSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      margin-top: 4
 
     AmmoSlot
       anchors.top: prev.bottom
       anchors.horizontalCenter: prev.horizontalCenter
+      margin-top: 4
+      
+    CapPanel
+      id: capPanel
+      anchors.top: prev.bottom
+      anchors.right: prev.right
       margin-top: 3
 
-    PurseButton
-      margin-top: 3
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
+    //SoulLabel
+    //SoulTitle
+    CapLabel
+    CapTitle
+
+    FightOffensiveBox
+      id: fightOffensiveBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 15
+      margin-right: 24
+
+    FightBalancedBox
+      id: fightBalancedBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 35
+      margin-right: 24
+
+    FightDefensiveBox
+      id: fightDefensiveBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 55
+      margin-right: 24
+
+    StandModeBox
+      id: standModeBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 15
+      margin-right: 1
+  
+    ChaseModeBox
+      id: chaseModeBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 35
+      margin-right: 1
+
+    SafeFightBox
+      id: safeFightBox
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 55
+      margin-right: 1
+  
+  MountButton
+    id: mountButton
+    anchors.top: purseButton.bottom
+    anchors.left: purseButton.left
+    margin-top: 2
+
+  Button
+    id: stopButton
+    !text: tr('Stop')
+    !tooltip: tr('Stop current action (ESC)')
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 81
+    margin-right: 4
+    size: 45 21
+    @onClick: function() g_game.cancelAttackAndFollow() end
+
+  Button
+    id: optionsButton
+    font: classicfont
+    !text: tr('Options')
+    !tooltip: tr('Open options')
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 105
+    margin-right: 4
+    size: 45 21
+    @onClick: modules.client_options_revamp.toggle()
+
+  Button
+    id: exphButton
+    font: classicfont
+    !text: tr('Exp/h')
+    !tooltip: tr('Open exp/h calculator')
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 127
+    margin-right: 4
+    size: 45 21
+    @onClick: modules.game_exph.toggle()
+
+  PurseButton
+    margin-top: 3
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: prev.horizontalCenter
+
+  UIButton
+    id: minButton
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 4
+    margin-left: 8
+    size: 12 12
+    image-source: /images/ui/miniwindow_buttons
+    image-clip: 1 1 12 12
+    @onClick: onInventoryMinimize(not self:isOn())
+
+    $hover:
+      image-clip: 1 15 12 12
+
+    $pressed:
+      image-clip: 1 29 12 12
+
+    $on:
+      image-clip: 15 1 12 12
+
+    $on hover:
+      image-clip: 15 15 12 12
+
+    $on pressed:
+      image-clip: 15 29 12 12

@@ -1,39 +1,43 @@
-mapPanel = modules.game_interface.getMapPanel()
-gameRootPanel = modules.game_interface.gameBottomPanel
-gameLeftPanel = modules.game_interface.getLeftPanel()
-gameTopMenu = modules.client_topmenu.getTopMenu()
+local mapPanel
+local gameRootPanel
+local gameLeftPanel
+local gameTopMenu
+
+local healthCircle
+local manaCircle
+local expCircle
+local skillCircle
+local healthCircleFront
+local manaCircleFront
+local expCircleFront
+local skillCircleFront
+
+local isHealthCircle
+local isManaCircle
+local isExpCircle
+local isSkillCircle
+local skillType
+local distanceFromCenter
+local opacityCircle
 
 function currentViewMode() return modules.game_interface.currentViewMode end
 
-healthCircle = nil
-manaCircle = nil
-expCircle = nil
-skillCircle = nil
-
-g_ui.loadUI('game_healthcircle')
-
-healthCircleFront = nil
-manaCircleFront = nil
-expCircleFront = nil
-skillCircleFront = nil
-
-optionPanel = nil
-
-isHealthCircle = not g_settings.getBoolean('healthcircle_hpcircle')
-isManaCircle = not g_settings.getBoolean('healthcircle_mpcircle')
-isExpCircle = g_settings.getBoolean('healthcircle_expcircle')
-isSkillCircle = g_settings.getBoolean('healthcircle_skillcircle')
-skillType = g_settings.getString('healthcircle_skilltype')
-skillsLoaded = false
-
-distanceFromCenter = g_settings.getNumber('healthcircle_distfromcenter')
-opacityCircle = g_settings.getNumber('healthcircle_opacity', 0.35)
-
-if not (skillType == 'magic' or skillType == 'fist' or skillType == 'club' or
-    skillType == 'sword' or skillType == 'axe' or skillType == 'distance' or
-    skillType == 'shielding' or skillType == 'fishing') then skillType = 'magic' end
-
 function init()
+    isHealthCircle = not g_settings.getBoolean('hpmpHealthCircle')
+    isManaCircle = not g_settings.getBoolean('hpmpManaCircle')
+    isExpCircle = g_settings.getBoolean('hpmpExpCircle')
+    isSkillCircle = g_settings.getBoolean('hpmpSkillCircle')
+    skillType = g_settings.getString('hpmpChooseSkill')
+    distanceFromCenter = g_settings.getNumber('hpmpDistanceCenter')
+    opacityCircle = g_settings.getNumber('hpmpCircleOpacity', 0.35)
+
+    mapPanel = modules.game_interface.getMapPanel()
+    gameRootPanel = modules.game_interface.gameBottomPanel
+    gameLeftPanel = modules.game_interface.getLeftPanel()
+    gameTopMenu = modules.client_topmenu.getTopMenu()
+
+    g_ui.loadUI('game_healthcircle')
+
     healthCircle = g_ui.createWidget('HealthCircle', mapPanel)
     manaCircle = g_ui.createWidget('ManaCircle', mapPanel)
     expCircle = g_ui.createWidget('ExpCircle', mapPanel)
@@ -68,9 +72,6 @@ function init()
         skillCircle:setVisible(false)
         skillCircleFront:setVisible(false)
     end
-
-    -- Add option window in options module
-    addToOptionsModule()
 end
 
 function terminate()
@@ -95,9 +96,6 @@ function terminate()
     terminateOnHpAndMpChange()
     terminateOnGeometryChange()
     terminateOnLoginChange()
-
-    -- Delete from options module
-    destroyOptionsModule()
 end
 
 -------------------------------------------------
@@ -363,7 +361,6 @@ end
 -------------------------------------------------
 
 function setHealthCircle(value)
-    value = toboolean(value)
     isHealthCircle = value
     if value then
         healthCircle:setVisible(true)
@@ -374,11 +371,10 @@ function setHealthCircle(value)
         healthCircleFront:setVisible(false)
     end
 
-    g_settings.set('healthcircle_hpcircle', not value)
+    g_settings.set('hpmpHealthCircle', not value)
 end
 
 function setManaCircle(value)
-    value = toboolean(value)
     isManaCircle = value
     if value then
         manaCircle:setVisible(true)
@@ -389,11 +385,10 @@ function setManaCircle(value)
         manaCircleFront:setVisible(false)
     end
 
-    g_settings.set('healthcircle_mpcircle', not value)
+    g_settings.set('hpmpManaCircle', not value)
 end
 
 function setExpCircle(value)
-    value = toboolean(value)
     isExpCircle = value
 
     if value then
@@ -405,11 +400,10 @@ function setExpCircle(value)
         expCircleFront:setVisible(false)
     end
 
-    g_settings.set('healthcircle_expcircle', value)
+    g_settings.set('hpmpExpCircle', value)
 end
 
 function setSkillCircle(value)
-    value = toboolean(value)
     isSkillCircle = value
 
     if value then
@@ -421,23 +415,23 @@ function setSkillCircle(value)
         skillCircleFront:setVisible(false)
     end
 
-    g_settings.set('healthcircle_skillcircle', value)
+    g_settings.set('hpmpSkillCircle', value)
 end
 
 function setSkillType(skill)
-    if not skillsLoaded then return end
+    if not modules.client_options.skillsLoaded then return end
 
     if skill == 'magic' or skill == 'fist' or skill == 'club' or skill ==
         'sword' or skill == 'axe' or skill == 'distance' or skill == 'shielding' or
         skill == 'fishing' then
         skillType = skill
         whenMapResizeChange()
-        g_settings.set('healthcircle_skilltype', skill)
+        g_settings.set('hpmpChooseSkill', skill)
     else
         if not skillType then
             skillType = 'magic'
             whenMapResizeChange()
-            g_settings.set('healthcircle_skilltype', 'magic')
+            g_settings.set('hpmpChooseSkill', 'magic')
         end
     end
 end
@@ -446,7 +440,7 @@ function setDistanceFromCenter(value)
     distanceFromCenter = value
     whenMapResizeChange()
 
-    g_settings.set('healthcircle_distfromcenter', value)
+    g_settings.set('hpmpDistanceCenter', value)
 end
 
 function setCircleOpacity(value)
@@ -459,79 +453,9 @@ function setCircleOpacity(value)
     skillCircle:setOpacity(value)
     skillCircleFront:setOpacity(value)
 
-    g_settings.set('healthcircle_opacity', value)
+    g_settings.set('hpmpCircleOpacity', value)
 end
 
 -------------------------------------------------
 -- Option Settings--------------------------------
 -------------------------------------------------
-
-optionPanel = nil
-healthCheckBox = nil
-manaCheckBox = nil
-experienceCheckBox = nil
-skillCheckBox = nil
-chooseSkillComboBox = nil
-distFromCenLabel = nil
-distFromCenScrollbar = nil
-opacityLabel = nil
-opacityScrollbar = nil
-
-function addToOptionsModule()
-    -- Add to options module
-    optionPanel = g_ui.loadUI('option_healthcircle')
-    modules.client_options.addTab(tr('Hp Mp Circle'), optionPanel,
-                                  '/game_healthcircle/img_game_healthcircle/hp_mp_circle')
-
-    -- UI values
-    healthCheckBox = optionPanel:recursiveGetChildById('healthCheckBox')
-    manaCheckBox = optionPanel:recursiveGetChildById('manaCheckBox')
-    experienceCheckBox = optionPanel:recursiveGetChildById('experienceCheckBox')
-    skillCheckBox = optionPanel:recursiveGetChildById('skillCheckBox')
-    chooseSkillComboBox = optionPanel:recursiveGetChildById(
-                              'chooseSkillComboBox')
-    distFromCenLabel = optionPanel:recursiveGetChildById('distFromCenLabel')
-    distFromCenScrollbar = optionPanel:recursiveGetChildById(
-                               'distFromCenScrollbar')
-    opacityLabel = optionPanel:recursiveGetChildById('opacityLabel')
-    opacityScrollbar = optionPanel:recursiveGetChildById('opacityScrollbar')
-
-    -- ComboBox start values
-    chooseSkillComboBox:addOption('magic')
-    chooseSkillComboBox:addOption('fist')
-    chooseSkillComboBox:addOption('club')
-    chooseSkillComboBox:addOption('sword')
-    chooseSkillComboBox:addOption('axe')
-    chooseSkillComboBox:addOption('distance')
-    chooseSkillComboBox:addOption('shielding')
-    chooseSkillComboBox:addOption('fishing')
-
-    -- Set values
-    healthCheckBox:setChecked(isHealthCircle)
-    manaCheckBox:setChecked(isManaCircle)
-    experienceCheckBox:setChecked(isExpCircle)
-    skillCheckBox:setChecked(isSkillCircle)
-    chooseSkillComboBox:setOption(skillType)
-    -- Prevent skill overwritten before initialize
-    skillsLoaded = true
-
-    distFromCenLabel:setText('Distance: ' .. distanceFromCenter)
-    distFromCenScrollbar:setValue(distanceFromCenter)
-    opacityLabel:setText('Opacity: ' .. opacityCircle)
-    opacityScrollbar:setValue(opacityCircle * 100)
-end
-
-function destroyOptionsModule()
-    healthCheckBox = nil
-    manaCheckBox = nil
-    experienceCheckBox = nil
-    skillCheckBox = nil
-    chooseSkillComboBox = nil
-    distFromCenLabel = nil
-    distFromCenScrollbar = nil
-    opacityLabel = nil
-    opacityScrollbar = nil
-
-    modules.client_options.removeTab('Hp Mp Circle')
-    optionPanel = nil
-end

@@ -2,9 +2,9 @@
 UICreatureButton = extends(UIWidget, "UICreatureButton")
 
 local CreatureButtonColors = {
-    onIdle = {notHovered = '#888888', hovered = '#FFFFFF'},
-    onTargeted = {notHovered = '#FF0000', hovered = '#FF8888'},
-    onFollowed = {notHovered = '#00FF00', hovered = '#88FF88'}
+    onIdle = {notHovered = '#AFAFAF', hovered = '#FFFFFF' },
+    onTargeted = {notHovered = '#E04040', hovered = '#F8A4A4' },
+    onFollowed = {notHovered = '#40E040', hovered = '#B4F8B4' }
 }
 
 local LifeBarColors = {} -- Must be sorted by percentAbove

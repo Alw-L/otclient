@@ -42,7 +42,6 @@ function init()
         onGameEnd = offline,
         onPingBack = updatePing
     })
-    connect(g_app, {onFps = updateFps})
 
     topMenu = g_ui.displayUI('topmenu')
 
@@ -50,10 +49,9 @@ function init()
     rightButtonsPanel = topMenu:getChildById('rightButtonsPanel')
     leftGameButtonsPanel = topMenu:getChildById('leftGameButtonsPanel')
     rightGameButtonsPanel = topMenu:getChildById('rightGameButtonsPanel')
-    pingLabel = topMenu:getChildById('pingLabel')
-    fpsLabel = topMenu:getChildById('fpsLabel')
-
+    
     g_keyboard.bindKeyDown('Ctrl+Shift+T', toggle)
+    hide(true)
 
     if g_game.isOnline() then online() end
 end
@@ -62,60 +60,21 @@ function terminate()
     disconnect(g_game, {
         onGameStart = online,
         onGameEnd = offline,
-        onPingBack = updatePing
     })
-    disconnect(g_app, {onFps = updateFps})
 
     topMenu:destroy()
 end
 
 function online()
-    showGameButtons()
-
     addEvent(function()
-        if modules.client_options.getOption('showPing') and
-            (g_game.getFeature(GameClientPing) or
-                g_game.getFeature(GameExtendedClientPing)) then
-            pingLabel:show()
-        else
-            pingLabel:hide()
-        end
+        hide()
     end)
+    showGameButtons()
 end
 
 function offline()
     hideGameButtons()
-    pingLabel:hide()
 end
-
-function updateFps(fps)
-    text = 'FPS: ' .. fps
-    fpsLabel:setText(text)
-end
-
-function updatePing(ping)
-    local text = 'Ping: '
-    local color
-    if ping < 0 then
-        text = text .. "??"
-        color = 'yellow'
-    else
-        text = text .. ping .. ' ms'
-        if ping >= 500 then
-            color = 'red'
-        elseif ping >= 250 then
-            color = 'yellow'
-        else
-            color = 'green'
-        end
-    end
-    pingLabel:setColor(color)
-    pingLabel:setText(text)
-end
-
-function setPingVisible(enable) pingLabel:setVisible(enable) end
-
-function setFpsVisible(enable) fpsLabel:setVisible(enable) end
 
 function addLeftButton(id, description, icon, callback, front)
     return addButton(id, description, icon, callback, leftButtonsPanel, false,
@@ -174,21 +133,27 @@ function getTopMenu() return topMenu end
 function toggle()
     local menu = getTopMenu()
     if not menu then return end
-
     if menu:isVisible() then
-        menu:hide()
-        modules.client_background.getBackground():addAnchor(AnchorTop, 'parent',
-                                                            AnchorTop)
-        modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'parent',
-                                                        AnchorTop)
-        modules.game_interface.getShowTopMenuButton():show()
+        hide()
     else
-        menu:show()
-        modules.client_background.getBackground():addAnchor(AnchorTop,
-                                                            'topMenu',
-                                                            AnchorBottom)
-        modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu',
-                                                        AnchorBottom)
-        modules.game_interface.getShowTopMenuButton():hide()
+        show()
     end
+end
+
+function hide(earlyHide)
+    local menu = getTopMenu()
+    if not menu then return end
+    menu:hide()
+    modules.client_background.getBackground():addAnchor(AnchorTop, 'parent', AnchorTop)
+    if(not earlyHide) then
+        modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'parent', AnchorTop)
+    end
+end
+
+function show()
+    local menu = getTopMenu()
+    if not menu then return end
+    menu:show()
+    modules.client_background.getBackground():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
+    modules.game_interface.getRootPanel():addAnchor(AnchorTop, 'topMenu', AnchorBottom)
 end

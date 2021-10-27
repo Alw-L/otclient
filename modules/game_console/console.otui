@@ -2,11 +2,11 @@ ConsoleLabel < UITextEdit
   font: verdana-11px-antialised
   height: 14
   color: yellow
-  margin-left: 2
+  margin-left: 1
   text-wrap: true
   text-auto-resize: true
   selection-color: #111416
-  selection-background-color: #999999
+  selection-background-color: #808080
   change-cursor-image: false
   cursor-visible: false
   editable: false
@@ -24,87 +24,151 @@ ConsolePhantomLabel < UILabel
   selection-background-color: #999999
 
 ConsoleTabBar < MoveableTabBar
-  height: 28
+  height: 16
+  margin-top: -2
 
 ConsoleTabBarPanel < MoveableTabBarPanel
   id: consoleTab
+  margin-top: 0
+  image-source: /images/ui/panel_bottom_chat
+  image-border: 3
+  padding: 1
+  padding-top: 3
+  padding-left: 3
 
   ScrollablePanel
     id: consoleBuffer
-    anchors.fill: parent
-    margin-right: 12
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
     vertical-scrollbar: consoleScrollBar
     layout:
       type: verticalBox
       align-bottom: true
-    border-width: 1
-    border-color: #202327
-    background: #00000066
     inverted-scroll: true
-    padding: 1
+    padding-bottom: 1
 
   VerticalScrollBar
     id: consoleScrollBar
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     anchors.right: parent.right
+    margin-right: 3
+    margin-bottom: 3
     step: 14
     pixels-scroll: true
 
 ConsoleTabBarButton < MoveableTabBarButton
-  height: 28
-  padding: 15
+  height: 18
+  padding: 20
+  font: verdana-11px-rounded
+  text-offset: 0 -2
+  $hover !checked:
+    image-clip: 0 18 17 18
+    color: #7f7f7f
+  $checked:
+    image-clip: 0 36 96 22
+    margin-top: 3
+    height: 22
+    color: white
+  $!checked:
+    text-offset: 0 2
+    image-clip: 0 0 96 15
+    height: 15
+    margin-top: 3
+    color: #7f7f7f
+  $on !checked:
+    color: #7f7f7f
 
 Panel
   id: consolePanel
+  padding-top: 5
+  image-source: /images/ui/panel_bottom
+  image-border: 7
+  image-border-right: 9
+  image-border-top: 28
+  
+  $first:
   anchors.fill: parent
+    
+  $!first:
+    anchors.top: prev.bottom
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
 
-  CheckBox
+  UIButton
     id: toggleChat
     !tooltip: tr('Disable chat mode, allow to walk using WASD')
+    //!tooltip: tr('Disable chat mode, allow to walk using WASD') .. ' (Ctrl+Enter)'
     anchors.left: parent.left
     anchors.top: parent.top
-    margin-left: 13
-    margin-top: 8
-    @onCheckChange: updateChatMode()
+    margin-left: 3
+    @onClick: toggleChat()
+    margin-top: 2
+    size: 12 12
+    text-align: left
+    text-offset: 18 -1
+    color: #dfdfdf
+    image-color: #dfdfdfff
+    image-rect: 0 0 12 12
+    image-source: /images/ui/checkbox
 
-  TabButton
+    $hover !disabled:
+      color: #ffffff
+
+    $!on:
+      image-clip: 0 0 12 12
+
+    $on:
+      image-clip: 0 12 12 12
+
+    $disabled:
+      image-color: #dfdfdf88
+      color: #dfdfdf88
+      opacity: 0.8
+
+  Button
     id: prevChannelButton
     icon: /images/game/console/leftarrow
     anchors.left: toggleChat.right
     anchors.top: parent.top
     margin-left: 3
-    margin-top: 6
+    size: 16 16
 
   ConsoleTabBar
     id: consoleTabBar
     anchors.left: prev.right
     anchors.top: parent.top
     anchors.right: next.left
-    margin-left: 5
-    margin-top: 3
-    margin-right: 5
-    tab-spacing: 2
+    margin-left: 1
+    tab-spacing: 0
     movable: true
 
-  TabButton
+  Button
     id: nextChannelButton
     icon: /images/game/console/rightarrow
     anchors.right: next.left
     anchors.top: parent.top
-    margin-right: 5
-    margin-top: 6
+    size: 16 16
+    margin-right: 1
 
   TabButton
     id: closeChannelButton
+    size: 16 16
     !tooltip: tr('Close this channel') .. ' (Ctrl+E)'
     icon: /images/game/console/closechannel
     anchors.right: next.left
     anchors.top: parent.top
     enabled: false
-    margin-right: 5
-    margin-top: 6
+    margin-right: 1
+    size: 16 16
+    icon-clip: 0 0 16 16
     @onClick: removeCurrentTab()
+
+    $pressed:
+      icon-clip: 0 16 16 16
 
   TabButton
     id: clearChannelButton
@@ -112,8 +176,13 @@ Panel
     icon: /images/game/console/clearchannel
     anchors.right: next.left
     anchors.top: parent.top
-    margin-right: 5
-    margin-top: 6
+    margin-right: 1
+    size: 16 16
+    icon-clip: 0 0 16 16
+
+    $pressed:
+      icon-clip: 0 16 16 16
+
     @onClick: |
       local consoleTabBar = self:getParent():getChildById('consoleTabBar')
       clearChannel(consoleTabBar)
@@ -124,8 +193,13 @@ Panel
     icon: /images/game/console/channels
     anchors.right: next.left
     anchors.top: parent.top
-    margin-right: 5
-    margin-top: 6
+    margin-right: 1
+    size: 16 16
+    icon-clip: 0 0 16 16
+
+    $pressed:
+      icon-clip: 0 16 16 16
+
     @onClick: g_game.requestChannels()
 
   TabButton
@@ -134,32 +208,37 @@ Panel
     icon: /images/game/console/ignore
     anchors.right: parent.right
     anchors.top: parent.top
-    margin-right: 5
-    margin-top: 6
+    size: 16 16
+    icon-clip: 0 0 16 16
+
+    $pressed:
+      icon-clip: 0 16 16 16
+
     @onClick: onClickIgnoreButton()
 
   Panel
     id: consoleContentPanel
-    anchors.top: prev.bottom
+    anchors.top: consoleTabBar.bottom
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: consoleTextEdit.top
-    margin-left: 6
-    margin-right: 6
-    margin-bottom: 4
-    margin-top: 4
+    margin-left: 3
+    margin-right: 3
+    margin-bottom: 2
+    margin-top: 6
     padding: 1
     focusable: false
+    phantom: true
 
   TabButton
     id: sayModeButton
     icon: /images/game/console/say
     !tooltip: tr('Adjust volume')
     &sayMode: 2
-    size: 20 20
+    size: 18 18
     anchors.left: parent.left
     anchors.bottom: parent.bottom
-    margin-left: 6
+    margin-left: 7
     margin-bottom: 6
     @onClick: sayModeChange()
 
@@ -168,8 +247,14 @@ Panel
     anchors.left: sayModeButton.right
     anchors.right: parent.right
     anchors.bottom: parent.bottom
-    margin-right: 6
-    margin-left: 6
+    height: 16
+    margin-right: 4
+    margin-left: 3
     margin-bottom: 6
     shift-navigation: true
     max-length: 255
+    background-color: #00000000
+    padding: 0 2
+
+    $disabled:
+      background-color: #ff000063

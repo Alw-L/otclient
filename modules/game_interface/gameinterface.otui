@@ -1,8 +1,13 @@
 GameSidePanel < UIMiniWindowContainer
   image-source: /images/ui/panel_side
   image-border: 4
-  padding: 4
-  width: 198
+  image-border-top: 2
+  image-border-left: 2
+  padding: 2
+  padding-right: 4
+  width: 178
+  focusable: false
+  on: true
   layout:
     type: verticalBox
     //spacing: 1
@@ -14,8 +19,6 @@ SelectColumnButton < CheckBox
     opacity: 1
 
 GameBottomPanel < Panel
-  image-source: /images/ui/panel_bottom
-  image-border: 4
 
 GameMapPanel < UIGameMap
   padding: 4
@@ -27,6 +30,7 @@ GameMapPanel < UIGameMap
 
 UIWidget
   id: gameRootPanel
+  margin-top: 1
   anchors.fill: parent
   anchors.top: topMenu.bottom
 
@@ -38,13 +42,19 @@ UIWidget
     anchors.bottom: gameBottomPanel.top
     focusable: false
 
-    Button
-      id: showTopMenuButton
+    TopMenuFrameCounterLabel
+      id: fpsLabel
+      text-auto-resize: true
       anchors.top: parent.top
       anchors.left: parent.left
-      !text: tr('Show Top Menu')
-      height: 32
-      visible: false
+      margin-left: 2
+
+    TopMenuPingLabel
+      color: white
+      id: pingLabel
+      text-auto-resize: true
+      anchors.top: fpsLabel.bottom
+      anchors.left: fpsLabel.left
 
   GameBottomPanel
     id: gameBottomPanel
@@ -52,6 +62,11 @@ UIWidget
     anchors.right: gameRightExtraPanel.left
     anchors.top: bottomSplitter.top
     anchors.bottom: parent.bottom
+    image-source: /images/ui/panel_flat
+    image-border: 4
+    padding-left: 1
+    padding-right: 1
+    margin-top: 3
 
   GameSidePanel
     id: gameLeftPanel
@@ -107,9 +122,9 @@ UIWidget
     anchors.right: gameRightExtraPanel.left
     anchors.bottom: parent.bottom
     relative-margin: bottom
-    margin-bottom: 172
-    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 300), 100) end
-    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 300, 100), self:getMarginBottom())) end
+    margin-bottom: 180
+    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 300), 110) end
+    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 300, 110), self:getMarginBottom())) end
 
   UIWidget
     id: mouseGrabber

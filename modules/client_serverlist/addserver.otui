@@ -59,7 +59,7 @@ MainWindow
   Button
     id: buttonAdd
     !text: tr('Add')
-    width: 64
+    width: 45
     anchors.right: parent.horizontalCenter
     anchors.bottom: parent.bottom
     margin-right: 2
@@ -68,7 +68,7 @@ MainWindow
   Button
     id: buttonCancel
     !text: tr('Cancel')
-    width: 64
+    width: 45
     anchors.left: parent.horizontalCenter
     anchors.bottom: parent.bottom
     margin-left: 2

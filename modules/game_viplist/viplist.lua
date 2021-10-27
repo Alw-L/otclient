@@ -26,7 +26,7 @@ function init()
     refresh()
     vipWindow:setup()
     if g_game.isOnline() then
-        vipWindow:setupOnStart()
+        online()
     end
 end
 
@@ -91,15 +91,39 @@ end
 
 function toggle()
     if vipButton:isOn() then
-        vipWindow:close()
         vipButton:setOn(false)
     else
-        vipWindow:open()
         vipButton:setOn(true)
+    end
+
+    if(not g_game.isOnline()) then
+        return
+    end
+
+    if vipWindow:isVisible('closed') then
+        closeWindow()
+    else
+        openWindow()
     end
 end
 
-function onMiniWindowClose() vipButton:setOn(false) end
+function closeWindow()
+    modules.game_playerbars.vipButton:setChecked(false)
+    vipWindow:close()
+end
+
+function openWindow()
+    modules.game_playerbars.vipButton:setChecked(1)
+    vipWindow:open()
+end
+
+function onMiniWindowOpen()
+    modules.game_playerbars.vipButton:setChecked(true)
+end
+
+function onMiniWindowClose()
+    modules.game_playerbars.vipButton:setChecked(false)
+end
 
 function createAddWindow()
     if not addVipWindow then addVipWindow = g_ui.displayUI('addvip') end
@@ -250,7 +274,17 @@ function sortBy(state)
 end
 
 function onAddVip(id, name, state, description, iconId, notify)
+    if not name or name:len() == 0 then
+        return
+    end
     local vipList = vipWindow:getChildById('contentsPanel')
+    local childrenCount = vipList:getChildCount()
+    for i=1,childrenCount do
+      local child = vipList:getChildByIndex(i)
+      if child:getText() == name then
+        return -- don't add duplicated vips
+      end
+    end
 
     local label = g_ui.createWidget('VipListLabel')
     label.onMousePress = onVipListLabelMousePress
@@ -280,11 +314,11 @@ function onAddVip(id, name, state, description, iconId, notify)
     end
 
     if state == VipState.Online then
-        label:setColor('#00ff00')
+        label:setColor('#5FF75F')
     elseif state == VipState.Pending then
         label:setColor('#ffca38')
     else
-        label:setColor('#ff0000')
+        label:setColor('#F75F5F')
     end
 
     label.vipState = state
@@ -342,6 +376,9 @@ end
 function onVipStateChange(id, state)
     local vipList = vipWindow:getChildById('contentsPanel')
     local label = vipList:getChildById('vip' .. id)
+    if not label then
+      return
+    end
     local name = label:getText()
     local description = label:getTooltip()
     local iconId = label.iconId

@@ -5,14 +5,22 @@ TradeWindow < MiniWindow
   UIItem
     id: tradeItem
     virtual: true
-    size: 16 16
+    size: 12 12
     anchors.top: parent.top
     anchors.left: parent.left
-    margin-top: 4
+    margin-top: 2
     margin-left: 4
+
+  ResizeBorder
+    minimum: 107
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    enabled: true
 
   MiniWindowContents
     padding: 4
+    padding-top: 0
 
     ScrollableFlatPanel
       id: ownTradeContainer
@@ -20,7 +28,7 @@ TradeWindow < MiniWindow
       anchors.bottom: acceptButton.top
       anchors.left: parent.left
       anchors.right: ownTradeScrollBar.left
-      margin-top: 16
+      margin-top: 12
       margin-bottom: 4
       padding: 2
       layout:
@@ -35,9 +43,9 @@ TradeWindow < MiniWindow
       anchors.top: parent.top
       anchors.bottom: acceptButton.top
       anchors.right: parent.horizontalCenter
-      margin-top: 16
+      margin-top: 12
       margin-bottom: 4
-      margin-right: 2
+      margin-right: 6
       step: 14
       pixels-scroll: true
       $!on:
@@ -49,9 +57,9 @@ TradeWindow < MiniWindow
       anchors.bottom: acceptButton.top
       anchors.left: parent.horizontalCenter
       anchors.right: counterTradeScrollBar.left
-      margin-top: 16
+      margin-top: 12
       margin-bottom: 4
-      margin-left: 2
+      margin-left: 6
       padding: 2
       layout:
         type: grid
@@ -65,7 +73,7 @@ TradeWindow < MiniWindow
       anchors.top: parent.top
       anchors.bottom: acceptButton.top
       anchors.right: parent.right
-      margin-top: 16
+      margin-top: 12
       margin-bottom: 4
       margin-right: 1
       step: 14
@@ -75,6 +83,7 @@ TradeWindow < MiniWindow
 
     Label
       id: ownTradeLabel
+      font: verdana-8px-antialised
       anchors.bottom: ownTradeContainer.top
       anchors.left: ownTradeContainer.left
       anchors.right: parent.horizontalCenter
@@ -82,8 +91,9 @@ TradeWindow < MiniWindow
 
     Label
       id: counterTradeLabel
+      font: verdana-8px-antialised
       anchors.bottom: counterTradeContainer.top
-      anchors.left: parent.horizontalCenter
+      anchors.left: counterTradeContainer.left
       anchors.right: counterTradeScrollBar.right
       margin-bottom: 2
 

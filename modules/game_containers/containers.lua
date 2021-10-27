@@ -53,11 +53,8 @@ function refreshContainerItems(container)
 end
 
 function toggleContainerPages(containerWindow, pages)
-    containerWindow:getChildById('miniwindowScrollBar'):setMarginTop(pages and
-                                                                         42 or
-                                                                         22)
-    containerWindow:getChildById('contentsPanel'):setMarginTop(pages and 42 or
-                                                                   22)
+    containerWindow:getChildById('miniwindowScrollBar'):setMarginTop(pages and 42 or 16)
+    containerWindow:getChildById('contentsPanel'):setMarginTop(pages and 42 or 19)
     containerWindow:getChildById('pagePanel'):setVisible(pages)
 end
 
@@ -119,6 +116,15 @@ function onContainerOpen(container, previousContainer)
         g_game.close(container)
         containerWindow:hide()
     end
+    containerWindow.onDrop = function(container, widget, mousePos)
+      if containerPanel:getChildByPos(mousePos) then
+        return false
+      end
+      local child = containerPanel:getChildByIndex(-1)
+      if child then
+        child:onDrop(widget, mousePos, true)        
+      end
+    end
 
     -- this disables scrollbar auto hiding
     local scrollbar = containerWindow:getChildById('miniwindowScrollBar')
@@ -157,8 +163,10 @@ function onContainerOpen(container, previousContainer)
     local layout = containerPanel:getLayout()
     local cellSize = layout:getCellSize()
     containerWindow:setContentMinimumHeight(cellSize.height)
-    containerWindow:setContentMaximumHeight(cellSize.height *
+    containerWindow:setContentMaximumHeight((cellSize.height + 3) *
                                                 layout:getNumLines())
+    
+    containerWindow:moveChildToIndex(containerWindow:getChildById('miniBorder'), containerWindow:getChildIndex(containerPanel))
 
     if not previousContainer then
         local panel = modules.game_interface.findContentPanelAvailable(containerWindow, cellSize.height)
@@ -167,10 +175,8 @@ function onContainerOpen(container, previousContainer)
         if modules.client_options.getOption('openMaximized') then
             containerWindow:setContentHeight(cellSize.height*layout:getNumLines())
         else
-            local filledLines = math.max(math.ceil(
-                                             container:getItemsCount() /
-                                                 layout:getNumColumns()), 1)
-            containerWindow:setContentHeight(filledLines * cellSize.height)
+            local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)
+            containerWindow:setContentHeight((cellSize.height+3)*filledLines)
         end
     end
 

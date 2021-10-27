@@ -12,10 +12,11 @@ Module
   load-later:
     - client_styles
     - client_locales
-    - client_topmenu
     - client_background
-    - client_options
+    - client_topmenu
     - client_entergame
+    - client_options
+    - client_options_revamp
     - client_terminal
     - client_modulemanager
     - client_serverlist

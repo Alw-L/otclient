@@ -3,9 +3,25 @@ Panel
     id: enableAudio
     !text: tr('Enable audio')
 
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: enableMusicSound
     !text: tr('Enable music sound')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   Label
     id: musicSoundVolumeLabel
@@ -13,7 +29,7 @@ Panel
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 6
+    margin-top: 12
     @onSetup: |
       local value = modules.client_options.getOption('musicSoundVolume')
       self:setText(tr('Music volume: %d', value))

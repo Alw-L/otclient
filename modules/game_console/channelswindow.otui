@@ -1,5 +1,6 @@
 ChannelListLabel < Label
-  font: verdana-11px-monochrome
+  font: verdana-11px-antialised
+  color: #a9a9a9
   background-color: alpha
   text-offset: 2 0
   focusable: true
@@ -10,48 +11,76 @@ ChannelListLabel < Label
 
 MainWindow
   id: channelsWindow
-  !text: tr('Channels')
-  size: 250 238
+  !text: tr('New Channel')
+  size: 240 255
   @onEscape: self:destroy()
+  padding-right: 14
+  padding-bottom: 10
+
+  GameLabel
+    id: selectChannelText
+    !text: tr('Select a channel') .. ':'
+    color: #bbbbbb
+    anchors.right: parent.right
+    anchors.left: parent.left
+    anchors.top: parent.top
+    text-align: left
+    margin-top: 6
+    margin-left: 2
+    margin-bottom: 3
 
   TextList
     id: channelList
     vertical-scrollbar: channelsScrollBar
-    anchors.fill: parent
+    anchors.right: parent.right
+    anchors.left: prev.left
+    anchors.top: prev.bottom
     anchors.bottom: next.top
-    margin-bottom: 10
+    margin-top: 2
+    margin-bottom: 12
+    margin-right: 2
     padding: 1
     focusable: false
 
   Label
     id: openPrivateChannelWithLabel
     !text: tr('Open a private message channel') .. ':'
-    anchors.left: parent.left
+    color: #bbbbbb
     anchors.right: parent.right
+    anchors.left: prev.left
     anchors.bottom: next.top
-    text-align: center
-    margin-bottom: 2
+    text-align: left
+    margin-bottom: 3
 
   TextEdit
     id: openPrivateChannelWith
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: next.top
-    margin-bottom: 10
+    margin-bottom: 20
+    margin-right: 4
+    height: 16
+    padding: 0 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 8
 
   Button
     id: buttonOpen
     !text: tr('Open')
-    width: 64
+    width: 45
     anchors.right: next.left
     anchors.bottom: parent.bottom
-    margin-right: 10
+    margin-right: 8
     @onClick: self:getParent():onEnter()
 
   Button
     id: buttonCancel
     !text: tr('Cancel')
-    width: 64
+    width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     @onClick: self:getParent():destroy()

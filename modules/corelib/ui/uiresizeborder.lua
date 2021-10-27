@@ -33,11 +33,11 @@ function UIResizeBorder:onHoverChange(hovered)
         end
         g_mouse.pushCursor(self.cursortype)
         self.hovering = true
-        if not self:isPressed() then g_effects.fadeIn(self) end
+        if not self:isPressed() then --[[g_effects.fadeIn(self)--]] end
     else
         if not self:isPressed() and self.hovering then
             g_mouse.popCursor(self.cursortype)
-            g_effects.fadeOut(self)
+            --g_effects.fadeOut(self)
             self.hovering = false
         end
     end
@@ -69,7 +69,7 @@ end
 function UIResizeBorder:onMouseRelease(mousePos, mouseButton)
     if not self:isHovered() then
         g_mouse.popCursor(self.cursortype)
-        g_effects.fadeOut(self)
+        --g_effects.fadeOut(self)
         self.hovering = false
     end
 end

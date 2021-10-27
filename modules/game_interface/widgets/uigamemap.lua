@@ -23,6 +23,67 @@ function UIGameMap:onDragEnter(mousePos)
 end
 
 function UIGameMap:onDragLeave(droppedWidget, mousePos)
+    local getLeftTopSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x-2, y = mousePos.y+2})
+    local getLeftDownSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x-2, y = mousePos.y-2})
+    local getRightDownSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x+2, y = mousePos.y-2})
+    local getRightTopSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x+2, y = mousePos.y+2})
+    local WindowContents = rootWidget:recursiveGetChildByPos(mousePos)
+
+    if WindowContents:getStyleName() == "ContainerWindow" then
+        if getLeftTopSlot:getStyleName() == "Item" then
+        local item = self.currentDragThing
+            if item:isItem() then
+                local toPos = getLeftTopSlot.position
+                local itemPos = item:getPosition()
+                if itemPos.x ~= toPos.x and itemPos.y ~= toPos.y and itemPos.z ~= toPos.z then
+                    if item:getCount() > 1 then
+                        modules.game_interface.moveStackableItem(item, toPos)
+                    else
+                        g_game.move(item, toPos, 1)
+                    end
+                end
+            end
+        elseif getLeftDownSlot:getStyleName() == "Item" then
+            local item = self.currentDragThing
+            if item:isItem() then
+                local toPos = getLeftDownSlot.position
+                local itemPos = item:getPosition()
+                if itemPos.x ~= toPos.x and itemPos.y ~= toPos.y and itemPos.z ~= toPos.z then
+                    if item:getCount() > 1 then
+                        modules.game_interface.moveStackableItem(item, toPos)
+                    else
+                        g_game.move(item, toPos, 1)
+                    end
+                end
+            end
+        elseif getRightDownSlot:getStyleName() == "Item" then
+            local item = self.currentDragThing
+            if item:isItem() then
+                local toPos = getRightDownSlot.position
+                local itemPos = item:getPosition()
+                if itemPos.x ~= toPos.x and itemPos.y ~= toPos.y and itemPos.z ~= toPos.z then
+                    if item:getCount() > 1 then
+                        modules.game_interface.moveStackableItem(item, toPos)
+                    else
+                        g_game.move(item, toPos, 1)
+                    end
+                end
+            end
+        elseif getRightTopSlot:getStyleName() == "Item" then
+            local item = self.currentDragThing
+            if item:isItem() then
+                local toPos = getRightTopSlot.position
+                local itemPos = item:getPosition()
+                if itemPos.x ~= toPos.x and itemPos.y ~= toPos.y and itemPos.z ~= toPos.z then
+                    if item:getCount() > 1 then
+                        modules.game_interface.moveStackableItem(item, toPos)
+                    else
+                        g_game.move(item, toPos, 1)
+                    end
+                end
+            end
+        end
+    end
     self.currentDragThing = nil
     self.hoveredWho = nil
     g_mouse.popCursor('target')

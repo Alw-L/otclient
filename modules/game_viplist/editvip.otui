@@ -1,14 +1,14 @@
 IconButton < CheckBox
-  size: 20 20
+  size: 15 15
   image-source: /images/game/viplist/vipcheckbox
-  image-size: 20 20
+  image-size: 18 18
   image-border: 3
-  margin: 2
+  margin: 3
   icon-source: /images/game/viplist/icons
   icon-size: 12 12
   icon-rect: 0 0 12 12
   icon-clip: 0 0 12 12
-  icon-offset: 4 6
+  icon-offset: 3 3
 
   $first:
     margin-left: 0
@@ -26,16 +26,22 @@ IconButton < CheckBox
     image-clip: 52 0 26 26
 
 MainWindow
-  size: 272 170
-  !text: tr('Edit VIP list entry')
+  size: 280 210
+  !text: tr('Change player in VIP list')
 
   Label
     id: nameLabel
     text: Name
     anchors.top: parent.top
     anchors.left: parent.left
-    color: green
+    color: #BFBFBF
     width: 180
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 4
 
   Label
     !text: tr('Description') .. ':'
@@ -43,7 +49,7 @@ MainWindow
     anchors.left: parent.left
     text-offset: 0 3
     height: 20
-    margin-top: 5
+    margin-top: 10
 
   TextEdit
     id: descriptionText
@@ -52,26 +58,13 @@ MainWindow
     anchors.right: parent.right
     margin: 0 5
 
-  Label
-    !text: tr('Notify-Login') .. ':'
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    text-offset: 0 3
-    height: 20
-    margin-top: 5
-
-  CheckBox
-    id: checkBoxNotify
-    anchors.top: prev.top
-    anchors.left: prev.right
-    margin: 2 6
-
   UIWidget
     layout: horizontalBox
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
     height: 24
+    margin-top: 10
 
     IconButton
       id: icon0
@@ -116,6 +109,28 @@ MainWindow
       id: icon10
       icon-clip: 120 0 12 12
 
+  Label
+    !text: tr('Notify at login')
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    text-offset: 0 3
+    height: 20
+    margin-top: 15
+    margin-left: 20
+
+  CheckBox
+    id: checkBoxNotify
+    anchors.top: prev.top
+    anchors.left: parent.left
+    margin: 4 6
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: parent.right
+    margin-top: -5
+    margin-left: -7
+
   HorizontalSeparator
     anchors.left: parent.left
     anchors.right: parent.right
@@ -125,7 +140,7 @@ MainWindow
   Button
     id: buttonOK
     !text: tr('Ok')
-    width: 64
+    width: 45
     anchors.right: next.left
     anchors.bottom: parent.bottom
     margin-right: 10
@@ -133,6 +148,6 @@ MainWindow
   Button
     id: buttonCancel
     !text: tr('Cancel')
-    width: 64
+    width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom

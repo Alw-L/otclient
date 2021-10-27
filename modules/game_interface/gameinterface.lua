@@ -9,8 +9,6 @@ gameSelectedPanel = nil
 panelsList = {}
 panelsRadioGroup = nil
 gameBottomPanel = nil
-showTopMenuButton = nil
-logoutButton = nil
 mouseGrabberWidget = nil
 countWindow = nil
 logoutWindow = nil
@@ -23,6 +21,7 @@ smartWalkDir = nil
 firstStep = false
 hookedMenuOptions = {}
 lastDirTime = g_clock.millis()
+local bindTurnKeyCheck = nil
 
 function init()
     g_ui.importStyle('styles/countwindow')
@@ -30,8 +29,10 @@ function init()
     connect(g_game, {
         onGameStart = onGameStart,
         onGameEnd = onGameEnd,
-        onLoginAdvice = onLoginAdvice
+        onLoginAdvice = onLoginAdvice,
+        onPingBack = updatePing
     }, true)
+    connect(g_app, {onFps = updateFps})
 
     -- Call load AFTER game window has been created and
     -- resized to a stable state, otherwise the saved
@@ -54,6 +55,9 @@ function init()
     gameRightExtraPanel = gameRootPanel:getChildById('gameRightExtraPanel')
     gameLeftPanel = gameRootPanel:getChildById('gameLeftPanel')
     gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
+    
+    pingLabel = gameMapPanel:getChildById('pingLabel')
+    fpsLabel = gameMapPanel:getChildById('fpsLabel')
 
     panelsList = {
         {
@@ -83,8 +87,6 @@ function init()
                                                         '/images/topbuttons/logout',
                                                         tryLogout, true)
 
-    showTopMenuButton = gameMapPanel:getChildById('showTopMenuButton')
-    showTopMenuButton.onClick = function() modules.client_topmenu.toggle() end
 
     setupViewMode(0)
 
@@ -102,6 +104,37 @@ function onSelectPanel(self, checked)
             end
         end
     end
+end
+
+function bindWASD()
+  bindWalkKey("W", North)
+  bindWalkKey("A", West)
+  bindWalkKey("S", South)
+  bindWalkKey("D", East)
+  bindTurnKey('Ctrl+W', North)
+  bindTurnKey('Ctrl+A', West)
+  bindTurnKey('Ctrl+S', South)
+  bindTurnKey('Ctrl+D', East)
+  bindWalkKey("E", NorthEast)
+  bindWalkKey("Q", NorthWest)
+  bindWalkKey("C", SouthEast)
+  bindWalkKey("Z", SouthWest)
+end
+
+function unbindWASD()
+ -- gameRootPanel:setAutoRepeatDelay(200)
+  unbindWalkKey("W")
+  unbindWalkKey("A")
+  unbindWalkKey("S")
+  unbindWalkKey("D")
+  unbindTurnKey('Ctrl+W')
+  unbindTurnKey('Ctrl+A')
+  unbindTurnKey('Ctrl+S')
+  unbindTurnKey('Ctrl+D')
+  unbindWalkKey("E")
+  unbindWalkKey("Q")
+  unbindWalkKey("C")
+  unbindWalkKey("Z")
 end
 
 function bindKeys()
@@ -144,7 +177,6 @@ function bindKeys()
         g_map.cleanTexts()
         modules.game_textmessage.clearMessages()
     end, gameRootPanel)
-    g_keyboard.bindKeyDown('Ctrl+.', nextViewMode, gameRootPanel)
 end
 
 function bindWalkKey(key, dir)
@@ -163,6 +195,11 @@ end
 
 function bindTurnKey(key, dir)
     local function callback(widget, code, repeatTicks)
+        if(bindTurnKeyCheck ~= nil and bindTurnKeyCheck ~= dir) then
+            return
+        end
+
+        bindTurnKeyCheck = dir
         if g_clock.millis() - lastDirTime >=
             modules.client_options.getOption('turnDelay') then
             g_game.turn(dir)
@@ -171,11 +208,17 @@ function bindTurnKey(key, dir)
             lastDirTime = g_clock.millis()
         end
     end
+    local function callback_up(widget, code, repeatTicks)
+        bindTurnKeyCheck = nil
+    end
 
+    g_keyboard.bindKeyUp(key, callback_up, gameRootPanel)
     g_keyboard.bindKeyPress(key, callback, gameRootPanel)
 end
 
 function unbindTurnKey(key)
+  --g_keyboard.unbindKeyDown(key, gameRootPanel)
+  g_keyboard.unbindKeyUp(key, gameRootPanel)
   g_keyboard.unbindKeyPress(key, gameRootPanel)
 end
 
@@ -189,8 +232,10 @@ function terminate()
     disconnect(g_game, {
         onGameStart = onGameStart,
         onGameEnd = onGameEnd,
-        onLoginAdvice = onLoginAdvice
+        onLoginAdvice = onLoginAdvice,
+        onPingBack = updatePing
     })
+    disconnect(g_app, {onFps = updateFps})
 
     disconnect(gameLeftPanel, {onVisibilityChange = onExtraPanelVisibilityChange})
     disconnect(gameRightExtraPanel, { onVisibilityChange = onExtraPanelVisibilityChange })
@@ -227,7 +272,7 @@ function show()
     gameMapPanel:followCreature(g_game.getLocalPlayer())
     setupViewMode(0)
     updateStretchShrink()
-    logoutButton:setTooltip(tr('Logout'))
+    pingLabel:hide()
 
     addEvent(function()
         if not limitedZoom or g_game.isGM() then
@@ -236,6 +281,15 @@ function show()
         else
             gameMapPanel:setMaxZoomOut(11)
             gameMapPanel:setLimitVisibleRange(true)
+        end
+    end)
+    addEvent(function()
+        if modules.client_options.getOption('showPing') and
+            (g_game.getFeature(GameClientPing) or
+                g_game.getFeature(GameExtendedClientPing)) then
+            pingLabel:show()
+        else
+            pingLabel:hide()
         end
     end)
 end
@@ -302,13 +356,13 @@ function tryExit()
         exitWindow = nil
     end
 
-    exitWindow = displayGeneralBox(tr('Exit'), tr(
+    exitWindow = displayGeneralBox(tr('Warning'), tr(
                                        "If you shut down the program, your character might stay in the game.\nClick on 'Logout' to ensure that you character leaves the game properly.\nClick on 'Exit' if you want to exit the program without logging out your character."),
                                    {
-        {text = tr('Force Exit'), callback = exitFunc},
+        {text = tr('Exit'), callback = exitFunc},
         {text = tr('Logout'), callback = logoutFunc},
         {text = tr('Cancel'), callback = cancelFunc},
-        anchor = AnchorHorizontalCenter
+        anchor = AnchorRight
     }, logoutFunc, cancelFunc)
 
     return true
@@ -336,7 +390,7 @@ function tryLogout(prompt)
             end
         end
     else
-        msg = 'Are you sure you want to logout?'
+        msg = 'Are you sure you want to leave Cypbia?'
 
         yesCallback = function()
             g_game.safeLogout()
@@ -356,7 +410,7 @@ function tryLogout(prompt)
         logoutWindow = displayGeneralBox(tr('Logout'), tr(msg), {
             {text = tr('Yes'), callback = yesCallback},
             {text = tr('No'), callback = noCallback},
-            anchor = AnchorHorizontalCenter
+            anchor = AnchorRight
         }, yesCallback, noCallback)
     else
         yesCallback()
@@ -379,6 +433,12 @@ function onWalkKeyDown(dir)
 end
 
 function changeWalkDir(dir, pop)
+    local player = g_game.getLocalPlayer()
+    if player then
+      if player:isDead() then
+        return
+      end
+    end
     while table.removevalue(smartWalkDirs, dir) do end
     if pop then
         if #smartWalkDirs == 0 then
@@ -414,6 +474,12 @@ function changeWalkDir(dir, pop)
 end
 
 function smartWalk(dir)
+    local player = g_game.getLocalPlayer()
+    if player then
+      if player:isDead() then
+        return
+      end
+    end
     if g_keyboard.getModifiers() ~= KeyboardNoModifier then return false end
 
     local dire = smartWalkDir or dir
@@ -713,14 +779,18 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
 
                 if modules.game_console.isIgnored(creatureName) then
                     menu:addOption(tr('Unignore') .. ' ' .. creatureName,
-                                   function()
-                        modules.game_console.removeIgnoredPlayer(creatureName)
-                    end)
+                        function()
+                            modules.game_console.removeIgnoredPlayer(creatureName)
+                            modules.game_textmessage.displayMessage(MessageModes.Status, tr("You are no longer ignoring player ".. creatureName .."."))
+                        end
+                    )
                 else
                     menu:addOption(tr('Ignore') .. ' ' .. creatureName,
-                                   function()
-                        modules.game_console.addIgnoredPlayer(creatureName)
-                    end)
+                        function()
+                            modules.game_console.addIgnoredPlayer(creatureName)
+                            modules.game_textmessage.displayMessage(MessageModes.Status, tr("You are no longer ignoring player ".. creatureName .."."))
+                        end
+                    )
                 end
 
                 local localPlayerShield = localPlayer:getShield()
@@ -924,7 +994,7 @@ function moveStackableItem(item, toPos)
     if g_keyboard.isShiftPressed() then
         g_game.move(item, toPos, 1)
         return
-    elseif g_keyboard.isCtrlPressed() ~= modules.client_options.getOption('moveStack') then
+    elseif g_keyboard.isCtrlPressed() ~= modules.client_options.getOption('moveStack') or g_keyboard.isKeyPressed("Enter") then
         g_game.move(item, toPos, item:getCount())
         return
     end
@@ -983,6 +1053,18 @@ function moveStackableItem(item, toPos)
         check()
         spinbox:setValue(spinbox:getValue() - 10)
     end, spinbox)
+    
+    scrollbar.onClick =
+      function()
+      local mousePos = g_window.getMousePosition()
+      local slider = scrollbar:getChildById('sliderButton')
+      check()
+      if slider:getPosition().x > mousePos.x then
+       spinbox:setValue(spinbox:getValue()-10)
+      elseif slider:getPosition().x < mousePos.x then
+       spinbox:setValue(spinbox:getValue()+10)
+      end
+    end
 
     scrollbar.onValueChange = function(self, value)
         itembox:setItemCount(value)
@@ -1027,8 +1109,6 @@ function getRightExtraPanel() return gameRightExtraPanel end
 function getSelectedPanel() return gameSelectedPanel end
 
 function getBottomPanel() return gameBottomPanel end
-
-function getShowTopMenuButton() return showTopMenuButton end
 
 function findContentPanelAvailable(child, minContentHeight)
     if gameSelectedPanel:isVisible() and gameSelectedPanel:fits(child, minContentHeight, 0) >= 0 then
@@ -1146,3 +1226,32 @@ function setupViewMode(mode)
 end
 
 function limitZoom() limitedZoom = true end
+
+function updateFps(fps)
+    text = 'FPS: ' .. fps
+    fpsLabel:setText(text)
+end
+
+function updatePing(ping)
+    local text = 'Ping: '
+    local color
+    if ping < 0 then
+        text = text .. "??"
+        color = 'yellow'
+    else
+        text = text .. ping .. ' ms'
+        if ping >= 500 then
+            color = 'red'
+        elseif ping >= 250 then
+            color = 'yellow'
+        else
+            color = 'green'
+        end
+    end
+    pingLabel:setColor(color)
+    pingLabel:setText(text)
+end
+
+function setPingVisible(enable) pingLabel:setVisible(enable) end
+
+function setFpsVisible(enable) fpsLabel:setVisible(enable) end

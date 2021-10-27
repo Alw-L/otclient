@@ -1,63 +1,155 @@
 Panel
   OptionCheckBox
-    id: showPing
-    !text: tr('Show connection ping')
-    !tooltip: tr('Display connection speed to the server (milliseconds)')
+    id: classicControl
+    !text: tr('Classic control')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
-    id: showLeftPanel
-    !text: tr('Show left panel')
+    id: autoChaseOverride
+    !text: tr('Allow auto chase override')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+    
+  OptionCheckBox
+    id: moveStack
+    !text: tr('Move stacks directly')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
-    id: showRightExtraPanel
-    !text: tr('Show an extra right panel')
+    id: smartWalk
+    !text: tr('Enable smart walking')
+    !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
-    id: openMaximized
-    !text: tr('Open containers maximized')
-
-  OptionCheckBox
-    id: displayNames
-    !text: tr('Display creature names')
-
-  OptionCheckBox
-    id: displayHealth
-    !text: tr('Display creature health bars')
-
-  OptionCheckBox
-    id: displayMana
-    !text: tr('Display player mana bar')
-
-  OptionCheckBox
-    id: displayText
-    !text: tr('Display text messages')
-
-  OptionCheckBox
-    id: enableHighlightMouseTarget
-    !text: tr('Highlight mouse target')
+    id: preciseControl
+    !text: tr('Enable precise control')
+    !tooltip: tr('You will have more precision over the character walking,\nbut it can feel more abrupt or unnatural')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   Label
-    id: chooseCrosshairLabel
-    width: 60
-    !text: tr('Crosshair:')
-    phantom: false
-    anchors.left: prev.left
+    id: turnDelayLabel
+    !text: tr('Turn delay: %sms', 30)
+    anchors.left: parent.left
+    anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 13
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('turnDelay')
+      self:setText(tr('Turn delay: %dms', value))
 
-  ComboBox
-    id: crosshair
-    width: 120
-    anchors.left: prev.right
-    anchors.top: enableHighlightMouseTarget.bottom
-    margin-top: 10
-    margin-left: 5
-    mouse-scroll: false
+  OptionScrollbar
+    id: turnDelay
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 30
+    maximum: 250
+
+  Label
+    id: hotkeyDelayLabel
+    !text: tr('Hotkey delay: %dms', 30)
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('hotkeyDelay')
+      self:setText(tr('Hotkey delay: %dms', value))
+
+  OptionScrollbar
+    id: hotkeyDelay
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 30
+    maximum: 250
+
+  HorizontalSeparator
+    id: separator
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: 12
+
+  OptionCheckBox
+    id: smoothWalk
+    !text: tr('Smooth Walking')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: precisionWalk
+    !text: tr('Precision Walking')
+    
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  Label
+    id: walkingKeysRepeatDelayLabel
+    !text: tr('Walking keys auto-repeat delay: %s ms', '10')
+    !tooltip: tr('Set precision walking delay.')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('walkingKeysRepeatDelay')
+      self:setText(tr('Walking keys auto-repeat delay: %s', value))
+
+  OptionScrollbar
+    id: walkingKeysRepeatDelay
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 250
 
   Button
-    id: changeLocale
-    !text: tr('Change language')
-    @onClick: modules.client_locales.createWindow()
+    id: hotkeysButton
+    !text: tr('Set hotkeys')
+    @onClick: modules.game_hotkeys.show()
     anchors.top: prev.bottom
     anchors.left: parent.left
     margin-top: 12

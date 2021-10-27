@@ -6,12 +6,13 @@ OptionCheckBox < CheckBox
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
+    margin-top: 17
 
   $!first:
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 2
+    margin-top: 18
 
 OptionScrollbar < HorizontalScrollBar
   step: 1
@@ -20,7 +21,7 @@ OptionScrollbar < HorizontalScrollBar
 MainWindow
   id: optionsWindow
   !text: tr('Options')
-  size: 480 480
+  size: 400 540
 
   @onEnter: modules.client_options.hide()
   @onEscape: modules.client_options.hide()
@@ -37,11 +38,12 @@ MainWindow
     anchors.left: optionsTabBar.right
     anchors.right: parent.right
     anchors.bottom: optionsTabBar.bottom
-    margin-left: 10
+    margin-left: 20
+    margin-top: 3
 
   Button
     !text: tr('Ok')
-    width: 64
+    width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom
-    @onClick: modules.client_options.hide()
+    @onClick: modules.client_options.toggle()

@@ -31,7 +31,7 @@ local function tryLogin(charInfo, tries)
                       charInfo.characterName, G.authenticatorToken, G.sessionKey)
 
     loadBox = displayCancelBox(tr('Please wait'),
-                               tr('Connecting to game server...'))
+                               tr('Connecting to game world. Please wait.'))
     connect(loadBox, {
         onCancel = function()
             loadBox = nil
@@ -286,7 +286,7 @@ function CharacterList.create(characters, account, otui)
     elseif account.subStatus == SubscriptionStatus.Premium then
         if account.premDays == 0 or account.premDays == 65535 then
             accountStatusLabel:setText(('%s%s'):format(tr(
-                                                           'Gratis Premium Account'),
+                                                           'Free Premium Account'),
                                                        status))
         else
             accountStatusLabel:setText(('%s%s'):format(tr(

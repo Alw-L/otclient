@@ -1,0 +1,77 @@
+ExphButton < UIButton
+  height: 15
+  &onClick: onExphButtonClick
+
+ExphNameLabel < GameLabel
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  anchors.left: parent.left
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+
+ExphValueLabel < GameLabel
+  id: value
+  font: verdana-11px-antialised
+  color: #AFAFAF
+  text-align: topright
+  anchors.right: parent.right
+  anchors.top: parent.top
+  anchors.bottom: parent.bottom
+  anchors.left: prev.left
+  text: 0
+
+MiniWindow
+  id: exphWindow
+  !text: tr('Exp/h')
+  color: #8F8F8F
+  height: 130
+  &save: true
+  &autoOpen: false
+
+  MiniWindowContents
+    padding-left: 10
+    padding-right: 10
+    margin-bottom: 10
+    layout: verticalBox
+
+    Button
+      id: resetButton
+      font: classicfont
+      !text: tr('Reset exp/h counter')
+      margin: 2 2
+      @onClick: modules.game_exph.resetCounter()
+
+    ExphButton
+      margin-top: 1
+      id: sessionTotal
+      ExphNameLabel
+        !text: tr('Session')
+      ExphValueLabel
+
+    ExphButton
+      id: expPerHour
+      ExphNameLabel
+        !text: tr('Exp/h')
+      ExphValueLabel
+        color: #00EB00
+
+    ExphButton
+      id: expGained
+      ExphNameLabel
+        !text: tr('Exp Gained')
+      ExphValueLabel
+        color: #ffff00
+
+    ExphButton
+      id: expToLevel
+      ExphNameLabel
+        !text: tr('Exp to level')
+      ExphValueLabel
+        color: #f36500
+
+    ExphButton
+      id: timeToLevel
+      ExphNameLabel
+        !text: tr('Time to level')
+      ExphValueLabel
+        color: #f55e5e

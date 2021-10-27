@@ -1,48 +1,51 @@
 HotkeyListLabel < UILabel
-  font: verdana-11px-monochrome
-  background-color: alpha
+  font: verdana-11px-antialised
+  background-color: #404040
   text-offset: 2 0
   focusable: true
   phantom: false
 
   $focus:
-    background-color: #ffffff22
+    background-color: #696969
 
 MainWindow
   id: hotkeysWindow
   !text: tr('Hotkeys')
-  size: 340 470
+  size: 340 340
 
   @onEnter: modules.game_hotkeys.ok()
   @onEscape: modules.game_hotkeys.cancel()
 
   Label
     id: currentHotkeysLabel
-    !text: tr('Current hotkeys') .. ':'
+    !text: tr('Available hotkeys:')
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
+    margin-top: -5
 
   VerticalScrollBar
     id: currentHotkeysScrollBar
-    height: 150
-    anchors.top: parent.top
+    height: 145
+    anchors.top: currentHotkeysLabel.bottom
     anchors.right: parent.right
     step: 14
     pixels-scroll: true
+    margin-top: 4
 
   TextList
     id: currentHotkeys
     vertical-scrollbar: currentHotkeysScrollBar
+    anchors.top: currentHotkeysLabel.bottom
     anchors.left: parent.left
     anchors.right: prev.left
-    anchors.top: prev.top
     anchors.bottom: prev.bottom
+    margin-top: 4
     focusable: false
 
   Button
     id: resetButton
-    width: 96
+    width: 64
     !text: tr('Reset All')
     anchors.left: parent.left
     anchors.top: next.top
@@ -76,6 +79,8 @@ MainWindow
     anchors.right: parent.right
     anchors.top: prev.bottom
     margin-top: 10
+    height: 1
+    visible: false
 
   ComboBox
     id: hotkeyActionCombo
@@ -85,6 +90,8 @@ MainWindow
     anchors.top: prev.bottom
     margin-top: 2
     mouse-scroll: false
+    height: 1
+    visible: false
 
   Label
     id: hotKeyTextLabel
@@ -93,7 +100,7 @@ MainWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 10
+    margin-top: 12
 
   TextEdit
     id: hotkeyText
@@ -101,7 +108,7 @@ MainWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom
-    margin-top: 2
+    margin-top: 1
     @onTextChange: modules.game_hotkeys.onHotkeyTextChange(self:getText())
 
   CheckBox
@@ -111,8 +118,16 @@ MainWindow
     anchors.right: parent.right
     anchors.top: prev.bottom
     enabled:false
-    margin-top: 5
+    margin-top: 14
+    margin-left: 7
     @onCheckChange: modules.game_hotkeys.onSendAutomaticallyChange(self:isChecked())
+
+  OptionsBroder
+    anchors.top: sendAutomatically.top
+    anchors.left: sendAutomatically.left
+    anchors.right: sendAutomatically.right
+    margin-top: -5
+    margin-left: -7
 
   Item
     id: itemPreview
@@ -124,7 +139,7 @@ MainWindow
   Button
     id: selectObjectButton
     !text: tr('Select object')
-    width: 128
+    width: 64
     enabled: false
     anchors.left: prev.right
     anchors.top: prev.top
@@ -134,7 +149,7 @@ MainWindow
   Button
     id: clearObjectButton
     !text: tr('Clear object')
-    width: 128
+    width: 64
     enabled: false
     anchors.left: prev.left
     anchors.right: prev.right
@@ -180,12 +195,12 @@ MainWindow
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: next.top
-    margin-bottom: 10
+    margin-bottom: 5
 
   Button
     id: okButton
     !text: tr('Ok')
-    width: 64
+    width: 45
     anchors.right: next.left
     anchors.bottom: parent.bottom
     @onClick: modules.game_hotkeys.ok()
@@ -194,7 +209,7 @@ MainWindow
   Button
     id: cancelButton
     !text: tr('Cancel')
-    width: 64
+    width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     @onClick: modules.game_hotkeys.cancel()

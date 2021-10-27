@@ -9,6 +9,7 @@ local enterGameButton
 local clientBox
 local protocolLogin
 local motdEnabled = true
+local SERVER_IP = "62.171.163.70"
 
 -- private functions
 local function onError(protocol, message, errorCode)
@@ -116,6 +117,7 @@ function EnterGame.init()
                                                       '/images/topbuttons/motd',
                                                       EnterGame.displayMotd)
     motdButton:hide()
+    clientBox = enterGame:getChildById('clientComboBox')
     g_keyboard.bindKeyDown('Ctrl+G', EnterGame.openWindow)
 
     if motdEnabled and G.motdNumber then motdButton:show() end
@@ -127,7 +129,7 @@ function EnterGame.init()
     local stayLogged = g_settings.getBoolean('staylogged')
     local autologin = g_settings.getBoolean('autologin')
     local clientVersion = g_settings.getInteger('client-version')
-    if clientVersion == 0 then clientVersion = 1074 end
+    if clientVersion == 0 then clientVersion = 860 end
 
     if port == nil or port == 0 then port = 7171 end
 
@@ -138,8 +140,6 @@ function EnterGame.init()
     enterGame:getChildById('serverPortTextEdit'):setText(port)
     enterGame:getChildById('autoLoginBox'):setChecked(autologin)
     enterGame:getChildById('stayLoggedBox'):setChecked(stayLogged)
-
-    clientBox = enterGame:getChildById('clientComboBox')
     for _, proto in pairs(g_game.getSupportedClients()) do
         clientBox:addOption(proto)
     end
@@ -148,10 +148,11 @@ function EnterGame.init()
     EnterGame.toggleAuthenticatorToken(clientVersion, true)
     EnterGame.toggleStayLoggedBox(clientVersion, true)
     connect(clientBox, {onOptionChange = EnterGame.onClientVersionChange})
+    EnterGame.setUniqueServer(SERVER_IP, 7171, 860)
 
     enterGame:hide()
 
-    if g_app.isRunning() and not g_game.isOnline() then enterGame:show() end
+    if g_app.isRunning() and not g_game.isOnline() then EnterGame.show() end
 end
 
 function EnterGame.firstShow()
@@ -305,8 +306,7 @@ function EnterGame.doLogin()
     EnterGame.hide()
 
     if g_game.isOnline() then
-        local errorBox = displayErrorBox(tr('Login Error'), tr(
-                                             'Cannot login while already in game.'))
+        local errorBox = displayErrorBox(tr('Login Error'), tr('You are already logged in.'))
         connect(errorBox, {onOk = EnterGame.show})
         return
     end
@@ -322,8 +322,7 @@ function EnterGame.doLogin()
     protocolLogin.onCharacterList = onCharacterList
     protocolLogin.onUpdateNeeded = onUpdateNeeded
 
-    loadBox = displayCancelBox(tr('Please wait'),
-                               tr('Connecting to login server...'))
+    loadBox = displayCancelBox(tr('Please wait'), tr('Your character list is being loaded. Please wait.'))
     connect(loadBox, {
         onCancel = function(msgbox)
             loadBox = nil
@@ -415,9 +414,8 @@ function EnterGame.setUniqueServer(host, port, protocol, windowWidth,
     serverListButton:setWidth(0)
 
     local rememberPasswordBox = enterGame:getChildById('rememberPasswordBox')
-    rememberPasswordBox:setMarginTop(-8)
 
-    if not windowWidth then windowWidth = 236 end
+    if not windowWidth then windowWidth = 240 end
     enterGame:setWidth(windowWidth)
     if not windowHeight then windowHeight = 210 end
     enterGame:setHeight(windowHeight)

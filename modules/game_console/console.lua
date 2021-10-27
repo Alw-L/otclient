@@ -1,23 +1,23 @@
 SpeakTypesSettings = {
   none = {},
-  say = { speakType = MessageModes.Say, color = '#FFFF00' },
-  whisper = { speakType = MessageModes.Whisper, color = '#FFFF00' },
-  yell = { speakType = MessageModes.Yell, color = '#FFFF00' },
+  say = { speakType = MessageModes.Say, color = '#EFEF00' },
+  whisper = { speakType = MessageModes.Whisper, color = '#EFEF00' },
+  yell = { speakType = MessageModes.Yell, color = '#EFEF00' },
   broadcast = { speakType = MessageModes.GamemasterBroadcast, color = '#F55E5E' },
   private = { speakType = MessageModes.PrivateTo, color = '#5FF7F7', private = true },
   privateRed = { speakType = MessageModes.GamemasterTo, color = '#F55E5E', private = true },
   privatePlayerToPlayer = { speakType = MessageModes.PrivateTo, color = '#9F9DFD', private = true },
-  privatePlayerToNpc = { speakType = MessageModes.NpcTo, color = '#9F9DFD', private = true, npcChat = true },
+  privatePlayerToNpc = { speakType = MessageModes.NpcTo, color = '#9F9FFE', private = true, npcChat = true },
   privateNpcToPlayer = { speakType = MessageModes.NpcFrom, color = '#5FF7F7', private = true, npcChat = true },
-  channelYellow = { speakType = MessageModes.Channel, color = '#FFFF00' },
+  channelYellow = { speakType = MessageModes.Channel, color = '#EFEF00' },
   channelWhite = { speakType = MessageModes.ChannelManagement, color = '#FFFFFF' },
   channelRed = { speakType = MessageModes.GamemasterChannel, color = '#F55E5E' },
   channelOrange = { speakType = MessageModes.ChannelHighlight, color = '#F6A731' },
-  monsterSay = { speakType = MessageModes.MonsterSay, color = '#FF9A57', hideInConsole = true},
-  monsterYell = { speakType = MessageModes.MonsterYell, color = '#FF9A57', hideInConsole = true},
+  monsterSay = { speakType = MessageModes.MonsterSay, color = '#FE6500', hideInConsole = true},
+  monsterYell = { speakType = MessageModes.MonsterYell, color = '#FE6500', hideInConsole = true},
   rvrAnswerFrom = { speakType = MessageModes.RVRAnswer, color = '#FE6500' },
   rvrAnswerTo = { speakType = MessageModes.RVRAnswer, color = '#FE6500' },
-  rvrContinue = { speakType = MessageModes.RVRContinue, color = '#FFFF00' },
+  rvrContinue = { speakType = MessageModes.RVRContinue, color = '#EFEF00' },
 }
 
 SpeakTypes = {
@@ -83,6 +83,8 @@ violationReportTab = nil
 ignoredChannels = {}
 filters = {}
 
+local wasWASD = false
+
 local communicationSettings = {
   useIgnoreList = true,
   useWhiteList = true,
@@ -117,12 +119,6 @@ function init()
   consoleTabBar:setContentWidget(consoleContentPanel)
   channels = {}
 
-  consolePanel.onDragEnter = onDragEnter
-  consolePanel.onDragLeave = onDragLeave
-  consolePanel.onDragMove = onDragMove
-  consoleTabBar.onDragEnter = onDragEnter
-  consoleTabBar.onDragLeave = onDragLeave
-  consoleTabBar.onDragMove = onDragMove
   consolePanel.onKeyPress = function(self, keyCode, keyboardModifiers)
     if not (keyboardModifiers == KeyboardCtrlModifier and keyCode == KeyC) then return false end
 
@@ -140,9 +136,7 @@ function init()
   g_keyboard.bindKeyPress('Shift+Down', function() navigateMessageHistory(-1) end, consolePanel)
   g_keyboard.bindKeyPress('Tab', function() consoleTabBar:selectNextTab() end, consolePanel)
   g_keyboard.bindKeyPress('Shift+Tab', function() consoleTabBar:selectPrevTab() end, consolePanel)
-  g_keyboard.bindKeyDown('Enter', sendCurrentMessage, consolePanel)
-  g_keyboard.bindKeyDown('Enter', switchChatOnCall)
-  g_keyboard.bindKeyDown('Escape', disableChatOnCall)
+  g_keyboard.bindKeyPress('Enter', sendCurrentMessage, consolePanel)
   g_keyboard.bindKeyPress('Ctrl+A', function() consoleTextEdit:clearText() end, consolePanel)
 
   -- apply buttom functions after loaded
@@ -152,10 +146,18 @@ function init()
   -- tibia like hotkeys
   g_keyboard.bindKeyDown('Ctrl+O', g_game.requestChannels)
   g_keyboard.bindKeyDown('Ctrl+E', removeCurrentTab)
+  g_keyboard.bindKeyDown('Ctrl+Shift+I', onClickIgnoreButton)
+  g_keyboard.bindKeyDown('Ctrl+D', switchToDefault)
   g_keyboard.bindKeyDown('Ctrl+H', openHelp)
 
+  -- g_keyboard.bindKeyPress('Ctrl+Enter',
+  --   function()
+  --     toggleChat()
+  --   end,
+  -- consolePanel)
   -- toggle WASD
   consoleToggleChat = consolePanel:getChildById('toggleChat')
+
   load()
 
   if g_game.isOnline() then
@@ -185,85 +187,72 @@ function selectAll(consoleBuffer)
 end
 
 function toggleChat()
-  consoleToggleChat:setChecked(not consoleToggleChat:isChecked())
+  if(consoleToggleChat:isOn()) then
+    wasWASD = false
+  end
+  consoleToggleChat:setOn(not consoleToggleChat:isOn())
+  updateChatMode()
 end
 
--- id of object first and then action
 function updateChatMode()
-  switchChat(not consoleToggleChat:isChecked())
-end
-
-local function unbindMovingKeys()
-  local gameInterface = modules.game_interface
-  gameInterface.unbindWalkKey("W")
-  gameInterface.unbindWalkKey("D")
-  gameInterface.unbindWalkKey("S")
-  gameInterface.unbindWalkKey("A")
-
-  gameInterface.unbindWalkKey("E")
-  gameInterface.unbindWalkKey("Q")
-  gameInterface.unbindWalkKey("C")
-  gameInterface.unbindWalkKey("Z")
-
-  gameInterface.unbindTurnKey("Ctrl+W")
-  gameInterface.unbindTurnKey("Ctrl+D")
-  gameInterface.unbindTurnKey("Ctrl+S")
-  gameInterface.unbindTurnKey("Ctrl+A")
-end
-
-local function bindMovingKeys()
-  local gameInterface = modules.game_interface
-  gameInterface.bindWalkKey("W", North)
-  gameInterface.bindWalkKey("D", East)
-  gameInterface.bindWalkKey("S", South)
-  gameInterface.bindWalkKey("A", West)
-
-  gameInterface.bindWalkKey("E", NorthEast)
-  gameInterface.bindWalkKey("Q", NorthWest)
-  gameInterface.bindWalkKey("C", SouthEast)
-  gameInterface.bindWalkKey("Z", SouthWest)
-
-  gameInterface.bindTurnKey("Ctrl+W", North)
-  gameInterface.bindTurnKey("Ctrl+D", East)
-  gameInterface.bindTurnKey("Ctrl+S", South)
-  gameInterface.bindTurnKey("Ctrl+A", West)
-end
-
-function switchChat(enabled)
--- enabled should be true if we enabling the chat and false if disabling it
-  -- consoleToggleChat:setChecked(not consoleToggleChat:isChecked())
-  if not (enabled and consoleTextEdit:isVisible()) then
-    consoleTextEdit:setVisible(enabled)
-    consoleTextEdit:setText("")
-  end
-
-  if enabled then
-    unbindMovingKeys()
-    consoleToggleChat:setTooltip(tr("Disable chat mode, allow to walk using WASD"))
+  if consoleToggleChat:isOn() then
+    wasWasd = false
+    disableChat()
   else
-    bindMovingKeys()
-    consoleToggleChat:setTooltip(tr("Enable chat mode"))
+    enableChat()
   end
 end
 
-function switchChatOnCall()
-  if not g_game.isOnline() or modules.game_hotkeys.areHotkeysDisabled() then return end
+function enableChat()
+  local gameInterface = modules.game_interface
 
-  if isChatEnabled() and consoleToggleChat:isChecked() or not consoleTextEdit:isVisible() then
-    switchChat(not consoleTextEdit:isVisible())
+  consoleTextEdit:setEnabled(true)
+  consolePanel:setBackgroundColor('#00000000')
+  --consoleTextEdit:setText("")
+
+  g_keyboard.unbindKeyUp("Space")
+  g_keyboard.unbindKeyUp("Escape")
+
+  gameInterface.unbindWASD()
+
+  g_keyboard.bindKeyDown('Ctrl+W', function() g_map.cleanTexts() modules.game_textmessage.clearMessages() end, gameInterface.gameRootPanel)
+  g_keyboard.bindKeyPress('Ctrl+A', function() consoleTextEdit:clearText() end, consolePanel)
+  if(modules.game_skills) then -- FIXME: workaround for game_skills dep 
+    g_keyboard.bindKeyDown('Ctrl+S', modules.game_skills.toggle)
   end
+  g_keyboard.bindKeyDown('Ctrl+D', switchToDefault)
+
+  -- consoleToggleChat:setTooltip(tr("Disable chat mode, allow to walk using WASD") .. ' (Ctrl+Enter)')
+  consoleToggleChat:setTooltip(tr("Disable chat mode, allow to walk using WASD"))
 end
 
-function disableChatOnCall()
-  if not g_game.isOnline() or modules.game_hotkeys.areHotkeysDisabled() then return end
-
-  if consoleToggleChat:isChecked() then
-    switchChat(false)
+function disableWasd()
+  if g_game.isOnline() and consoleToggleChat:isOn() and not modules.game_hotkeys.areHotkeysDisabled() then
+    consoleToggleChat:setOn(false)
+    wasWASD = true
   end
+  enableChat()
 end
 
-function isChatEnabled()
-  return consoleTextEdit:isVisible()
+function disableChat()
+  local gameInterface = modules.game_interface
+
+  consoleTextEdit:setEnabled(false)
+  consolePanel:setBackgroundColor('#1200054f')
+  consoleTextEdit:setText("")
+
+  g_keyboard.bindKeyUp("Space", disableWasd)
+  g_keyboard.bindKeyUp("Escape", disableWasd)
+
+  g_keyboard.unbindKeyDown('Ctrl+W')
+  g_keyboard.unbindKeyPress('Ctrl+A')
+  g_keyboard.unbindKeyDown('Ctrl+S')
+  g_keyboard.unbindKeyDown('Ctrl+D')
+  
+  gameInterface.bindWASD()
+
+  -- consoleToggleChat:setTooltip(tr("Enable chat mode") .. ' (Ctrl+Enter)')
+  consoleToggleChat:setTooltip(tr("Enable chat mode"))
 end
 
 function terminate()
@@ -288,7 +277,11 @@ function terminate()
 
   g_keyboard.unbindKeyDown('Ctrl+O')
   g_keyboard.unbindKeyDown('Ctrl+E')
+  g_keyboard.unbindKeyDown('Ctrl+Shift+I')
+  g_keyboard.unbindKeyDown('Ctrl+D')
   g_keyboard.unbindKeyDown('Ctrl+H')
+  -- g_keyboard.unbindKeyDown('Ctrl+Enter')
+  g_keyboard.unbindKeyPress('Enter')
 
   saveCommunicationSettings()
 
@@ -319,7 +312,7 @@ end
 function save()
   local settings = {}
   settings.messageHistory = messageHistory
-  settings.wasdMode = consoleToggleChat:isChecked()
+  settings.wasdMode = consoleToggleChat:isOn()
   g_settings.setNode('game_console', settings)
 end
 
@@ -327,15 +320,19 @@ function load()
   local settings = g_settings.getNode('game_console')
   if settings then
     messageHistory = settings.messageHistory or {}
-    consoleToggleChat:setChecked(settings.wasdMode or false)
+    consoleToggleChat:setOn(settings.wasdMode or false)
   end
   loadCommunicationSettings()
 end
 
 function onTabChange(tabBar, tab)
+  local consoleScrollBar = tab.tabPanel:getChildById('consoleScrollBar')
+  consoleScrollBar:setValue(0)
   if tab == defaultTab or tab == serverTab then
     consolePanel:getChildById('closeChannelButton'):disable()
+    consoleTextEdit:setColor("white")
   else
+    consoleTextEdit:setColor("#9F9FFE")
     consolePanel:getChildById('closeChannelButton'):enable()
   end
 end
@@ -440,6 +437,9 @@ function addTab(name, focus)
   end
   if focus then
     consoleTabBar:selectTab(tab)
+    if name == "Default" then
+      consoleTextEdit:setColor("white")
+    end
   end
   return tab
 end
@@ -509,9 +509,20 @@ function addChannel(name, id)
   return tab
 end
 
+function switchToDefault()
+  default = tr('Default')
+  local default = getTab(default)
+  local panel = consoleTabBar:getTabPanel(default)
+  local consoleBuffer = panel:getChildById('consoleScrollBar')
+  consoleBuffer:setValue(0)
+  return consoleTabBar:selectTab(default)
+end
+
 function addPrivateChannel(receiver)
   channels[receiver] = receiver
-  return addTab(receiver, true)
+  addTab(receiver, false)
+  local tab = getTab(receiver)
+  return consoleTabBar:selectTab(tab)
 end
 
 function addPrivateText(text, speaktype, name, isPrivateCommand, creatureName)
@@ -575,6 +586,19 @@ function getHighlightedText(text)
   return tmpData
 end
 
+function selectWordFromPos(label, cursorPos, consoleBuffer)-- tutaj
+local text = label:getText()
+   for word in string.gmatch(text, "%a+") do
+      from, to = string.find(text, word)
+      if cursorPos >= from-1 and cursorPos <= to then
+        label:setSelection(from-1, to)
+		local text = {}
+	    table.insert(text, label:getSelection())
+		consoleBuffer.selectionText = table.concat(text, '\n')
+      end
+   end
+end
+
 function addTabText(text, speaktype, tab, creatureName)
   if not tab or tab.locked or not text or #text == 0 then return end
 
@@ -589,6 +613,16 @@ function addTabText(text, speaktype, tab, creatureName)
   label:setText(text)
   label:setColor(speaktype.color)
   consoleTabBar:blinkTab(tab)
+  
+  connect(label, { onDoubleClick = function()
+  local cursorPos = label:getCursorPos()
+  selectWordFromPos(label, label:getCursorPos(), consoleBuffer)
+  return true end } )
+  
+  connect(tab, { onDoubleClick = function()
+   local consoleBuffer = panel:getChildById('consoleScrollBar')
+   consoleBuffer:setValue(0)
+  end } )
 
   label.highlightInfo = {}
 
@@ -649,7 +683,7 @@ function addTabText(text, speaktype, tab, creatureName)
 
   label.name = creatureName
   consoleBuffer.onMouseRelease = function(self, mousePos, mouseButton)
-    processMessageMenu(mousePos, mouseButton, nil, nil, nil, tab)
+    processMessageMenu(mousePos, mouseButton, nil, nil, label, tab)
   end
   label.onMouseRelease = function(self, mousePos, mouseButton)
     if mouseButton == MouseLeftButton then
@@ -772,6 +806,7 @@ function processChannelTabMenu(tab, mousePos, mouseButton)
   local characterName = g_game.getCharacterName()
   channelName = tab:getText()
   if tab ~= defaultTab and tab ~= serverTab then
+    consoleTabBar:selectTab(tab)
     menu:addOption(tr('Close'), function() removeTab(channelName) end)
     --menu:addOption(tr('Show Server Messages'), function() --[[TODO]] end)
     menu:addSeparator()
@@ -821,7 +856,12 @@ function processMessageMenu(mousePos, mouseButton, creatureName, text, label, ta
           menu:addOption(tr('Exclude from private chat'), function() g_game.excludeFromOwnChannel(creatureName) end)
         end
         if isIgnored(creatureName) then
-          menu:addOption(tr('Unignore') .. ' ' .. creatureName, function() removeIgnoredPlayer(creatureName) end)
+          menu:addOption(tr('Unignore') .. ' ' .. creatureName, 
+            function()
+              removeIgnoredPlayer(creatureName)
+              modules.game_textmessage.displayMessage(MessageModes.Status, tr("You are no longer ignoring player ".. creatureName .."."))
+            end
+          )
         else
           menu:addOption(tr('Ignore') .. ' ' .. creatureName, function() addIgnoredPlayer(creatureName) end)
         end
@@ -834,7 +874,7 @@ function processMessageMenu(mousePos, mouseButton, creatureName, text, label, ta
 
       menu:addOption(tr('Copy name'), function () g_window.setClipboardText(creatureName) end)
     end
-    local selection = tab.tabPanel:getChildById('consoleBuffer').selectionText
+    local selection = tab.tabPanel:getChildById('consoleBuffer').selectionText or label:getSelection()
     if selection and #selection > 0 then
       menu:addOption(tr('Copy'), function() g_window.setClipboardText(selection) end, '(Ctrl+C)')
     end
@@ -852,13 +892,18 @@ function processMessageMenu(mousePos, mouseButton, creatureName, text, label, ta
 end
 
 function sendCurrentMessage()
+  disableWasd()
+
   local message = consoleTextEdit:getText()
   if #message == 0 then return end
-  if not isChatEnabled() then return end
   consoleTextEdit:clearText()
 
   -- send message
   sendMessage(message)
+  if(wasWASD) then
+    wasWASD = false
+    toggleChat()
+  end
 end
 
 function addFilter(filter)
@@ -1028,7 +1073,7 @@ function setIgnoreNpcMessages(ignore)
 end
 
 function navigateMessageHistory(step)
-  if not isChatEnabled() then return end
+  if consoleToggleChat:isOn() then return end
   local numCommands = #messageHistory
   if numCommands > 0 then
     currentMessageIndex = math.min(math.max(currentMessageIndex + step, 0), numCommands)
@@ -1224,7 +1269,6 @@ function doChannelListSubmit()
     if selectedChannelLabel.channelId == 0xFFFF then
       g_game.openOwnChannel()
     else
-      g_game.leaveChannel(selectedChannelLabel.channelId)
       g_game.joinChannel(selectedChannelLabel.channelId)
     end
   end
@@ -1324,7 +1368,6 @@ end
 function addIgnoredPlayer(name)
   if isIgnored(name) then return end
   table.insert(communicationSettings.ignoredPlayers, name)
-  communicationSettings.useIgnoreList = true
 end
 
 function removeIgnoredPlayer(name)
@@ -1476,6 +1519,7 @@ function onClickIgnoreButton()
 end
 
 function online()
+  updateChatMode()
   defaultTab = addTab(tr('Default'), true)
   serverTab = addTab(tr('Server Log'), false)
 
@@ -1502,6 +1546,7 @@ function online()
       end
     end
   end
+  scheduleEvent(function() consoleTabBar:selectTab(defaultTab) end, 500)
   scheduleEvent(function() ignoredChannels = {} end, 3000)
 end
 

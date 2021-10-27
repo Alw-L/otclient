@@ -2,9 +2,10 @@ DeathWindow < MainWindow
   id: deathWindow
   !text: tr('You are dead')
   &baseWidth: 350
-  &baseHeight: 15
+  &baseHeight: 155
 
   Label
+    !text: tr('Alas! Brave adventurer, you have met a sad fate.\nBut do not despair, for the gods will bring you back\ninto this world in exchange for a small sacrifice\n\nSimply click on Ok to resume your journeys!')
     id: labelText
     width: 550
     height: 140
@@ -16,7 +17,7 @@ DeathWindow < MainWindow
   Button
     id: buttonOk
     !text: tr('Ok')
-    width: 64
+    width: 45
     anchors.left: parent.left
     anchors.bottom: parent.bottom
     margin-left: 160

@@ -31,7 +31,21 @@ function UIWindow:onDragEnter(mousePos)
 end
 
 function UIWindow:onDragLeave(droppedWidget, mousePos)
-    -- TODO: auto detect and reconnect anchors
+    -- NOTE: change widget to droppedWidget for snap to panel feature
+    if widget then
+        if widget:getClassName() == 'UIMiniWindow' then
+            if widget:getParent():getStyleName() ~= "GameSidePanel" then
+                local oldParent = widget:getParent()
+                if oldParent == self then
+                    return true
+                end
+                if oldParent then
+                    oldParent:removeChild(widget)
+                end
+                modules.game_interface.getRightPanel():addChild(widget)
+            end
+        end
+    end
 end
 
 function UIWindow:onDragMove(mousePos, mouseMoved)

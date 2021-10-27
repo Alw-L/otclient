@@ -16,6 +16,13 @@ function UIMessageBox.display(title, message, buttons, onEnterCallback,
 
     local messageLabel = g_ui.createWidget('MessageBoxLabel', messageBox)
     messageLabel:setText(message)
+    messageLabel:setColor('#BFBFBF')
+    
+    local separator = g_ui.createWidget('HorizontalSeparator', messageBox)  
+    separator:addAnchor(AnchorBottom, 'parent', AnchorBottom)
+    separator:addAnchor(AnchorLeft, 'parent', AnchorLeft)
+    separator:addAnchor(AnchorRight, 'parent', AnchorRight)
+    separator:setMarginBottom(28)
 
     local buttonsWidth = 0
     local buttonsHeight = 0
@@ -34,9 +41,11 @@ function UIMessageBox.display(title, message, buttons, onEnterCallback,
             button:addAnchor(AnchorBottom, 'parent', AnchorBottom)
             button:addAnchor(AnchorLeft, 'parent', AnchorLeft)
             buttonsHeight = button:getHeight()
+            button:setWidth(45)
         else
             button:addAnchor(AnchorBottom, 'prev', AnchorBottom)
             button:addAnchor(AnchorLeft, 'prev', AnchorRight)
+            button:setWidth(45)
         end
         buttonsWidth = buttonsWidth + button:getWidth() + button:getMarginLeft()
     end
@@ -57,7 +66,7 @@ function UIMessageBox.display(title, message, buttons, onEnterCallback,
     messageBox:setHeight(messageLabel:getHeight() + messageBox:getPaddingTop() +
                              messageBox:getPaddingBottom() +
                              buttonHolder:getHeight() +
-                             buttonHolder:getMarginTop())
+                             buttonHolder:getMarginTop() + 16)
     return messageBox
 end
 

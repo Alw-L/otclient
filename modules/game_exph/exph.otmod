@@ -1,0 +1,11 @@
+Module
+  name: game_exph
+  description: Manage exp/h window
+  author: tenlilnet
+  website: https://github.com/tornadia
+  sandboxed: true
+  scripts: [ exph ]
+  @onLoad: init()
+  @onUnload: terminate()
+  dependencies:
+    - game_interface

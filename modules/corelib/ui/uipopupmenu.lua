@@ -62,7 +62,7 @@ function UIPopupMenu:addOption(optionName, optionCallback, shortcut)
     optionWidget:setText(optionName)
     local width = optionWidget:getTextSize().width +
                       optionWidget:getMarginLeft() +
-                      optionWidget:getMarginRight() + 15
+                      optionWidget:getMarginRight() + 50
 
     if shortcut then
         local shortcutLabel = g_ui.createWidget(

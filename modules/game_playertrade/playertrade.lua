@@ -45,7 +45,9 @@ function fillTrade(name, items, counter)
                              'counterTradeContainer')
         label = tradeWindow:recursiveGetChildById('counterTradeLabel')
 
-        tradeWindow:recursiveGetChildById('acceptButton'):enable()
+        acceptButton = tradeWindow:recursiveGetChildById('acceptButton')
+        acceptButton:enable()
+        acceptButton:setOpacity(1)
     else
         tradeContainer = tradeWindow:recursiveGetChildById('ownTradeContainer')
         label = tradeWindow:recursiveGetChildById('ownTradeLabel')

@@ -12,6 +12,7 @@ function init()
             updateModuleInfo(focusedChild:getText())
         end
     })
+    --g_keyboard.bindKeyDown('Ctrl+1', toggle)
 
     g_keyboard.bindKeyPress('Up', function()
         moduleList:focusPreviousChild(KeyboardFocusReason)
@@ -29,6 +30,7 @@ function init()
 end
 
 function terminate()
+    --g_keyboard.unbindKeyDown('Ctrl+1')
     moduleManagerWindow:destroy()
     moduleManagerButton:destroy()
     moduleList = nil

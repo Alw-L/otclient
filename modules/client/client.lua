@@ -60,8 +60,10 @@ end
 function init()
   connect(g_app, { onRun = startup,
                    onExit = exit })
+  connect(g_game, { onGameStart = onGameStart,
+                    onGameEnd = onGameEnd })
 
-  g_window.setMinimumSize({ width = 600, height = 480 })
+  g_window.setMinimumSize({ width = 1024, height = 640 })
   if musicChannel then
     g_sounds.preload(musicFilename)
   end
@@ -71,8 +73,7 @@ function init()
     g_window.setFullscreen(true)
   else
     -- window size
-    local size = { width = 800, height = 600 }
-    size = g_settings.getSize('window-size', size)
+    local size = g_settings.getSize('window-size', { width = 1024, height = 640 })
     g_window.resize(size)
 
     -- window position, default is the screen center
@@ -85,7 +86,7 @@ function init()
     g_window.move(pos)
 
     -- window maximized?
-    local maximized = g_settings.getBoolean('window-maximized', false)
+    local maximized = g_settings.getBoolean('window-maximized', true)
     if maximized then g_window.maximize() end
   end
 
@@ -107,6 +108,8 @@ end
 function terminate()
   disconnect(g_app, { onRun = startup,
                       onExit = exit })
+  disconnect(g_game, { onGameStart = onGameStart,
+                       onGameEnd = onGameEnd })
   -- save window configs
   g_settings.set('window-size', g_window.getUnmaximizedSize())
   g_settings.set('window-pos', g_window.getUnmaximizedPos())
@@ -115,4 +118,14 @@ end
 
 function exit()
   g_logger.info("Exiting application..")
+end
+
+function onGameStart()
+  local player = g_game.getLocalPlayer()
+  if not player then return end
+  g_window.setTitle(g_app.getName() .. " - " .. player:getName())  
+end
+
+function onGameEnd()
+  g_window.setTitle(g_app.getName())
 end

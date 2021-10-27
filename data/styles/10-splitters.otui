@@ -1,9 +1,13 @@
 Splitter < UISplitter
   size: 4 4
   opacity: 0
-  background: #ffffff44
 
 ResizeBorder < UIResizeBorder
   size: 4 4
   opacity: 0
-  background: #ffffff44
+
+MiniBorder < UIResizeBorder
+  size: 15 14
+  image-source: /images/ui/minibroder
+  image-clip: 15 14 0 0
+  image-border: 1

@@ -1,28 +1,77 @@
 Panel
   OptionCheckBox
     id: showInfoMessagesInConsole
-    !text: tr('Show info messages in console')
+    !text: tr('Show Info Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: showEventMessagesInConsole
-    !text: tr('Show event messages in console')
+    !text: tr('Show Event Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: showStatusMessagesInConsole
-    !text: tr('Show status messages in console')
+    !text: tr('Show Status Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: showTimestampsInConsole
-    !text: tr('Show timestamps in console')
+    !text: tr('Show Timestamps in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
 
   OptionCheckBox
     id: showLevelsInConsole
     !text: tr('Show levels in console')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: showPrivateMessagesInConsole
     !text: tr('Show private messages in console')
 
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
   OptionCheckBox
     id: showPrivateMessagesOnScreen
     !text: tr('Show private messages on screen')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7

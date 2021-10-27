@@ -1,17 +1,17 @@
 ScrollBarSlider < UIButton
   id: sliderButton
   anchors.centerIn: parent
-  size: 13 17
+  size: 12 12
   image-source: /images/ui/scrollbar
-  image-clip: 0 26 13 13
-  image-border: 2
+  image-clip: 1 27 12 12
+  image-border: 1
   image-color: #ffffffff
   $hover:
-    image-clip: 13 26 13 13
+    image-clip: 14 27 12 12
   $pressed:
-    image-clip: 26 26 13 13
+    image-clip: 27 27 12 12
   $disabled:
-    image-color: #ffffff66
+    image-color: #ffffff00
 
 ScrollBarValueLabel < Label
   id: valueLabel
@@ -21,7 +21,7 @@ ScrollBarValueLabel < Label
 
 VerticalScrollBar < UIScrollBar
   orientation: vertical
-  width: 13
+  width: 12
   height: 39
   image-source: /images/ui/scrollbar
   image-clip: 39 0 13 65
@@ -33,38 +33,36 @@ VerticalScrollBar < UIScrollBar
     anchors.top: parent.top
     anchors.left: parent.left
     image-source: /images/ui/scrollbar
-    image-clip: 0 0 13 13
+    image-clip: 1 1 12 12
     image-color: #ffffffff
-    size: 13 13
+    size: 12 12
     $hover:
-      image-clip: 13 0 13 13
+      image-clip: 14 1 12 12
     $pressed:
-      image-clip: 26 0 13 13
-    $disabled:
-      image-color: #ffffff66
+      image-clip: 27 1 12 12
 
   UIButton
     id: incrementButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right
-    size: 13 13
+    size: 12 12
     image-source: /images/ui/scrollbar
-    image-clip: 0 13 13 13
+    image-clip: 1 14 12 12
     image-color: #ffffffff
     $hover:
-      image-clip: 13 13 13 13
+      image-clip: 14 14 12 12
     $pressed:
-      image-clip: 26 13 13 13
-    $disabled:
-      image-color: #ffffff66
+      image-clip: 27 14 12 12
 
   ScrollBarSlider
+    image-border-top: 5
+    image-border-bottom: 6
 
   ScrollBarValueLabel
 
 HorizontalScrollBar < UIScrollBar
   orientation: horizontal
-  height: 13
+  height: 12
   width: 39
   image-source: /images/ui/scrollbar
   image-clip: 0 65 52 13
@@ -78,13 +76,13 @@ HorizontalScrollBar < UIScrollBar
     anchors.top: parent.top
     anchors.left: parent.left
     image-source: /images/ui/scrollbar
-    image-clip: 0 39 13 13
+    image-clip: 1 39 12 12
     image-color: #ffffffff
-    size: 13 13
+    size: 12 12
     $hover:
-      image-clip: 13 39 13 13
+      image-clip: 14 39 12 12
     $pressed:
-      image-clip: 26 39 13 13
+      image-clip: 27 39 12 12
     $disabled:
       image-color: #ffffff66
 
@@ -92,17 +90,19 @@ HorizontalScrollBar < UIScrollBar
     id: incrementButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right
-    size: 13 13
+    size: 12 12
     image-source: /images/ui/scrollbar
-    image-clip: 0 52 13 13
+    image-clip: 1 52 12 12
     image-color: #ffffffff
     $hover:
-      image-clip: 13 52 13 13
+      image-clip: 14 52 12 12
     $pressed:
-      image-clip: 26 52 13 13
+      image-clip: 27 52 12 12
     $disabled:
       image-color: #ffffff66
 
   ScrollBarSlider
+    image-border-left: 5
+    image-border-right: 6
 
   ScrollBarValueLabel

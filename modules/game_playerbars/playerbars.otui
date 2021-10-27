@@ -1,0 +1,56 @@
+SpecialMiniWindow
+  id: playerBarsWindow
+  height: 25
+  @onClose: modules.game_playerbars.onMiniWindowClose()
+  &save: true
+  &notMinimize: true
+  
+  MiniWindowContents
+
+  ButtonBox
+    id: SkillsButton
+    font: classicfont
+    !text: tr('Skills')
+    !tooltip: tr('Skills window') .. ' (Ctrl+S)'
+    size: 36 20
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin: 2 7
+
+  ButtonBox
+    id: BattleButton
+    font: classicfont
+    anchors.left: SkillsButton.right
+    anchors.top: SkillsButton.top
+    margin-left: 2
+    !text: tr('Battle')
+    !tooltip: tr('Battle window') .. ' (Ctrl+B)'
+    size: 36 20
+
+  ButtonBox
+    id: VipButton
+    font: classicfont
+    anchors.left: BattleButton.right
+    anchors.top: BattleButton.top
+    margin-left: 2
+    !text: tr('VIP')
+    !tooltip: tr('VIP window') .. ' (Ctrl+P)'
+    size: 36 20
+
+  ButtonBox
+    id: logoutButton
+    font: classicfont
+    anchors.right: parent.right
+    anchors.top: VipButton.top
+    margin-right: 4
+    !text: tr('Logout')
+    !tooltip: tr('Leave the game') .. ' (Ctrl+L)'
+    size: 45 20
+    @onClick: modules.game_interface.tryLogout()
+
+
+
+
+
+
+

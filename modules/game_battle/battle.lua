@@ -3,7 +3,7 @@ local binaryTree = {} -- BST
 local battleButtons = {} -- map of creature id
 
 -- Global variables that will inherit from init
-local battleWindow, battleButton, battlePanel, mouseWidget, filterPanel, toggleFilterButton
+local battleWindow, battleButton, battlePanel, mouseWidget, filterPanel, filterSeparator, sortPanel
 local lastBattleButtonSwitched, lastCreatureSelected
 
 -- Hide Buttons ("hidePlayers", "hideNPCs", "hideMonsters", "hideSkulls", "hideParty")
@@ -87,8 +87,9 @@ function init() -- Initiating the module (load)
 	scrollbar:mergeStyle({ ['$!on'] = { }})
 
 	battlePanel = battleWindow:recursiveGetChildById('battlePanel')
+	sortPanel = battleWindow:recursiveGetChildById('sortPanel')
 	filterPanel = battleWindow:recursiveGetChildById('filterPanel')
-	toggleFilterButton = battleWindow:recursiveGetChildById('toggleFilterButton')
+	filterSeparator = battleWindow:recursiveGetChildById('filterSeparator')
 
 	-- Hide/Show Filter Options
 	local settings = g_settings.getNode('BattleList')
@@ -125,11 +126,8 @@ function init() -- Initiating the module (load)
 	connecting(true)
 
 	-- Determining Height and Setting up!
-	battleWindow:setContentMinimumHeight(80)
+	battleWindow:setContentMinimumHeight(60)
 	battleWindow:setup()
-	if g_game.isOnline() then
-		battleWindow:setupOnStart()
-	end
 end
 
 -- Binary Search, Insertion and Resort functions
@@ -591,19 +589,20 @@ end
 
 function hideFilterPanel() -- Hide Filter panel
 	filterPanel.originalHeight = filterPanel:getHeight()
+	filterPanel.originalMarginTop = filterPanel:getMarginTop()
 	filterPanel:setHeight(0)
-	toggleFilterButton:getParent():setMarginTop(0)
-	toggleFilterButton:setImageClip(torect("0 0 21 12"))
+	filterPanel:setMarginTop(0)
 	setHidingFilters(true)
 	filterPanel:setVisible(false)
+	filterSeparator:setVisible(false)
 end
 
 function showFilterPanel() -- Show Filter panel
-	toggleFilterButton:getParent():setMarginTop(5)
+	filterPanel:setMarginTop(filterPanel.originalMarginTop)
 	filterPanel:setHeight(filterPanel.originalHeight)
-	toggleFilterButton:setImageClip(torect("21 0 21 12"))
 	setHidingFilters(false)
 	filterPanel:setVisible(true)
+	filterSeparator:setVisible(true)
 end
 
 function toggleFilterPanel() -- Switching modes of filter panel (hide/show)
@@ -931,21 +930,41 @@ function onBattleButtonHoverChange(battleButton, hovered) -- Interaction with mo
 	end
 end
 
-function onOpen()
+function onMiniWindowOpen()
 	battleButton:setOn(true)
 	connecting()
+	if battleWindow:isVisible() then
+		if not modules.game_playerbars.battleButton:isChecked() then
+			modules.game_playerbars.battleButton:setChecked(true)
+		end
+	end
 end
 
-function onClose()
+function onMiniWindowClose()
 	battleButton:setOn(false)
 	disconnecting()
+	modules.game_playerbars.battleButton:setChecked(false)
 end
 
-function toggle() -- Close/Open the battle window or Pressing Ctrl + B
-	if battleButton:isOn() then
-		battleWindow:close()
+function closeWindow()
+	modules.game_playerbars.battleButton:setChecked(false)
+	battleWindow:close()
+end
+
+function openWindow()
+	modules.game_playerbars.battleButton:setChecked(true)
+	battleWindow:open()
+end
+
+function toggle()
+	if(not g_game.isOnline()) then
+		return
+	end
+
+	if battleWindow:isVisible() then
+		closeWindow()
 	else
-		battleWindow:open()
+		openWindow()
 	end
 end
 
@@ -965,7 +984,7 @@ function terminate() -- Terminating the Module (unload)
 	battleWindow = nil
 	mouseWidget = nil
 	filterPanel = nil
-	toggleFilterButton = nil
+	filterSeparator = nil
 
 	g_keyboard.unbindKeyDown('Ctrl+B')
 

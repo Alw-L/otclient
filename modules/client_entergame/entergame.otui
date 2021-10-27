@@ -1,6 +1,6 @@
-EnterGameWindow < MainWindow
+EnterGameWindow < StaticMainWindow
   !text: tr('Enter Game')
-  size: 236 298
+  size: 260 340
 
 EnterGameButton < Button
   width: 64
@@ -26,7 +26,7 @@ EnterGameWindow
   &stayLoggedBoxEnabled: false
   &stayLoggedBoxHeight: 24
   @onEnter: EnterGame.doLogin()
-
+  
   MenuLabel
     !text: tr('Account name')
     anchors.left: parent.left

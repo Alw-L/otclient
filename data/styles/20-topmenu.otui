@@ -5,9 +5,11 @@ TopButton < UIButton
   image-border: 3
   image-color: #ffffffff
   icon-color: #ffffffff
+  //icon-clip: 0 0 20 20
 
   $on:
     image-source: /images/ui/button_top_blink
+    //icon-clip: 0 20 20 20
 
   $hover !disabled:
     image-color: #ffffff99
@@ -15,6 +17,7 @@ TopButton < UIButton
 
   $pressed:
     image-clip: 52 0 26 26
+    //icon-clip: 0 20 20 20
 
   $disabled:
     image-color: #ffffff44
@@ -44,6 +47,8 @@ TopMenuPanel < Panel
   height: 36
   image-source: /images/ui/panel_top
   image-repeated: true
+  image-border: 3
+  image-border-top: 0
   focusable: false
 
 TopMenuFrameCounterLabel < Label

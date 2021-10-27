@@ -98,7 +98,7 @@ function terminate()
     messagesPanel = nil
 end
 
-function calculateVisibleTime(text) return math.max(#text * 100, 4000) end
+function calculateVisibleTime(text) return math.max(#text * 50, 3000) end
 
 function displayMessage(mode, text)
     if not g_game.isOnline() then return end

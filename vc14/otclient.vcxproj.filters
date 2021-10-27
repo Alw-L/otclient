@@ -1055,7 +1055,7 @@
     <ClInclude Include="..\src\client\animator.h">
       <Filter>Header Files\client</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\client\config.h">
+    <ClInclude Include="..\src\client\features.h">
       <Filter>Header Files\client</Filter>
     </ClInclude>
     <ClInclude Include="..\src\framework\graphics\drawpool.h">
@@ -1063,9 +1063,6 @@
     </ClInclude>
     <ClInclude Include="..\src\framework\graphics\pool.h">
       <Filter>Header Files\framework\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gitinfo.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,7 @@
+Font
+  name: classicfont
+  texture: classicfont
+  height: 8
+  glyph-size: 8 8
+  space-width: 2
+  default: true

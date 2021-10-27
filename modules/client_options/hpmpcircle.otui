@@ -1,0 +1,119 @@
+Panel
+  OptionCheckBox
+    id: hpmpHealthCircle
+    text: Health circle
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-top: 10
+    !tooltip: tr('On health circle')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: hpmpManaCircle
+    text: Mana circle
+    !tooltip: tr('On mana circle')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: hpmpExpCircle
+    text: Experience circle
+    !tooltip: tr('On experience circle')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: hpmpSkillCircle
+    text: Skill circle
+    !tooltip: tr('On skill circle')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  Label
+    id: chooseSkillLabel
+    width: 60
+    !text: tr('Skill:')
+    !tooltip: tr('Choose skill to show in skill circle.')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 20
+
+  ComboBox
+    id: hpmpChooseSkill
+    width: 120
+    anchors.left: prev.left
+    anchors.top: prev.top
+    margin-top: -4
+    margin-left: 40
+    mouse-scroll: false
+    @onTextChange: modules.game_healthcircle.setSkillType(self:getText())
+
+  Label
+    id: distFromCenLabel
+    !text: tr('Distance: %s', 0)
+    !tooltip: tr('Set distance from center.')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: chooseSkillLabel.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('hpmpDistanceCenter')
+      local text = value
+      self:setText(tr('Distance: %s', text))
+
+  OptionScrollbar
+    id: hpmpDistanceCenter
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 100
+
+  Label
+    id: opacityLabel
+    !text: tr('Opacity: %s%%', 35)
+    !tooltip: tr('Set circle opacity.')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('hpmpCircleOpacity')
+      local text = value * 100
+      self:setText(tr('Opacity: %s%%', text))
+
+  OptionScrollbar
+    id: hpmpCircleOpacity
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 100

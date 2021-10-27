@@ -4,22 +4,26 @@ VipListLabel < GameLabel
   image-rect: 0 0 12 12
   image-clip: 0 0 12 12
   image-source: /images/game/viplist/icons
-  font: verdana-11px-monochrome
+  font: verdana-11px-antialised
   phantom: false
 
   $first:
-    margin-top: 5
+    margin-top: 0
 
 MiniWindow
   id: vipWindow
-  !text: tr('VIP List')
+  !text: tr('VIP')
+  color: #8F8F8F
   height: 100
   icon: /images/topbuttons/viplist
+  @onOpen: modules.game_viplist.onMiniWindowOpen()
   @onClose: modules.game_viplist.onMiniWindowClose()
   &save: true
+  &autoOpen: false
 
   MiniWindowContents
     layout: verticalBox
     padding-left: 5
     padding-right: 5
+    height: 50
     &onMousePress: modules.game_viplist.onVipListMousePress
