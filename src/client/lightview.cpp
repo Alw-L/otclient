@@ -113,14 +113,6 @@ void LightView::setShade(const Point& point, const std::vector<Otc::Direction> d
     shade.dirs = dirs;
 }
 
-void LightView::clearShade(const Point& point)
-{
-    size_t index = (m_mapView->m_drawDimension.width() * (point.y / m_mapView->m_tileSize)) + (point.x / m_mapView->m_tileSize);
-    if(index >= m_shades.size()) return;
-
-    m_shades[index].floor = -1;
-}
-
 void LightView::resize()
 {
     m_pool->resize(m_mapView->m_rectDimension.size());
@@ -139,24 +131,20 @@ void LightView::draw(const Rect& dest, const Rect& src)
     g_drawPool.addFilledRect(m_mapView->m_rectDimension, m_globalLightColor);
     const auto& shadeBase = std::make_pair<Point, Size>(Point(m_mapView->getTileSize() / 2.8), Size(m_mapView->getTileSize() * 1.6));
     for(int_fast8_t z = m_mapView->m_floorMax; z >= m_mapView->m_floorMin; --z) {
-        g_drawPool.startPosition();
-        {
-            if(z < m_mapView->m_floorMax) {
-                for(auto& shade : m_shades) {
-                    if(shade.floor != z) continue;
-                    shade.floor = -1;
+        if(z < m_mapView->m_floorMax) {
+            for(auto& shade : m_shades) {
+                if(shade.floor != z) continue;
+                shade.floor = -1;
 
-                    auto newPos = shade.pos;
-
-                    for(auto dir : shade.dirs) {
-                        if(dir == Otc::South)
-                            newPos.y -= SPRITE_SIZE / 1.6;
-                        else if(dir == Otc::East)
-                            newPos.x -= SPRITE_SIZE / 1.6;
-                    }
-
-                    g_drawPool.addRepeatedTexturedRect(Rect(newPos - shadeBase.first, shadeBase.second), m_shadeTexture, m_globalLightColor);
+                auto newPos = shade.pos;
+                for(auto dir : shade.dirs) {
+                    if(dir == Otc::South)
+                        newPos.y -= SPRITE_SIZE / 1.6;
+                    else if(dir == Otc::East)
+                        newPos.x -= SPRITE_SIZE / 1.6;
                 }
+
+                g_drawPool.addTexturedRect(Rect(newPos - shadeBase.first, shadeBase.second), m_shadeTexture, m_globalLightColor);
             }
         }
 

@@ -31,12 +31,10 @@
 class AdaptativeFrameCounter
 {
 public:
-    inline AdaptativeFrameCounter() : m_interval(GetTickCount()) {}
+    inline AdaptativeFrameCounter() : m_interval(stdext::millis()) {}
 
     bool update();
     bool canRefresh();
-
-    size_t getMaximumSleepMicros() { return static_cast<long>(getMaxPeriod()) * 1000.0; }
 
     uint getFps() const { return m_fps; }
     uint getMaxFps() const { return m_maxFps; }
@@ -45,19 +43,13 @@ public:
 
 private:
     double getMaxPeriod() { return 1.0 / m_maxFps; }
-    double getTime()
-    {
-        return std::chrono::duration_cast<std::chrono::duration<double>>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()
-            ).count();
-    }
 
     uint m_fps{ 0 },
         m_maxFps{ 0 },
         m_fpsCount{ 0 },
         m_interval{ 0 };
 
-    double m_currentTime{ 0.f }, m_lastTime{ 0.f };
+    ticks_t m_currentTime{ 0 }, m_lastTime{ 0 };
 };
 
 #endif

@@ -27,8 +27,8 @@ bool AdaptativeFrameCounter::canRefresh()
 {
     if(m_maxFps == 0) return true;
 
-    m_currentTime = getTime();
-    return m_currentTime - m_lastTime >= getMaxPeriod();
+    m_currentTime = stdext::micros();
+    return m_currentTime - m_lastTime >= 1000000 / m_maxFps;
 }
 
 bool AdaptativeFrameCounter::update()
@@ -37,7 +37,7 @@ bool AdaptativeFrameCounter::update()
 
     m_lastTime = m_currentTime;
 
-    const uint tickCount = GetTickCount();
+    const uint tickCount = stdext::millis();
     if(tickCount - m_interval <= 1000)
         return false;
 
