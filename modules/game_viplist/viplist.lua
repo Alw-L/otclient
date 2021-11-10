@@ -25,6 +25,7 @@ function init()
     if not g_game.getFeature(GameAdditionalVipInfo) then loadVipInfo() end
     refresh()
     vipWindow:setup()
+    vipWindow:moveChildToIndex(vipWindow:getChildById('miniBorder'), vipWindow:getChildIndex(vipWindow:getChildById('contentsPanel'))-1)
     if g_game.isOnline() then
         online()
     end

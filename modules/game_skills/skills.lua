@@ -7,7 +7,7 @@ function init()
         onLevelChange = onLevelChange,
         onHealthChange = onHealthChange,
         onManaChange = onManaChange,
-        onSoulChange = onSoulChange,
+        --onSoulChange = onSoulChange,
         onFreeCapacityChange = onFreeCapacityChange,
         onTotalCapacityChange = onTotalCapacityChange,
         onStaminaChange = onStaminaChange,
@@ -51,7 +51,7 @@ function terminate()
         onLevelChange = onLevelChange,
         onHealthChange = onHealthChange,
         onManaChange = onManaChange,
-        onSoulChange = onSoulChange,
+        --onSoulChange = onSoulChange,
         onFreeCapacityChange = onFreeCapacityChange,
         onTotalCapacityChange = onTotalCapacityChange,
         onStaminaChange = onStaminaChange,
@@ -210,7 +210,7 @@ function refresh()
     onLevelChange(player, player:getLevel(), player:getLevelPercent())
     onHealthChange(player, player:getHealth(), player:getMaxHealth())
     onManaChange(player, player:getMana(), player:getMaxMana())
-    onSoulChange(player, player:getSoul())
+    --onSoulChange(player, player:getSoul())
     onFreeCapacityChange(player, player:getFreeCapacity())
     onStaminaChange(player, player:getStamina())
     onMagicLevelChange(player, player:getMagicLevel(),
@@ -247,7 +247,7 @@ function refresh()
             local percentBar = skillButton:getChildById('percent')
 
             if skillButton:isVisible() then
-                maximumHeight = maximumHeight + 15
+                maximumHeight = maximumHeight + 14
                 if percentBar then
                     showPercentBar(skillButton, skillsSettings[char][skillButton:getId()] ~= 1)
                     if percentBar:isVisible() then
@@ -260,7 +260,7 @@ function refresh()
 
     local contentsPanel = skillsWindow:getChildById('contentsPanel')
     skillsWindow:setContentMinimumHeight(44)
-    skillsWindow:setContentMaximumHeight(maximumHeight ~= 25 and maximumHeight or 300)
+    skillsWindow:setContentMaximumHeight(maximumHeight ~= 25 and maximumHeight or 275)
 end
 
 function offline()
@@ -404,8 +404,10 @@ function onManaChange(localPlayer, mana, maxMana)
     checkAlert('mana', mana, maxMana, 30)
 end
 
+--function onSoulChange(localPlayer, soul) setSkillValue('soul', comma_value(soul)) end
+
 function onFreeCapacityChange(localPlayer, freeCapacity)
-    setSkillValue('capacity', comma_value(freeCapacity))
+    setSkillValue('capacity', comma_value(freeCapacity*100))
     checkAlert('capacity', freeCapacity, localPlayer:getTotalCapacity(), 20)
 end
 

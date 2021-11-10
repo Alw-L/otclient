@@ -2,7 +2,6 @@ SkillFirstWidget < UIWidget
 
 SkillButton < UIButton
   height: 21
-  margin-bottom: 1
   &onClick: onSkillButtonClick
 
 SmallSkillButton < SkillButton
@@ -84,6 +83,13 @@ MiniWindow
         !text: tr('Mana')
       SkillValueLabel
 
+    //SkillButton
+    //  id: soul
+    //  height: 15
+    //  SkillNameLabel
+    //    !text: tr('Soul Points')
+    //  SkillValueLabel
+
     SkillButton
       id: capacity
       height: 15
@@ -128,8 +134,8 @@ MiniWindow
       SkillPercentPanel
         background-color: red
       
-    HorizontalSeparator
-      margin-top: 5
+    HorizontalSeparatorMini
+      margin-top: 8
 
     SkillButton
       id: skillId0

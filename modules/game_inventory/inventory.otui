@@ -182,7 +182,7 @@ CapTitle < GameLabel
     height: 0
 
 ConditionWidget < UIWidget
-  size: 8 8
+  size: 9 9
 
   $!first:
     margin-left: 1
@@ -192,6 +192,7 @@ SpecialMiniWindow
   height: 168
   @onClose: modules.game_inventory.onMiniWindowClose()
   &save: true
+  &notMinimize: true
 
   MiniWindowContents
     padding-top: 1
@@ -219,12 +220,10 @@ SpecialMiniWindow
       anchors.left: prev.left
       UIWidget
         id: conditionHolder
-        margin-left: 1
-        margin-top: 1
         anchors.fill: parent
         layout:
           type: grid
-          cell-size: 8 8
+          cell-size: 9 9
           cell-spacing: 1
           flow: true
 

@@ -314,14 +314,6 @@ function update()
     
 end
 
-function toggleChaseMode()
-    if chaseMode == ChaseOpponent then
-        chaseModeRadioGroup:selectWidget(standModeBox)
-    else
-        chaseModeRadioGroup:selectWidget(chaseModeBox)
-    end
-end
-
 function check()
     if modules.client_options.getOption('autoChaseOverride') then
         if g_game.isAttacking() and g_game.getChaseMode() == ChaseOpponent then
@@ -405,6 +397,10 @@ end
 
 local excessIcons = {}
 function toggleIcon(bitChanged)
+    if(bitChanged == PlayerStates.Pz) then
+        return
+    end
+
     local icon = conditionHolder:getChildById(Icons[bitChanged].id)
     local childCount = conditionHolder:getChildCount()
     if icon then
@@ -442,12 +438,14 @@ function adjustConditionHolder()
     if(conditionHolder:getChildCount() > 3) then
         conditionHolder:setMarginLeft(3)
         conditionHolder:setMarginTop(2)
+        conditionHolder:getLayout():setCellSize(tosize('8 8'))
     elseif(conditionHolder:getChildCount() == 1) then
         conditionHolder:setMarginTop(6)
-        conditionHolder:setMarginLeft(12)
+        conditionHolder:setMarginLeft(11)
     elseif(conditionHolder:getChildCount() <= 3) then
         conditionHolder:setMarginTop(6)
-        conditionHolder:setMarginLeft(3)
+        conditionHolder:setMarginLeft(1)
+        conditionHolder:getLayout():setCellSize(tosize('9 9'))
     end
 end
 
@@ -556,14 +554,17 @@ end
 
 function onFreeCapacityChange(player, freeCapacity)
     if not freeCapacity then return end
-    if freeCapacity > 99999 then
-      freeCapacity = math.min(9999, math.floor(freeCapacity/1000)) .. "k"
+    freeCapacity = math.floor(freeCapacity * 100)
+    local decorator = ''
+    if freeCapacity > 999999 then
+        freeCapacity = math.floor(freeCapacity/10^6) .. "m"
+    elseif freeCapacity > 99999 then
+        freeCapacity = math.floor(freeCapacity/10^5) .. "kk"
     elseif freeCapacity > 999 then
-      freeCapacity = math.floor(freeCapacity)
-    elseif freeCapacity > 99 then
-      freeCapacity = math.floor(freeCapacity * 10) / 10
+        freeCapacity = math.floor(freeCapacity/10^3)
+        decorator = 'k'
     end
-    capLabel:setText(freeCapacity * 100)
+    capLabel:setText(freeCapacity .. decorator)
 end
 
 function onSetFightMode(self, selectedFightButton)
@@ -582,7 +583,8 @@ function onSetFightMode(self, selectedFightButton)
 end
 
 function onSetChaseMode(self, checked)
-    local chaseMode
+    if checked == nil then return end
+    local checked = checked:getId() == 'chaseModeBox'
     if checked then
         chaseMode = ChaseOpponent
     else
