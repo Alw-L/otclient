@@ -1,17 +1,89 @@
-SpecialMiniWindow
+HeadlessMiniWindow
   id: minimapWindow
-  height: 150
+  height: 120
   @onOpen: onMiniWindowOpen()
   @onClose: onMiniWindowClose()
   &save: true
 
-  MiniWindowContents
+  HeadlessMiniWindowContents
     Minimap
       id: minimap
-      anchors.fill: parent
+      anchors.top: parent.top
+      anchors.left: parent.left
+      size: 106 106
+      margin-top: 6
+      margin-left: 9
 
-  // ResizeBorder
-  //   anchors.right: parent.right
-  //   anchors.top: parent.top
-  //   anchors.bottom: parent.bottom
-  //   enabled: true
+    Button
+      id: windRoseUp
+      anchors.top: windRose.top
+      anchors.horizontalCenter: windRose.horizontalCenter
+      size: 9 18
+      @onClick: self:getParent():getChildById('minimap'):move(0, 1)
+
+    Button
+      id: windRoseLeft
+      anchors.verticalCenter: windRose.verticalCenter
+      anchors.left: windRose.left
+      size: 18 9
+      @onClick: self:getParent():getChildById('minimap'):move(1, 0)
+
+    Button
+      id: windRoseRight
+      anchors.verticalCenter: windRose.verticalCenter
+      anchors.right: windRose.right
+      size: 18 9
+      @onClick: self:getParent():getChildById('minimap'):move(-1, 0)
+
+    Button
+      id: windRoseDown
+      anchors.bottom: windRose.bottom
+      anchors.horizontalCenter: windRose.horizontalCenter
+      size: 9 18
+      @onClick: self:getParent():getChildById('minimap'):move(0, -1)
+    Panel
+      id: windRose
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 6
+      margin-right: 4
+      image-source: /images/ui/windrose
+      size: 43 43
+      phantom: true
+
+    ZoomOutMapButton
+      id: zoomOutButton
+      anchors.top: windRose.bottom
+      anchors.left: windRose.left
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):doZoomOut()
+
+    ZoomInMapButton
+      id: zoomInButton
+      anchors.top: prev.bottom
+      anchors.left: prev.left
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):doZoomIn()
+
+    UpMapButton
+      id: floorUpButton
+      anchors.top: windRose.bottom
+      anchors.right: windRose.right
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):floorUp()
+
+    DownMapButton
+      id: floorDownButton
+      anchors.top: prev.bottom
+      anchors.right: prev.right
+      margin-top:2
+      @onClick: self:getParent():getChildById('minimap'):floorDown()
+
+    Button
+      id: centerButton
+      size: 43 20
+      text: Center
+      anchors.top: prev.bottom
+      anchors.right: prev.right
+      margin-top: 2
+      @onClick: self:getParent():getChildById('minimap'):doReset()

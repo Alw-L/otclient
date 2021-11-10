@@ -8,97 +8,27 @@ MinimapCross < UIWidget
   image: /images/game/minimap/cross
   size: 16 16
 
-MinimapFloorUpButton < Button
-  size: 20 20
-  margin-right: 28
-  margin-bottom: 28
-  anchors.right: parent.right
-  anchors.bottom: parent.bottom
-  icon-source: /images/game/minimap/floor_up
-  icon-clip: 0 32 16 16
-  $pressed:
-    icon-clip: 0 0 16 16
-  $hover !pressed:
-    icon-clip: 0 16 16 16
-
-MinimapFloorDownButton < Button
-  size: 20 20
-  margin-right: 28
-  margin-bottom: 4
-  anchors.right: parent.right
-  anchors.bottom: parent.bottom
-  icon-source: /images/game/minimap/floor_down
-  icon-clip: 0 32 16 16
-  $pressed:
-    icon-clip: 0 0 16 16
-  $hover !pressed:
-    icon-clip: 0 16 16 16
-
-MinimapZoomInButton < Button
-  size: 20 20
-  margin-right: 4
-  margin-bottom: 28
-  anchors.right: parent.right
-  anchors.bottom: parent.bottom
-  icon-source: /images/game/minimap/zoom_in
-
-MinimapZoomOutButton < Button
-  size: 20 20
-  margin-right: 4
-  margin-bottom: 4
-  anchors.right: parent.right
-  anchors.bottom: parent.bottom
-  icon-source: /images/game/minimap/zoom_out
-
-MinimapResetButton < Button
-  !text: tr('Center')
-  size: 44 20
-  anchors.left: parent.left
-  anchors.top: parent.top
-  margin: 4
 
 Minimap < UIMinimap
-  border: 1 #787878
-  border-color-top: #666666
-  border-color-left: #666666
-  padding: 1
   draggable: true
   focusable: false
   cross: true
   color: black
 
-  MinimapFloorUpButton
-    id: floorUpButton
-    @onClick: self:getParent():floorUp(1)
-
-  MinimapFloorDownButton
-    id: floorDownButton
-    @onClick: self:getParent():floorDown(1)
-
-  MinimapZoomInButton
-    id: zoomInButton
-    @onClick: self:getParent():zoomIn()
-
-  MinimapZoomOutButton
-    id: zoomOutButton
-    @onClick: self:getParent():zoomOut()
-
-  MinimapResetButton
-    @onClick: self:getParent():reset()
 
 
 // Minimap Flag Create Window
 
 
 MinimapFlagCheckBox < CheckBox
-  size: 16 16
-  margin-left: 5
+  size: 15 15
+  margin-left: 2
   image-source: /images/game/minimap/flagcheckbox
-  image-size: 16 16
+  image-size: 15 15
   image-border: 3
   icon-source: /images/game/minimap/mapflags
   icon-size: 11 11
-  icon-offset: 2 2
+  icon-offset: 2 4
   anchors.left: prev.right
   anchors.top: prev.top
   $!checked:
@@ -111,14 +41,28 @@ MinimapFlagCheckBox < CheckBox
     image-clip: 52 0 26 26
 
 MinimapFlagWindow < MainWindow
-  !text: tr('Edit Mark')
-  size: 286 189
+  !text: tr('Create Map Mark')
+  size: 196 185
 
   Label
-    !text: tr('Enter a short description') .. ':'
-    color: #BFBFBF
-    anchors.left: parent.left
+    !text: tr('Position') .. ':'
+    text-auto-resize: true
     anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 2
+
+  Label
+    id: position
+    text-auto-resize: true
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 2
+
+  Label
+    !text: tr('Description') .. ':'
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 7
 
   TextEdit
     id: description
@@ -126,13 +70,6 @@ MinimapFlagWindow < MainWindow
     anchors.left: parent.left
     anchors.top: prev.bottom
     anchors.right: parent.right
-
-  Label
-    !text: tr('Select a type') .. ':'
-    color: #BFBFBF
-    anchors.left: parent.left
-    anchors.top: prev.bottom
-    margin-top: 10
 
   MinimapFlagCheckBox
     id: flag0

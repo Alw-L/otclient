@@ -39,13 +39,6 @@ local defaultOptions = {
     antiAliasing = true,
     renderScale = 100,
     shadowFloorIntensity = 15,
-    hpmpHealthCircle = true,
-    hpmpManaCircle = true,
-    hpmpExpCircle = false,
-    hpmpSkillCircle = false,
-    hpmpChooseSkill = 'magic',
-    hpmpDistanceCenter = 0,
-    hpmpCircleOpacity = 0.35,
     walkingKeysRepeatDelay = 10,
     smoothWalk = true,
     precisionWalk = false
@@ -148,9 +141,7 @@ function init()
     --optionsTabBar:addButton(tr('Export Map'), nil, '/images/optionstab/option_button')
     
     optionsTabBar:addSeparator()
-    
-    circlePanel = g_ui.loadUI('hpmpcircle')
-    optionsTabBar:addTab(tr('Health/Mana Circle'), circlePanel, '/images/optionstab/option_button')
+
 
     optionsButton = modules.client_topmenu.addLeftButton('optionsButton',
                                                          tr('Options'),
@@ -200,28 +191,10 @@ function setupComboBox()
         end
 end
 
-function setupCirclePanel()
-    -- UI values
-    chooseSkillComboBox = circlePanel:recursiveGetChildById(
-                              'hpmpChooseSkill')
-
-    -- ComboBox start values
-    chooseSkillComboBox:addOption('magic')
-    chooseSkillComboBox:addOption('fist')
-    chooseSkillComboBox:addOption('club')
-    chooseSkillComboBox:addOption('sword')
-    chooseSkillComboBox:addOption('axe')
-    chooseSkillComboBox:addOption('distance')
-    chooseSkillComboBox:addOption('shielding')
-    chooseSkillComboBox:addOption('fishing')
-    -- Prevent skill overwritten before initialize
-    skillsLoaded = true
-end
 
 function setup()
     setupComboBox()
     setupGraphicsEngines()
-    setupCirclePanel()
 
     -- load options
     for k, v in pairs(defaultOptions) do
@@ -413,28 +386,7 @@ function setOption(key, value, force)
             displayInfoBox(tr('Warning'), tr(
                                'Rendering scale above 100%% will drop performance and visual bugs may occur.'))
         end
-    elseif key == 'hpmpHealthCircle' then
-        modules.game_healthcircle.setHealthCircle(value)
-    elseif key == 'hpmpManaCircle' then
-        modules.game_healthcircle.setManaCircle(value)
-    elseif key == 'hpmpExpCircle' then
-        modules.game_healthcircle.setExpCircle(value)
-    elseif key == 'hpmpSkillCircle' then
-        modules.game_healthcircle.setSkillCircle(value)
-    elseif key == 'hpmpChooseSkill' then
-        modules.game_healthcircle.setSkillType(value)
-    elseif key == 'hpmpDistanceCenter' then
-        circlePanel:getChildById('distFromCenLabel'):setText(
-            tr('Distance: %s', value)
-        )
-        modules.game_healthcircle.setDistanceFromCenter(value)
-    elseif key == 'hpmpCircleOpacity' then
-        circlePanel:getChildById('opacityLabel'):setText(
-            tr('Opacity: %s%%', value)
-        )
-        modules.game_healthcircle.setCircleOpacity(value / 100)
     end
-
     -- change value for keybind updates
     for _, panel in pairs(optionsTabBar:getTabsPanel()) do
         local widget = panel:recursiveGetChildById(key)

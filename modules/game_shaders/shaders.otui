@@ -13,15 +13,8 @@ ShadersPanel < UIWidget
     type: verticalBox
     fit-children: true
 
-  Label
-    text: Shaders Map/Outfit/Mount
-    text-align: center
-
   ComboBox
     id: mapComboBox
 
   ComboBox
     id: outfitComboBox
-
-  ComboBox
-    id: mountComboBox

@@ -122,7 +122,6 @@ standModeBox = nil
 safeFightButton = nil
 fightModeRadioGroup = nil
 inventoryMinimized = false
-mountButton = nil
 
 function init()
     connect(LocalPlayer, {
@@ -164,8 +163,6 @@ function init()
     chaseModeRadioGroup:addWidget(standModeBox)
     chaseModeRadioGroup:addWidget(chaseModeBox)
     
-    mountButton = inventoryWindow:recursiveGetChildById('mountButton')
-    mountButton.onClick = onMountButtonClick
     
     connect(fightModeRadioGroup, { onSelectionChange = onSetFightMode })
     connect(chaseModeRadioGroup, { onSelectionChange = onSetChaseMode })
@@ -259,7 +256,6 @@ function terminate()
     fightBalancedBox = nil
     fightDefensiveBox = nil
     safeFightButton = nil
-    mountButton = nil
     fightModeRadioGroup = nil
     inventoryPanel = nil
     inventoryButton = nil
@@ -354,13 +350,6 @@ function online()
                 end
             end
         end
-        
-        if g_game.getFeature(GamePlayerMounts) then
-            mountButton:setVisible(true)
-            mountButton:setChecked(player:isMounted())
-        else
-            mountButton:setVisible(false)
-        end
     end
 
     update()
@@ -411,15 +400,7 @@ function toggle()
     end
 end
 
-function onMountButtonClick(self, mousePos)
-    local player = g_game.getLocalPlayer()
-    if player then player:toggleMount() end
-end
-
 function onOutfitChange(localPlayer, outfit, oldOutfit)
-    if outfit.mount == oldOutfit.mount then return end
-    
-    mountButton:setChecked(outfit.mount ~= nil and outfit.mount > 0)
 end
 
 local excessIcons = {}

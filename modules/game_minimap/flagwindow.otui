@@ -1,12 +1,12 @@
 FlagButton < CheckBox
-  size: 16 16
+  size: 15 15
   margin-left: 2
   image-source: /images/game/minimap/flagcheckbox
-  image-size: 16 16
+  image-size: 15 15
   image-border: 3
   icon-source: /images/game/minimap/mapflags
-  icon-size: 16 16
-  icon-clip: 0 0 16 16
+  icon-size: 11 11
+  icon-clip: 0 0 11 11
   icon-offset: 2 4
   text:
 
@@ -25,8 +25,8 @@ FlagButton < CheckBox
 
 FlagWindow < MainWindow
   id: flagWindow
-  !text: tr('Edit Mark')
-  size: 286 189
+  !text: tr('Create Map Mark')
+  size: 196 185
 
   Label
     id: position

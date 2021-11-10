@@ -27,10 +27,6 @@ OUTFIT_SHADERS = {
     {name = 'Fragmented', frag = 'shaders/fragment/noise.frag'}
 }
 
-MOUNT_SHADERS = {
-    {name = 'Mount - Default', frag = nil},
-    {name = 'Rainbow', frag = 'shaders/fragment/party.frag'}
-}
 
 -- Fix for texture offset drawing, adding walking offsets.
 local dirs = {
@@ -61,7 +57,6 @@ function attachShaders()
 
     local player = g_game.getLocalPlayer()
     player:setOutfitShader(g_shaders.getShader('Default'))
-    player:setMountShader(g_shaders.getShader('Default'))
 
     connect(g_game.getLocalPlayer(),
             {onWalkEnd = onWalkEvent --[[, onAutoWalk = function() end]] })
@@ -96,11 +91,6 @@ function init()
         end
     end
 
-    local mountComboBox = shadersPanel:getChildById('mountComboBox')
-    mountComboBox.onOptionChange = function(combobox, option)
-        local player = g_game.getLocalPlayer()
-        if player then player:setMountShader(g_shaders.getShader(option)) end
-    end
 
     local registerShader = function(opts, method)
         local fragmentShaderPath = resolvepath(opts.frag)
@@ -129,11 +119,6 @@ function init()
     for _, opts in pairs(OUTFIT_SHADERS) do
         registerShader(opts, 'setupOutfitShader')
         outfitComboBox:addOption(opts.name, opts)
-    end
-
-    for _, opts in pairs(MOUNT_SHADERS) do
-        registerShader(opts, 'setupMountShader')
-        mountComboBox:addOption(opts.name, opts)
     end
 end
 

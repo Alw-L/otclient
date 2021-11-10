@@ -1,15 +1,6 @@
-NextOutfitButton < NextButton
-PrevOutfitButton < PreviousButton
-NextMountButton < NextButton
-PrevMountButton < PreviousButton
-
 MainWindow
   !text: tr('Select Outfit')
-  size: 420 225
-  padding-top: 17
-  padding-left: 14
-  padding-right: 14
-  padding-bottom: 8
+  size: 420 220
 
   @onEnter: modules.game_outfit.accept()
   @onEscape: modules.game_outfit.destroy()
@@ -19,123 +10,65 @@ MainWindow
     id: outfitCreatureBox
     anchors.top: parent.top
     anchors.left: parent.left
-    margin-top: 15
-    margin-left: 4
-    padding: 8
-    size: 68 68
+    padding: 8 8 8 8
+    size: 71 71
+    
 
-  Label
-    id: label1
-    !text: tr("Choose an outfit and determine the colours of the various")
-    anchors.top: outfitNextButton.bottom
-    anchors.left: outfitCreatureBox.left
-    margin-top: 11
-    color: #BFBFBF
-
-  Label
-    id: label2
-    !text: tr("parts of your character's body")
-    anchors.top: label1.bottom
-    anchors.left: prev.left
-    color: #BFBFBF
-
-  Creature
-    id: mountCreatureBox
-    anchors.top: parent.top
-    anchors.right: parent.right
-    margin-top: 15
-    margin-right: 22
-    padding: 4 4 4 4
-    size: 96 96
-    fixed-creature-size: true
 
   Label
     id: outfitName
     !text: tr('No Outfit')
-    width: 115
+    width: 0
     anchors.bottom: prev.top
     anchors.left: prev.left
     margin-bottom: 2
+    visible: false
 
-  Label
-    id: mountName
-    !text: tr('No Mount')
-    width: 115
-    anchors.bottom: prev.top
-    anchors.left: prev.left
-    margin-bottom: 2
-
-  NextMountButton
-    id: mountNextButton
-    anchors.left: mountCreatureBox.right
-    anchors.verticalCenter: mountCreatureBox.verticalCenter
-    margin-left: 3
+  Button
+    id: outfitNextButton
+    text: Next
+    size: 40 22
+    anchors.left: outfitCreatureBox.left
+    anchors.top: outfitCreatureBox.bottom
+    margin-top: 5
+    margin-left: 19
     enabled: true
-    @onClick: modules.game_outfit.nextMountType()
-
-  PrevMountButton
-    id: mountPrevButton
-    anchors.right: mountCreatureBox.left
-    anchors.verticalCenter: mountCreatureBox.verticalCenter
-    margin-right: 3
-    enabled: true
-    @onClick: modules.game_outfit.previousMountType()
+    @onClick: modules.game_outfit.nextOutfitType()
 
   // Body Selection Buttons
 
   ButtonBox
     id: head
+    size: 40 22
     !text: tr('Head')
     anchors.top: outfitCreatureBox.top
     anchors.left: outfitCreatureBox.right
-    margin-left: 13
+    margin-left: 10
     checked: true
-    width: 43
 
   ButtonBox
     id: primary
+    size: 40 22
     !text: tr('Body')
     anchors.top: prev.bottom
     anchors.left: prev.left
-    margin-top: 5
-    width: 43
+    margin-top: 4
 
   ButtonBox
     id: secondary
+    size: 40 22
     !text: tr('Legs')
     anchors.top: prev.bottom
     anchors.left: prev.left
-    margin-top: 5
-    width: 43
+    margin-top: 4
 
   ButtonBox
     id: detail
+    size: 40 22
     !text: tr('Feet')
     anchors.top: prev.bottom
     anchors.left: prev.left
-    margin-top: 5
-    width: 43
-
-  Button
-    id: outfitPrevButton
-    !text: tr('Prev')
-    anchors.top: outfitCreatureBox.bottom
-    anchors.horizontalCenter: outfitCreatureBox.horizontalCenter
-    margin-top: 5
-    margin-right: 13
-    width: 26
-    enabled: true
-    @onClick: modules.game_outfit.previousOutfitType()
-
-  Button
-    id: outfitNextButton
-    !text: tr('Next')
-    anchors.top: prev.top
-    anchors.horizontalCenter: outfitCreatureBox.horizontalCenter
-    margin-left: 13
-    width: 26
-    enabled: true
-    @onClick: modules.game_outfit.nextOutfitType()
+    margin-top: 4
 
   // Color Panel
 
@@ -143,58 +76,61 @@ MainWindow
     id: colorBoxPanel
     anchors.top: head.top
     anchors.left: head.right
-    margin-left: 15
+    margin-right: 10
+    margin-left: 10
     width: 302
-    height: 119
+    height: 98
     layout:
       type: grid
       cell-size: 12 12
-      cell-spacing: 1
+      cell-spacing: 2
       num-columns: 19
       num-lines: 7
+
+  Label
+    id: label1
+    !text: tr("Choose an outfit and determine the")
+    anchors.top: outfitNextButton.bottom
+    anchors.left: outfitCreatureBox.left
+    margin-top: 7
+    color: #BFBFBF
+
+  Label
+    id: label2
+    !text: tr("colours of the various parts of your character's body")
+    anchors.top: prev.bottom
+    anchors.left: prev.left
+    margin-top: 4
+    color: #BFBFBF
+
+  Button
+    id: randomizeButton
+    !text: tr('Randomize')
+    !tooltip: tr('Randomize characters outfit')
+    width: 75
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_outfit.randomize()
 
   // Addon Check Boxes
 
   CheckBox
     id: addon1
     !text: tr('Addon 1')
-    width: 80
-    anchors.top: label2.bottom
-    anchors.left: parent.left
-    margin-top: 6
-    margin-left: 2
+    width: 72
+    anchors.top: colorBoxPanel.bottom
+    anchors.right: addon2.left
+    margin-top: 8
     enabled: false
-    visible: false
 
   CheckBox
     id: addon2
     !text: tr('Addon 2')
-    width: 80
+    width: 72
     anchors.top: prev.top
-    anchors.left: prev.right
+    anchors.right: colorBoxPanel.right
     enabled: false
-    visible: false
-
-  CheckBox
-    id: addon3
-    !text: tr('Addon 3')
-    width: 80
-    anchors.top: prev.top
-    anchors.left: prev.right
-    enabled: false
-    visible: false
-
-
-  // Action Button Section
-
-  Button
-    id: randomizeButton
-    !text: tr('Randomize')
-    !tooltip: tr('Randomize characters outfit')
-    width: 68
-    anchors.left: outfitCreatureBox.left
-    anchors.bottom: parent.bottom
-    @onClick: modules.game_outfit.randomize()
+    margin-right: 40
 
   HorizontalSeparator
     anchors.left: parent.left
@@ -206,16 +142,16 @@ MainWindow
   Button
     id: outfitOkButton
     !text: tr('Ok')
-    width: 45
+    width: 43
     anchors.right: next.left
     anchors.bottom: parent.bottom
-    margin-right: 10
+    margin-right: 16
     @onClick: modules.game_outfit.accept()
 
   Button
     id: outfitCancelButton
     !text: tr('Cancel')
-    width: 45
+    width: 43
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     @onClick: modules.game_outfit.destroy()

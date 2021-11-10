@@ -101,8 +101,6 @@ ChaseModeBox < CombatBox
 SafeFightBox < CombatBox
   image-source: /images/game/combatmodes/safefight
 
-MountButton < CombatBox
-  image-source: /images/game/combatmodes/mount
 
 WhiteDoveBox < CombatBox
   image-source: /images/game/combatmodes/whitedovemode
@@ -324,12 +322,6 @@ SpecialMiniWindow
       anchors.right: parent.right
       margin-top: 55
       margin-right: 1
-  
-  MountButton
-    id: mountButton
-    anchors.top: purseButton.bottom
-    anchors.left: purseButton.left
-    margin-top: 2
 
   Button
     id: stopButton

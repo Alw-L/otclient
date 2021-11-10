@@ -30,7 +30,7 @@ int main(int argc, const char* argv[])
     std::vector<std::string> args(argv, argv + argc);
 
     // setup application name and version
-    g_app.setName("Delvine");
+    g_app.setName("DelvineOT");
     g_app.setCompactName("delvine");
 
     // initialize application framework and otclient

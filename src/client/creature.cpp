@@ -132,23 +132,6 @@ void Creature::internalDrawOutfit(Point dest, float scaleFactor, bool animateWal
             xPattern = direction;
 
         int zPattern = 0;
-        if(m_outfit.hasMount()) {
-            if(animateWalk) animationPhase = getCurrentAnimationPhase(true);
-
-            const auto& datType = rawGetMountThingType();
-
-            dest -= datType->getDisplacement() * scaleFactor;
-            datType->draw(dest, scaleFactor, 0, xPattern, 0, 0, animationPhase, textureType, color);
-            dest += getDisplacement() * scaleFactor;
-
-            zPattern = std::min<int>(1, getNumPatternZ() - 1);
-
-            if(canDrawShader && m_mountShader) {
-                m_mountShader->bind();
-                m_mountShader->setUniformValue(ShaderManager::MOUNT_ID_UNIFORM, m_outfit.getMount());
-                g_drawPool.setShaderProgram(m_mountShader, g_drawPool.size());
-            }
-        }
 
         if(animateWalk) animationPhase = getCurrentAnimationPhase();
 
@@ -222,7 +205,7 @@ void Creature::drawOutfit(const Rect& destRect, bool resize, const Color color)
     const float scaleFactor = destRect.width() / static_cast<float>(frameSize);
     const Point dest = destRect.bottomRight() - (Point(SPRITE_SIZE) - getDisplacement()) * scaleFactor;
 
-    internalDrawOutfit(dest, scaleFactor, true, TextureType::SMOOTH, Otc::South, color);
+    internalDrawOutfit(dest, scaleFactor, false, TextureType::NONE, Otc::South, color);
 }
 
 void Creature::drawInformation(const Rect& parentRect, const Point& dest, float scaleFactor, Point drawOffset, const float horizontalStretchFactor, const float verticalStretchFactor, int drawFlags)
