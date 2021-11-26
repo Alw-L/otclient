@@ -44,7 +44,7 @@ public:
 
     static bool hasSpeedFormula() { return speedA != 0 && speedB != 0 && speedC != 0; }
 
-    void draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, int frameFlags, LightView* lightView = nullptr) override;
+    void draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, LightView* lightView = nullptr) override;
 
     void internalDrawOutfit(Point dest, float scaleFactor, bool animateWalk, TextureType textureType, Otc::Direction direction, Color color);
 
@@ -103,8 +103,8 @@ public:
     PointF getJumpOffset() { return m_jumpOffset; }
     Position getLastStepFromPosition() { return m_lastStepFromPosition; }
     Position getLastStepToPosition() { return m_lastStepToPosition; }
-    float getStepProgress() { return m_walkTimer.ticksElapsed() / getStepDuration(); }
-    float getStepTicksLeft() { return (float)getStepDuration() - m_walkTimer.ticksElapsed(); }
+    float getStepProgress() { return m_walkTimer.ticksElapsed() / m_stepCache.duration; }
+    float getStepTicksLeft() { return static_cast<float>(m_stepCache.getDuration(m_lastStepDirection)) - m_walkTimer.ticksElapsed(); }
     ticks_t getWalkTicksElapsed() { return m_walkTimer.ticksElapsed(); }
     std::array<double, Otc::LastSpeedFormula> getSpeedFormulaArray() { return m_speedFormula; }
     Point getDisplacement() override;
@@ -176,13 +176,15 @@ protected:
     TexturePtr m_emblemTexture;
     TexturePtr m_typeTexture;
     TexturePtr m_iconTexture;
-    stdext::boolean<true> m_showShieldTexture;
-    stdext::boolean<false> m_shieldBlink;
-    stdext::boolean<false> m_passable;
-    stdext::boolean<false> m_showTimedSquare;
-    stdext::boolean<false> m_showStaticSquare;
-    stdext::boolean<false> m_forceWalk;
-    stdext::boolean<true> m_removed;
+
+    bool m_showShieldTexture{ true },
+        m_shieldBlink{ false },
+        m_passable{ false },
+        m_showTimedSquare{ false },
+        m_showStaticSquare{ false },
+        m_forceWalk{ false },
+        m_removed{ true };
+
     Color m_timedSquareColor;
     Color m_staticSquareColor;
     Color m_informationColor;
@@ -200,8 +202,8 @@ protected:
     Timer m_walkTimer;
     Timer m_footTimer;
     TilePtr m_walkingTile;
-    stdext::boolean<false> m_walking;
-    stdext::boolean<false> m_allowAppearWalk;
+    bool m_walking{ false },
+        m_allowAppearWalk{ false };
     ScheduledEventPtr m_walkUpdateEvent;
     ScheduledEventPtr m_walkFinishAnimEvent;
     EventPtr m_disappearEvent;
