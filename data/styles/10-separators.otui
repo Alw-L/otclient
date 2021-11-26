@@ -1,3 +1,9 @@
+HorizontalSeparatorMini < UIWidget
+  height: 1
+  border: 1 #a0a0a0
+  phantom: true
+  focusable: false
+  
 HorizontalSeparator < UIWidget
   image-source: /images/ui/separator_horizontal
   image-border: 1

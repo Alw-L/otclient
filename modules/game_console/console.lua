@@ -368,11 +368,6 @@ function clear()
   consoleTabBar:removeTab(serverTab)
   serverTab = nil
 
-  local npcTab = consoleTabBar:getTab('NPCs')
-  if npcTab then
-    consoleTabBar:removeTab(npcTab)
-    npcTab = nil
-  end
 
   if violationReportTab then
     consoleTabBar:removeTab(violationReportTab)
@@ -1521,11 +1516,10 @@ end
 function online()
   updateChatMode()
   defaultTab = addTab(tr('Default'), true)
-  serverTab = addTab(tr('Server Log'), false)
 
   if g_game.getClientVersion() >= 820 then
-    local tab = addTab("NPCs", false)
-    tab.npcChat = true
+    --local tab = addTab("NPCs", false)
+    --tab.npcChat = true
   end
   if g_game.getClientVersion() < 862 then
     g_keyboard.bindKeyDown('Ctrl+R', openPlayerReportRuleViolationWindow)

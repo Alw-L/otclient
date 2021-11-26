@@ -554,7 +554,7 @@ end
 
 function onFreeCapacityChange(player, freeCapacity)
     if not freeCapacity then return end
-    freeCapacity = math.floor(freeCapacity * 100)
+    freeCapacity = freeCapacity
     local decorator = ''
     if freeCapacity > 999999 then
         freeCapacity = math.floor(freeCapacity/10^6) .. "m"

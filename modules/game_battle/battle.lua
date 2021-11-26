@@ -128,6 +128,8 @@ function init() -- Initiating the module (load)
 	-- Determining Height and Setting up!
 	battleWindow:setContentMinimumHeight(60)
 	battleWindow:setup()
+
+    battleWindow:moveChildToIndex(battleWindow:getChildById('miniBorder'), battleWindow:getChildIndex(battleWindow:getChildById('contentsPanel')))
 end
 
 -- Binary Search, Insertion and Resort functions

@@ -1,0 +1,226 @@
+MainWindow
+  id: mainWindow
+  !text: tr('Graphics Options')
+  size: 250 310
+  padding-bottom: 9
+  padding-right: 18
+  padding-top: 32
+  padding-left: 18
+
+  @onEnter: modules.client_options_revamp.hide()
+  @onEscape: modules.client_options_revamp.hideOption('graphic')
+
+  ButtonBox
+    id: opengl1
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-top: 10
+    margin-left: -7
+    text: OpenGL 1
+    size: 80 20
+
+  ButtonBox
+    id: opengl2
+    anchors.left: prev.right
+    anchors.verticalCenter: prev.verticalCenter
+    text: OpenGL 2
+    size: 80 20
+    margin-left: 13
+
+  ButtonBox
+    id: directx9
+    anchors.left: prev.right
+    anchors.verticalCenter: prev.verticalCenter
+    text: DirectX 9
+    size: 80 20
+    margin-left: 13
+
+  OptionCheckBox
+    id: vsync
+    !text: tr('Enable vertical synchronization')
+    !tooltip: tr('Limits FPS to 60')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: showFps
+    !text: tr('Show frame rate')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: optimizeFps
+    !text: tr('Optimize FPS')
+    !tooltip: tr('try to optimize when the frame rate is below 60. VISUAL PROBLEMS MAY OCCUR')
+
+  OptionCheckBox
+    id: enableLights
+    !text: tr('Enable lights')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: drawViewportEdge
+    !text: tr('Draw Viewport Edge')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: floatingEffect
+    !text: tr('Draw Floating Effects')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: fullscreen
+    !text: tr('Fullscreen')
+    tooltip: Ctrl+Shift+F
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheckBox
+    id: dontStretchShrink
+    !text: tr('Don\'t stretch/shrink Game Window')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+    
+  OptionCheckBox
+    id: antiAliasing
+    !text: tr('Anti-Aliasing')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  Label
+    id: renderScaleLabel
+    !text: tr('Render Scale')..':'
+    phantom: false
+    anchors.left: prev.left
+    anchors.top: prev.bottom
+    margin-top: 13
+
+  ComboBox
+    id: renderScale
+    width: 120
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-top: -4
+    margin-left: 5
+    mouse-scroll: false
+
+  Label
+    id: ambientLightLabel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: renderScaleLabel.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('ambientLight')
+      self:setText(tr('Ambient light: %s%%', value))
+
+  OptionScrollbar
+    id: ambientLight
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 100
+
+  Label
+    id: shadowFloorIntensityLevel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('shadowFloorIntensity')
+      self:setText(tr('Floor Shadowing Intensity: %s%%', value))
+
+  OptionScrollbar
+    id: shadowFloorIntensity
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 0
+    maximum: 100
+
+  Label
+    id: backgroundFrameRateLabel
+    !text: tr('Game framerate limit: %s', 'max')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 12
+    @onSetup: |
+      local value = modules.client_options.getOption('backgroundFrameRate')
+      local text = value
+      if value <= 0 or value >= 201 then
+        text = 'max'
+      end
+
+      self:setText(tr('Adjust framerate limit: %s', text))
+
+  OptionScrollbar
+    id: backgroundFrameRate
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 3
+    minimum: 10
+    maximum: 201
+  
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-left: -7
+    margin-top: 20
+
+  Button
+    !text: tr('Ok')
+    width: 45
+    height: 22
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.client_options_revamp.hideOption('general')

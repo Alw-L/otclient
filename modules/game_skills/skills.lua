@@ -407,7 +407,7 @@ end
 --function onSoulChange(localPlayer, soul) setSkillValue('soul', comma_value(soul)) end
 
 function onFreeCapacityChange(localPlayer, freeCapacity)
-    setSkillValue('capacity', comma_value(freeCapacity*100))
+    setSkillValue('capacity', comma_value(freeCapacity))
     checkAlert('capacity', freeCapacity, localPlayer:getTotalCapacity(), 20)
 end
 

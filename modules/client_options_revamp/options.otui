@@ -1,3 +1,32 @@
+OptionCheck < CheckBox
+  @onCheckChange: modules.client_options.setOption(self:getId(), self:isChecked())
+  height: 14
+  margin-bottom: 2
+
+  $first:
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-top: 3
+
+  $!first:
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 17
+
+
+OptionBroder < UIWidget
+  image-source: /images/ui/options_broder
+  image-border: 1
+  height: 22
+  width: 25
+  phantom: true
+  focusable: false
+  margin-top: -5
+  margin-left: -7
+
+
 MainWindow
   id: optionsWindow
   !text: tr('Options')
@@ -17,7 +46,7 @@ MainWindow
     height: 20
     anchors.left: parent.left
     anchors.top: parent.top
-    @onClick: modules.client_options_revamp.openOnTab('General')
+    @onClick: modules.client_options_revamp.openWindow('general')
 
   Label
     !text: tr('Change general') .. '\n' .. tr('game options')
@@ -36,7 +65,7 @@ MainWindow
     anchors.left: btnGeneral.left
     anchors.top: btnGeneral.bottom
     margin-top: 13
-    @onClick: modules.client_options_revamp.openOnTab('Graphics')
+    @onClick: modules.client_options_revamp.openWindow('graphic')
 
   Label
     !text: tr('Change graphics and') .. '\n' .. tr('performance settings')
@@ -55,7 +84,7 @@ MainWindow
     anchors.left: btnGraphics.left
     anchors.top: btnGraphics.bottom
     margin-top: 13
-    @onClick: modules.client_options_revamp.openOnTab('Console')
+    @onClick: modules.client_options_revamp.openWindow('general')
 
   Label
     !text: tr('Customize the console')

@@ -105,6 +105,7 @@ function onContainerOpen(container, previousContainer)
         containerWindow = previousContainer.window
         previousContainer.window = nil
         previousContainer.itemsPanel = nil
+        containerWindow:moveChildToIndex(containerWindow:getChildById('miniBorder'), containerWindow:getChildIndex(containerWindow:getChildById('contentsPanel'))-1)
     else
         containerWindow = g_ui.createWidget('ContainerWindow')
     end
@@ -166,7 +167,7 @@ function onContainerOpen(container, previousContainer)
     containerWindow:setContentMaximumHeight((cellSize.height + 3) *
                                                 layout:getNumLines())
     
-    containerWindow:moveChildToIndex(containerWindow:getChildById('miniBorder'), containerWindow:getChildIndex(containerPanel))
+    containerWindow:moveChildToIndex(containerWindow:getChildById('miniBorder'), containerWindow:getChildIndex(containerWindow:getChildById('contentsPanel')))
 
     if not previousContainer then
         local panel = modules.game_interface.findContentPanelAvailable(containerWindow, cellSize.height)

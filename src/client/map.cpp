@@ -152,10 +152,6 @@ void Map::addThing(const ThingPtr& thing, const Position& pos, int16 stackPos)
             for(const auto& other : m_animatedTexts) {
                 if(other->getPosition() == pos) {
                     prevAnimatedText = other;
-                    if(other->merge(animatedText)) {
-                        merged = true;
-                        break;
-                    }
                 }
             }
 
