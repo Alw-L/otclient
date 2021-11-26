@@ -71,28 +71,26 @@ Creature::Creature() : Thing()
     m_mountShader = g_shaders.getDefaultMountShader();
 }
 
-void Creature::draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, int frameFlags, LightView* lightView)
+void Creature::draw(const Point& dest, float scaleFactor, bool animate, const Highlight& highLight, TextureType textureType, Color color, LightView* lightView)
 {
     if(!canBeSeen())
         return;
 
-    if(frameFlags & Otc::FUpdateThing) {
-        if(m_showTimedSquare) {
-            g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement() + 2) * scaleFactor, Size(28 * scaleFactor)), m_timedSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
-        }
-
-        if(m_showStaticSquare) {
-            g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement()) * scaleFactor, Size(SPRITE_SIZE * scaleFactor)), m_staticSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
-        }
-
-        internalDrawOutfit(dest + m_walkOffset * scaleFactor, scaleFactor, animate, textureType, m_direction, color);
-
-        if(highLight.enabled && this == highLight.thing) {
-            internalDrawOutfit(dest + m_walkOffset * scaleFactor, scaleFactor, animate, TextureType::ALL_BLANK, m_direction, highLight.rgbColor);
-        }
+    if(m_showTimedSquare) {
+        g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement() + 2) * scaleFactor, Size(28 * scaleFactor)), m_timedSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
     }
 
-    if(lightView && frameFlags & Otc::FUpdateLight) {
+    if(m_showStaticSquare) {
+        g_drawPool.addBoundingRect(Rect(dest + (m_walkOffset - getDisplacement()) * scaleFactor, Size(SPRITE_SIZE * scaleFactor)), m_staticSquareColor, std::max<int>(static_cast<int>(2 * scaleFactor), 1));
+    }
+
+    internalDrawOutfit(dest + m_walkOffset * scaleFactor, scaleFactor, animate, textureType, m_direction, color);
+
+    if(highLight.enabled && this == highLight.thing) {
+        internalDrawOutfit(dest + m_walkOffset * scaleFactor, scaleFactor, animate, TextureType::ALL_BLANK, m_direction, highLight.rgbColor);
+    }
+
+    if(lightView) {
         auto light = getLight();
 
         if(isLocalPlayer() && (g_map.getLight().intensity < 64 || m_position.z > SEA_FLOOR)) {
@@ -136,7 +134,7 @@ void Creature::internalDrawOutfit(Point dest, float scaleFactor, bool animateWal
         if(animateWalk) animationPhase = getCurrentAnimationPhase();
 
         const PointF jumpOffset = m_jumpOffset * scaleFactor;
-        dest -= Point(stdext::round(jumpOffset.x), stdext::round(jumpOffset.y));
+        dest -= Point(std::round(jumpOffset.x), std::round(jumpOffset.y));
 
         auto* datType = rawGetThingType();
 
@@ -178,7 +176,7 @@ void Creature::internalDrawOutfit(Point dest, float scaleFactor, bool animateWal
         }
 
         if(animationPhases > 1) {
-            animationPhase = (g_clock.millis() % (animateTicks * animationPhases)) / animateTicks;
+            animationPhase = (g_clock.millis() % (static_cast<long long>(animateTicks) * animationPhases)) / animateTicks;
         }
 
         if(m_outfit.getCategory() == ThingCategoryEffect)
@@ -220,7 +218,7 @@ void Creature::drawInformation(const Rect& parentRect, const Point& dest, float 
     const Point creatureOffset = Point(16 - getDisplacementX(), -getDisplacementY() - 2);
 
     Point p = dest - drawOffset;
-    p += (getDrawOffset() + creatureOffset) * scaleFactor - Point(stdext::round(jumpOffset.x), stdext::round(jumpOffset.y));
+    p += (getDrawOffset() + creatureOffset) * scaleFactor - Point(std::round(jumpOffset.x), std::round(jumpOffset.y));
     p.x *= horizontalStretchFactor;
     p.y *= verticalStretchFactor;
     p += parentRect.topLeft();
@@ -235,11 +233,15 @@ void Creature::drawInformation(const Rect& parentRect, const Point& dest, float 
     }
 
     // calculate main rects
-    auto backgroundRect = Rect(p.x - (13.5), p.y, 27, 4);
-    backgroundRect.bind(parentRect);
 
     const Size nameSize = m_nameCache.getTextSize();
-    auto textRect = Rect(p.x - nameSize.width() / 2.0, p.y - 12, nameSize);
+    const int cropSizeText = ADJUST_CREATURE_INFORMATION_BASED_ON_CROP_SIZE ? m_drawCache.exactSize : 12,
+        cropSizeBackGround = ADJUST_CREATURE_INFORMATION_BASED_ON_CROP_SIZE ? cropSizeText - nameSize.height() : 0;
+
+    auto backgroundRect = Rect(p.x - (13.5), p.y - cropSizeBackGround, 27, 4);
+    backgroundRect.bind(parentRect);
+
+    auto textRect = Rect(p.x - nameSize.width() / 2.0, p.y - cropSizeText, nameSize);
     textRect.bind(parentRect);
 
     // distance them
@@ -378,7 +380,7 @@ void Creature::updateJump()
         b = +4 * m_jumpHeight / m_jumpDuration,
         height = a * t * t + b * t;
 
-    const int roundHeight = stdext::round(height),
+    const int roundHeight = std::round(height),
         halfJumpDuration = m_jumpDuration / 2;
 
     m_jumpOffset = PointF(height, height);
@@ -387,14 +389,14 @@ void Creature::updateJump()
         g_map.notificateCameraMove(m_walkOffset);
     }
 
-    int nextT, diff = 0, i = 1;
+    int nextT = 0, diff = 0, i = 1;
     if(m_jumpTimer.ticksElapsed() < halfJumpDuration)
         diff = 1;
     else if(m_jumpTimer.ticksElapsed() > halfJumpDuration)
         diff = -1;
 
     do {
-        nextT = stdext::round((-b + std::sqrt(std::max<double>(b * b + 4 * a * (roundHeight + diff * i), 0.0)) * diff) / (2 * a));
+        nextT = std::round((-b + std::sqrt(std::max<double>(b * b + 4 * a * (roundHeight + diff * i), 0.0)) * diff) / (2 * a));
         ++i;
 
         if(nextT < halfJumpDuration)
@@ -567,8 +569,10 @@ void Creature::nextWalkUpdate()
 
 void Creature::updateWalk(const bool isPreWalking)
 {
-    const float extraSpeed = isLocalPlayer() ? 10.f : 0,
-        walkTicksPerPixel = (getStepDuration(true) + extraSpeed) / SPRITE_SIZE;
+    const uint stepDuration = getStepDuration(true);
+
+    const float extraSpeed = isLocalPlayer() && !hasSpeedFormula() ? 800.f / static_cast<float>(stepDuration) : 0.f,
+        walkTicksPerPixel = (stepDuration + extraSpeed) / SPRITE_SIZE;
 
     const int totalPixelsWalked = std::min<int>((m_walkTimer.ticksElapsed() / walkTicksPerPixel), SPRITE_SIZE);
 
@@ -721,15 +725,18 @@ void Creature::updateOutfitColor(Color color, Color finalColor, Color delta, int
 
 void Creature::setSpeed(uint16 speed)
 {
+    if(speed == m_speed)
+        return;
+
     const uint16 oldSpeed = m_speed;
     m_speed = speed;
 
     // Cache for stepSpeed Law
-    if(g_game.getFeature(Otc::GameNewSpeedLaw) && hasSpeedFormula()) {
+    if(hasSpeedFormula()) {
         speed *= 2;
 
         if(speed > -speedB) {
-            m_calculatedStepSpeed = floor((Creature::speedA * log((speed / 2) + Creature::speedB) + Creature::speedC) + 0.5);
+            m_calculatedStepSpeed = floor((Creature::speedA * log((speed / 2.) + Creature::speedB) + Creature::speedC) + 0.5);
             if(m_calculatedStepSpeed == 0) m_calculatedStepSpeed = 1;
         } else m_calculatedStepSpeed = 1;
     }
@@ -875,17 +882,19 @@ uint64 Creature::getStepDuration(bool ignoreDiagonal, Otc::Direction dir)
         m_stepCache.speed = m_speed;
         m_stepCache.groundSpeed = groundSpeed;
 
-        const bool hasGameNewSpeedLaw = g_game.getFeature(Otc::GameNewSpeedLaw) && hasSpeedFormula();
-
         double stepDuration = 1000. * groundSpeed;
-        if(hasGameNewSpeedLaw) {
+        if(hasSpeedFormula()) {
             stepDuration = std::floor(stepDuration / m_calculatedStepSpeed);
         } else stepDuration /= m_speed;
 
         if(FORCE_NEW_WALKING_FORMULA || g_game.getClientVersion() >= 860) {
             const auto serverBeat = g_game.getServerBeat();
             stepDuration = std::ceil(stepDuration / serverBeat) * serverBeat;
-        }
+
+            if(isLocalPlayer() && hasSpeedFormula())
+                stepDuration = std::max<double>(stepDuration, 110.f);
+        } else if(isLocalPlayer())
+            stepDuration += 8.f;
 
         m_stepCache.duration = stepDuration;
         m_stepCache.diagonalDuration = stepDuration * (g_game.getClientVersion() > 810 || FORCE_NEW_WALKING_FORMULA ? 3 : 2);
@@ -963,7 +972,7 @@ int Creature::getCurrentAnimationPhase(const bool mount)
 
     if(thingType->isAnimateAlways()) {
         const int ticksPerFrame = std::round(1000 / thingType->getAnimationPhases());
-        return (g_clock.millis() % (ticksPerFrame * thingType->getAnimationPhases())) / ticksPerFrame;
+        return (g_clock.millis() % (static_cast<long long>(ticksPerFrame) * thingType->getAnimationPhases())) / ticksPerFrame;
     }
 
     return m_walkAnimationPhase;

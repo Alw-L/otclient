@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#include <filesystem>
+
 #include "resourcemanager.h"
 #include "filestream.h"
 
@@ -146,7 +148,7 @@ void ResourceManager::searchAndAddPackages(const std::string& packagesDir, const
     auto files = listDirectoryFiles(packagesDir);
     for(auto it = files.rbegin(); it != files.rend(); ++it) {
         const std::string& file = *it;
-        if(!stdext::ends_with(file, packageExt))
+        if(!file.ends_with(packageExt))
             continue;
         std::string package = getRealDir(packagesDir) + "/" + file;
         if(!addSearchPath(package, true))
@@ -194,6 +196,10 @@ std::string ResourceManager::readFileContents(const std::string& fileName)
     PHYSFS_readBytes(file, static_cast<void*>(&buffer[0]), fileSize);
     PHYSFS_close(file);
 
+#if ENABLE_ENCRYPTION == 1
+    buffer = decrypt(buffer);
+#endif
+
     return buffer;
 }
 
@@ -225,7 +231,11 @@ bool ResourceManager::writeFileStream(const std::string& fileName, std::iostream
 
 bool ResourceManager::writeFileContents(const std::string& fileName, const std::string& data)
 {
+#if ENABLE_ENCRYPTION == 1
+    return writeFileBuffer(fileName, (const uchar*)encrypt(data, std::string(ENCRYPTION_PASSWORD)).c_str(), data.size());
+#else
     return writeFileBuffer(fileName, (const uchar*)data.c_str(), data.size());
+#endif
 }
 
 FileStreamPtr ResourceManager::openFile(const std::string& fileName)
@@ -278,22 +288,22 @@ std::list<std::string> ResourceManager::listDirectoryFiles(const std::string& di
 
 std::vector<std::string> ResourceManager::getDirectoryFiles(const std::string& path, bool filenameOnly, bool recursive)
 {
-    if(!fs::exists(path))
+    if(!std::filesystem::exists(path))
         return std::vector<std::string>();
 
-    fs::path p(path);
+    std::filesystem::path p(path);
     return discoverPath(p, filenameOnly, recursive);
 }
 
-std::vector<std::string> ResourceManager::discoverPath(const fs::path& path, bool filenameOnly, bool recursive)
+std::vector<std::string> ResourceManager::discoverPath(const std::filesystem::path& path, bool filenameOnly, bool recursive)
 {
     std::vector<std::string> files;
 
     /* Before doing anything, we have to add this directory to search path,
      * this is needed so it works correctly when one wants to open a file.  */
     addSearchPath(path.generic_string(), true);
-    for(fs::directory_iterator it(path), end; it != end; ++it) {
-        if(fs::is_directory(it->path().generic_string()) && recursive) {
+    for(std::filesystem::directory_iterator it(path), end; it != end; ++it) {
+        if(std::filesystem::is_directory(it->path().generic_string()) && recursive) {
             std::vector<std::string> subfiles = discoverPath(it->path(), filenameOnly, recursive);
             files.insert(files.end(), subfiles.begin(), subfiles.end());
         } else {
@@ -310,7 +320,7 @@ std::vector<std::string> ResourceManager::discoverPath(const fs::path& path, boo
 std::string ResourceManager::resolvePath(const std::string& path)
 {
     std::string fullPath;
-    if(stdext::starts_with(path, "/"))
+    if(path.starts_with("/"))
         fullPath = path;
     else {
         std::string scriptPath = "/" + g_lua.getCurrentSourcePath();
@@ -318,8 +328,9 @@ std::string ResourceManager::resolvePath(const std::string& path)
             fullPath += scriptPath + "/";
         fullPath += path;
     }
-    if(!(stdext::starts_with(fullPath, "/")))
+    if(!(fullPath.starts_with("/")))
         g_logger.traceWarning(stdext::format("the following file path is not fully resolved: %s", path));
+
     stdext::replace_all(fullPath, "//", "/");
     return fullPath;
 }
@@ -357,7 +368,7 @@ std::string ResourceManager::guessFilePath(const std::string& filename, const st
 
 bool ResourceManager::isFileType(const std::string& filename, const std::string& type)
 {
-    if(stdext::ends_with(filename, std::string(".") + type))
+    if(filename.ends_with(std::string(".") + type))
         return true;
     return false;
 }
@@ -365,4 +376,105 @@ bool ResourceManager::isFileType(const std::string& filename, const std::string&
 ticks_t ResourceManager::getFileTime(const std::string& filename)
 {
     return g_platform.getFileModificationTime(getRealPath(filename));
+}
+
+std::string ResourceManager::encrypt(const std::string& data, const std::string& password)
+{
+    const size_t len = data.length(),
+        plen = password.length();
+
+    std::ostringstream ss;
+    int j = 0;
+    for(int i = -1; ++i < len;)
+    {
+        int ct = data[i];
+        if(i % 2) {
+            ct = ct - password[j] + i;
+        } else {
+            ct = ct + password[j] - i;
+        }
+        ss << (char)(ct);
+        j++;
+
+        if(j >= plen)
+            j = 0;
+    }
+
+    return ss.str();
+}
+std::string ResourceManager::decrypt(const std::string& data)
+{
+    const std::string& password = std::string(ENCRYPTION_PASSWORD);
+
+    const size_t len = data.length(),
+        plen = password.length();
+
+    std::ostringstream ss;
+    int j = 0;
+    for(int i = -1; ++i < len;)
+    {
+        int ct = data[i];
+        if(i % 2) {
+            ct = ct + password[j] - i;
+        } else {
+            ct = ct - password[j] + i;
+        }
+        ss << (char)(ct);
+        ++j;
+
+        if(j >= plen)
+            j = 0;
+    }
+
+    return ss.str();
+}
+
+uint8_t* ResourceManager::decrypt(uint8_t* data, int32_t size)
+{
+    const std::string& password = std::string(ENCRYPTION_PASSWORD);
+    const size_t plen = password.length();
+
+    uint8_t* new_Data = new uint8_t[size];
+
+    int j = 0;
+    for(int i = -1; ++i < size;)
+    {
+        int ct = data[i];
+        if(i % 2) {
+            new_Data[i] = ct + password[j] - i;
+        } else {
+            new_Data[i] = ct - password[j] + i;
+        }
+        data[i] = new_Data[i];
+        ++j;
+
+        if(j >= plen)
+            j = 0;
+    }
+
+    return nullptr;
+}
+
+void ResourceManager::runEncryption(const std::string& password)
+{
+    std::vector<std::string> excludedExtensions = { ".rar",".ogg",".xml",".dll",".exe", ".log",".otb" };
+    for(const auto& entry : std::filesystem::recursive_directory_iterator("./")) {
+        std::string ext = entry.path().extension().string();
+        if(std::find(excludedExtensions.begin(), excludedExtensions.end(), ext) != excludedExtensions.end())
+            continue;
+
+        std::ifstream ifs(entry.path().string(), std::ios_base::binary);
+        std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+        ifs.close();
+        data = encrypt(data, password);
+        save_string_into_file(data, entry.path().string());
+    }
+}
+
+void ResourceManager::save_string_into_file(const std::string& contents, const std::string& name)
+{
+    std::ofstream datFile;
+    datFile.open(name, std::ofstream::binary | std::ofstream::trunc | std::ofstream::out);
+    datFile.write(contents.c_str(), contents.size());
+    datFile.close();
 }

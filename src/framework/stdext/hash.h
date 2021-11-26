@@ -20,26 +20,18 @@
  * THE SOFTWARE.
  */
 
-#include "hardwarebuffer.h"
-#include "graphics.h"
+#ifndef STDEXT_HASH_H
+#define STDEXT_HASH_H
 
-#include <framework/core/application.h>
-#include <framework/core/logger.h>
+#include <string>
 
-HardwareBuffer::HardwareBuffer(Type type)
-{
-    m_type = type;
-    m_id = 0;
-    glGenBuffers(1, &m_id);
-    if(!m_id)
-        g_logger.fatal("Unable to create hardware buffer.");
+namespace stdext {
+    template <class T>
+    inline void hash_combine(std::size_t& seed, const T& v)
+    {
+        std::hash<T> hasher;
+        seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
 }
 
-HardwareBuffer::~HardwareBuffer()
-{
-#ifndef NDEBUG
-    assert(!g_app.isTerminated());
 #endif
-    if(g_graphics.ok())
-        glDeleteBuffers(1, &m_id);
-}

@@ -52,8 +52,6 @@ enum {
 
 MapView::MapView()
 {
-    m_optimizedSize = Size(g_map.getAwareRange().horizontal(), g_map.getAwareRange().vertical()) * SPRITE_SIZE;
-
     m_pools.map = g_drawPool.createPoolF(PoolType::MAP);
     m_pools.creatureInformation = g_drawPool.createPool(PoolType::CREATURE_INFORMATION);
     m_pools.text = g_drawPool.createPool(PoolType::TEXT);
@@ -183,17 +181,25 @@ void MapView::drawFloor()
 
             g_drawPool.startPosition();
             {
-                for(const auto& tile : map.grounds)
-                    tile->drawGround(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
+                for(const auto& tile : map.grounds) {
+                    if(!tile->canRender(m_drawViewportEdge, cameraPosition, m_viewport, lightView))
+                        continue;
+
+                    tile->drawGround(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, lightView);
+                }
             }
 
-            for(const auto& tile : map.surfaces)
-                tile->drawSurface(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
+            for(const auto& tile : map.surfaces) {
+                if(!tile->canRender(m_drawViewportEdge, cameraPosition, m_viewport, lightView))
+                    continue;
+
+                tile->drawSurface(transformPositionTo2D(tile->getPosition(), cameraPosition), m_scaleFactor, lightView);
+            }
 
             g_drawPool.startPosition();
             {
                 for(const MissilePtr& missile : g_map.getFloorMissiles(z))
-                    missile->draw(transformPositionTo2D(missile->getPosition(), cameraPosition), m_scaleFactor, Otc::FUpdateAll, lightView);
+                    missile->draw(transformPositionTo2D(missile->getPosition(), cameraPosition), m_scaleFactor, lightView);
             }
 
             if(m_shadowFloorIntensity > 0 && z == cameraPosition.z + 1) {
@@ -347,7 +353,7 @@ void MapView::updateVisibleTilesCache()
                     }
 
                     // skip tiles that are completely behind another tile
-                    if(tile->isCompletelyCovered(m_cachedFirstVisibleFloor) && !tile->hasLight())
+                    if(tile->isCompletelyCovered(m_cachedFirstVisibleFloor))
                         continue;
 
                     if(isDrawingLights() && (tile->isFullyOpaque() || (tile->getGround() && tile->getGround()->isTopGround())))
@@ -374,7 +380,7 @@ void MapView::updateVisibleTilesCache()
     m_mustUpdateVisibleTilesCache = false;
 }
 
-void MapView::updateGeometry(const Size& visibleDimension, const Size& optimizedSize)
+void MapView::updateGeometry(const Size& visibleDimension)
 {
     const uint8 tileSize = SPRITE_SIZE * (static_cast<float>(m_renderScale) / 100);
     const Size drawDimension = visibleDimension + Size(3),
@@ -415,7 +421,6 @@ void MapView::updateGeometry(const Size& visibleDimension, const Size& optimized
     m_tileSize = tileSize;
     m_virtualCenterOffset = virtualCenterOffset;
     m_visibleCenterOffset = visibleCenterOffset;
-    m_optimizedSize = optimizedSize;
 
     m_rectDimension = Rect(0, 0, bufferSize);
 
@@ -536,7 +541,7 @@ void MapView::setVisibleDimension(const Size& visibleDimension)
         return;
     }
 
-    updateGeometry(visibleDimension, m_optimizedSize);
+    updateGeometry(visibleDimension);
 }
 
 void MapView::setViewMode(ViewMode viewMode)
@@ -549,25 +554,20 @@ void MapView::setAutoViewMode(bool enable)
 {
     m_autoViewMode = enable;
     if(enable)
-        updateGeometry(m_visibleDimension, m_optimizedSize);
-}
-
-void MapView::optimizeForSize(const Size& visibleSize)
-{
-    updateGeometry(m_visibleDimension, visibleSize);
+        updateGeometry(m_visibleDimension);
 }
 
 void MapView::setAntiAliasing(const bool enable)
 {
     m_pools.map->setSmooth(enable);
 
-    updateGeometry(m_visibleDimension, m_optimizedSize);
+    updateGeometry(m_visibleDimension);
 }
 
 void MapView::setRenderScale(const uint8 scale)
 {
     m_renderScale = scale;
-    updateGeometry(m_visibleDimension, m_optimizedSize);
+    updateGeometry(m_visibleDimension);
     updateLight();
 }
 
@@ -717,7 +717,7 @@ uint8 MapView::calcFirstVisibleFloor()
     }
 
     // just ensure the that the floor is in the valid range
-    z = stdext::clamp<int>(z, 0, static_cast<int>(MAX_Z));
+    z = std::clamp<int>(z, 0, static_cast<int>(MAX_Z));
     return z;
 }
 
@@ -742,7 +742,7 @@ uint8 MapView::calcLastVisibleFloor()
         z = std::max<int>(m_lockedFirstVisibleFloor, z);
 
     // just ensure the that the floor is in the valid range
-    z = stdext::clamp<int>(z, 0, static_cast<int>(MAX_Z));
+    z = std::clamp<int>(z, 0, static_cast<int>(MAX_Z));
     return z;
 }
 

@@ -34,9 +34,10 @@ struct Highlight {
     Color rgbColor = Color::alpha;
     ThingPtr thing;
     ScheduledEventPtr listeningEvent;
-    stdext::boolean<false> enabled;
-    stdext::boolean<false> update;
-    stdext::boolean<false> invertedColorSelection;
+
+    bool enabled{ false },
+        update{ false },
+        invertedColorSelection{ false };
 };
 
 // @bindclass
@@ -46,7 +47,7 @@ class Thing : public LuaObject
 public:
     Thing();
     virtual ~Thing() {}
-    virtual void draw(const Point& /*dest*/, float /*scaleFactor*/, bool /*animate*/, const Highlight& /*highLight*/, TextureType /*textureType*/ = TextureType::NONE, Color /* color */ = Color::white, int /*frameFlag*/ = Otc::FUpdateThing, LightView* /*lightView*/ = nullptr) {}
+    virtual void draw(const Point& /*dest*/, float /*scaleFactor*/, bool /*animate*/, const Highlight& /*highLight*/, TextureType /*textureType*/ = TextureType::NONE, Color /* color */ = Color::white, LightView* /*lightView*/ = nullptr) {}
     virtual void setId(uint32 /*id*/) {}
 
     void setPosition(const Position& position);
@@ -161,7 +162,7 @@ protected:
     uint16 m_datId;
 
 private:
-    stdext::boolean<true> m_canDraw;
+    bool m_canDraw{ true };
 };
 #pragma pack(pop)
 
