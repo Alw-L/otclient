@@ -9,14 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release - GIT Version|Win32">
-      <Configuration>Release - GIT Version</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release - GIT Version|x64">
-      <Configuration>Release - GIT Version</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -48,17 +40,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
@@ -82,17 +64,7 @@
     <Import Project="arch32.props" />
     <Import Project="release.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="arch32.props" />
-    <Import Project="release.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="arch64.props" />
-    <Import Project="release.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="arch64.props" />
     <Import Project="release.props" />
@@ -109,13 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../src;</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../src;</IncludePath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../src;</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../src;</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -125,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -138,7 +104,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -153,7 +119,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -161,36 +128,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|Win32'">
-    <ClCompile>
-      <PreprocessorDefinitions>$(PREPROCESSOR_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <TargetMachine>MachineX86</TargetMachine>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <PreBuildEvent>
-      <Command>
-echo | set /p dummyName=#define GIT_BRANCH &gt;  ../src/gitinfo.h
-git rev-parse --abbrev-ref HEAD &gt;&gt;  ../src/gitinfo.h
-
-echo | set /p dummyName=#define GIT_VERSION &gt;&gt; ../src/gitinfo.h
-git describe --abbrev=0 --tag &gt;&gt;  ../src/gitinfo.h
-
-echo | set /p dummyName=#define GIT_COMMITS &gt;&gt;  ../src/gitinfo.h
-git rev-list --count head &gt;&gt;  ../src/gitinfo.h
-		</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -202,45 +139,15 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;E:\Dokument\Organized\otclientv2\directx9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>E:\Dokument\Organized\otclientv2\directx9\x86-64\libGLESv2.lib;E:\Dokument\Organized\otclientv2\directx9\x86-64\libEGL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>$(PREPROCESSOR_DEFS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <WarningLevel>Level4</WarningLevel>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
-      <Optimization>MaxSpeed</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>$(VcpkgInstalledDir)$(VcpkgTriplet)\include\luajit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <PreBuildEvent>
-      <Command>
-echo | set /p dummyName=#define GIT_BRANCH &gt;  ../src/gitinfo.h
-git rev-parse --abbrev-ref HEAD &gt;&gt;  ../src/gitinfo.h
-
-echo | set /p dummyName=#define GIT_VERSION &gt;&gt; ../src/gitinfo.h
-git describe --abbrev=0 --tag &gt;&gt;  ../src/gitinfo.h
-
-echo | set /p dummyName=#define GIT_COMMITS &gt;&gt;  ../src/gitinfo.h
-git rev-list --count head &gt;&gt;  ../src/gitinfo.h
-		</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\client\animatedtext.cpp" />
@@ -293,9 +200,7 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClCompile Include="..\src\framework\core\configmanager.cpp" />
     <ClCompile Include="..\src\framework\core\event.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">FW_GRAPHICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|Win32'">FW_GRAPHICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">FW_GRAPHICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - GIT Version|x64'">FW_GRAPHICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\src\framework\core\eventdispatcher.cpp" />
     <ClCompile Include="..\src\framework\core\filestream.cpp" />
@@ -316,7 +221,6 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClCompile Include="..\src\framework\graphics\framebuffer.cpp" />
     <ClCompile Include="..\src\framework\graphics\framebuffermanager.cpp" />
     <ClCompile Include="..\src\framework\graphics\graphics.cpp" />
-    <ClCompile Include="..\src\framework\graphics\hardwarebuffer.cpp" />
     <ClCompile Include="..\src\framework\graphics\image.cpp" />
     <ClCompile Include="..\src\framework\graphics\ogl\painterogl.cpp" />
     <ClCompile Include="..\src\framework\graphics\ogl\painterogl1.cpp" />
@@ -438,7 +342,7 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClInclude Include="..\src\client\uiminimap.h" />
     <ClInclude Include="..\src\client\uiprogressrect.h" />
     <ClInclude Include="..\src\client\uisprite.h" />
-    <ClInclude Include="..\src\client\config.h" />
+    <ClInclude Include="..\src\client\features.h" />
     <ClInclude Include="..\src\framework\const.h" />
     <ClInclude Include="..\src\framework\core\adaptativeframecounter.h" />
     <ClInclude Include="..\src\framework\core\application.h" />
@@ -472,7 +376,6 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClInclude Include="..\src\framework\graphics\framebuffermanager.h" />
     <ClInclude Include="..\src\framework\graphics\glutil.h" />
     <ClInclude Include="..\src\framework\graphics\graphics.h" />
-    <ClInclude Include="..\src\framework\graphics\hardwarebuffer.h" />
     <ClInclude Include="..\src\framework\graphics\image.h" />
     <ClInclude Include="..\src\framework\graphics\ogl\painterogl.h" />
     <ClInclude Include="..\src\framework\graphics\ogl\painterogl1.h" />
@@ -530,7 +433,6 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClInclude Include="..\src\framework\sound\soundsource.h" />
     <ClInclude Include="..\src\framework\sound\streamsoundsource.h" />
     <ClInclude Include="..\src\framework\stdext\any.h" />
-    <ClInclude Include="..\src\framework\stdext\boolean.h" />
     <ClInclude Include="..\src\framework\stdext\cast.h" />
     <ClInclude Include="..\src\framework\stdext\compiler.h" />
     <ClInclude Include="..\src\framework\stdext\demangle.h" />
@@ -538,6 +440,7 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClInclude Include="..\src\framework\stdext\dynamic_storage.h" />
     <ClInclude Include="..\src\framework\stdext\exception.h" />
     <ClInclude Include="..\src\framework\stdext\format.h" />
+    <ClInclude Include="..\src\framework\stdext\hash.h" />
     <ClInclude Include="..\src\framework\stdext\math.h" />
     <ClInclude Include="..\src\framework\stdext\net.h" />
     <ClInclude Include="..\src\framework\stdext\packed_any.h" />
@@ -572,7 +475,6 @@ git rev-list --count head &gt;&gt;  ../src/gitinfo.h
     <ClInclude Include="..\src\framework\util\size.h" />
     <ClInclude Include="..\src\framework\xml\tinystr.h" />
     <ClInclude Include="..\src\framework\xml\tinyxml.h" />
-    <ClInclude Include="..\src\gitinfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\otcicon.rc" />

@@ -560,11 +560,9 @@ function onFreeCapacityChange(player, freeCapacity)
         freeCapacity = math.floor(freeCapacity/10^6) .. "m"
     elseif freeCapacity > 99999 then
         freeCapacity = math.floor(freeCapacity/10^5) .. "kk"
-    elseif freeCapacity > 999 then
-        freeCapacity = math.floor(freeCapacity/10^3)
-        decorator = 'k'
     end
-    capLabel:setText(freeCapacity .. decorator)
+
+    capLabel:setText(math.floor(freeCapacity) .. decorator)
 end
 
 function onSetFightMode(self, selectedFightButton)

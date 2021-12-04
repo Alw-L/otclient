@@ -84,7 +84,7 @@ MainWindow
     anchors.left: btnGraphics.left
     anchors.top: btnGraphics.bottom
     margin-top: 13
-    @onClick: modules.client_options_revamp.openWindow('general')
+    @onClick: modules.client_options_revamp.openWindow('console')
 
   Label
     !text: tr('Customize the console')
@@ -103,7 +103,7 @@ MainWindow
     anchors.left: btnConsole.left
     anchors.top: btnConsole.bottom
     margin-top: 13
-    @onClick: modules.game_hotkeys.toggle()
+    @onClick: modules.client_options_revamp.toggleHotkey()
 
   Label
     !text: tr('Edit your hotkey texts')

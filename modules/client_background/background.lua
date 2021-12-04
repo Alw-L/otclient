@@ -3,17 +3,17 @@ local background
 local infoWindow
 local clientVersionLabel
 
-local accesAccountLink = "http://cypbia.site/?subtopic=createaccount"
-local websiteLink = "http://cypbia.site"
+local accesAccountLink = "http://delvine.net/?subtopic=createaccount"
+local websiteLink = "http://delvine.net"
 
 local infoTexts = {
- [1] = "Cypbia Client",
+ [1] = "Delvine Client",
  [2] = "Version 1.0",
  [3] = "Copyright (C) 2021",
  [4] = "",
  [5] = "All rights reserved.",
  [6] = "Official Website",
- [7] = "Cypbia.site",
+ [7] = "Delvine.net",
 }
 
 -- public functions

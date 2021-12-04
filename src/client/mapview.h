@@ -97,7 +97,6 @@ public:
     Position getCameraPosition();
     void setCameraPosition(const Position& pos);
 
-    void setMinimumAmbientLight(float intensity) { m_minimumAmbientLight = intensity; updateLight(); }
     float getMinimumAmbientLight() { return m_minimumAmbientLight; }
 
     void setShadowFloorIntensity(float intensity) { m_shadowFloorIntensity = intensity; updateLight(); }
@@ -209,7 +208,7 @@ private:
     float m_minimumAmbientLight{ 0 },
         m_fadeInTime{ 0 },
         m_fadeOutTime{ 0 },
-        m_shadowFloorIntensity{ 0 },
+        m_shadowFloorIntensity{ 0.1 },
         m_scaleFactor{ 1.f };
 
     Rect m_rectDimension;
@@ -233,7 +232,7 @@ private:
         m_mustUpdateVisibleCreaturesCache{ true },
         m_shaderSwitchDone{ true },
         m_drawHealthBars{ true },
-        m_drawManaBar{ true },
+        m_drawManaBar{ false },
         m_multifloor{ true },
         m_drawTexts{ true },
         m_drawNames{ true },

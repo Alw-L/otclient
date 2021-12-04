@@ -1,0 +1,188 @@
+MainWindow
+  id: mainWindow
+  !text: tr('Console Options')
+  size: 290 550
+  padding-bottom: 9
+  padding-right: 18
+  padding-top: 32
+  padding-left: 18
+
+  @onEnter: modules.client_options_revamp.hide()
+  @onEscape: modules.client_options_revamp.hideOption('console')
+
+  OptionCheck
+    id: displayNames
+    !text: tr('Display creature names')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: displayHealth
+    !text: tr('Display creature health bars')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: displayText
+    !text: tr('Display text messages')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 15
+
+  OptionCheck
+    id: showPing
+    !text: tr('Show connection ping')
+    !tooltip: tr('Display connection speed to the server (milliseconds)')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showLeftPanel
+    !text: tr('Show left panel')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showRightExtraPanel
+    !text: tr('Show an extra right panel')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: openMaximized
+    !text: tr('Open containers maximized')
+
+  OptionsBroder
+    id: broder1
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 15
+
+  OptionCheck
+    id: showInfoMessagesInConsole
+    !text: tr('Show Info Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showEventMessagesInConsole
+    !text: tr('Show Event Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showStatusMessagesInConsole
+    !text: tr('Show Status Messages in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showTimestampsInConsole
+    !text: tr('Show Timestamps in Console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showPrivateMessagesInConsole
+    !text: tr('Show private messages in console')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  OptionCheck
+    id: showPrivateMessagesOnScreen
+    !text: tr('Show private messages on screen')
+
+  OptionsBroder
+    anchors.top: prev.top
+    anchors.left: prev.left
+    anchors.right: prev.right
+    margin-top: -5
+    margin-left: -7
+
+  HorizontalSeparator
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 15
+    
+  Button
+    !text: tr('Ok')
+    width: 45
+    height: 22
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.client_options_revamp.hideOption('console')

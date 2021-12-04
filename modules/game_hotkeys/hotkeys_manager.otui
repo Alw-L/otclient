@@ -11,7 +11,7 @@ HotkeyListLabel < UILabel
 MainWindow
   id: hotkeysWindow
   !text: tr('Hotkeys')
-  size: 340 340
+  size: 240 340
 
   @onEnter: modules.game_hotkeys.ok()
   @onEscape: modules.game_hotkeys.cancel()
@@ -203,7 +203,7 @@ MainWindow
     width: 45
     anchors.right: next.left
     anchors.bottom: parent.bottom
-    @onClick: modules.game_hotkeys.ok()
+    @onClick: modules.client_options_revamp.hideHotkey('true')
     margin-right: 10
 
   Button
@@ -212,7 +212,7 @@ MainWindow
     width: 45
     anchors.right: parent.right
     anchors.bottom: parent.bottom
-    @onClick: modules.game_hotkeys.cancel()
+    @onClick: modules.client_options_revamp.hideHotkey()
 
 HotkeyAssignWindow < MainWindow
   id: assignWindow

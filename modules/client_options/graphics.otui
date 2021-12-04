@@ -135,26 +135,7 @@ Panel
     margin-top: -4
     margin-left: 5
     mouse-scroll: false
-
-  Label
-    id: ambientLightLabel
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: renderScaleLabel.bottom
-    margin-top: 12
-    @onSetup: |
-      local value = modules.client_options.getOption('ambientLight')
-      self:setText(tr('Ambient light: %s%%', value))
-
-  OptionScrollbar
-    id: ambientLight
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 3
-    minimum: 0
-    maximum: 100
-
+  
   Label
     id: shadowFloorIntensityLevel
     anchors.left: parent.left

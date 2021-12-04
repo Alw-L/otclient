@@ -183,9 +183,6 @@
     <ClCompile Include="..\src\framework\graphics\graphics.cpp">
       <Filter>Source Files\framework\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\framework\graphics\hardwarebuffer.cpp">
-      <Filter>Source Files\framework\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\framework\graphics\image.cpp">
       <Filter>Source Files\framework\graphics</Filter>
     </ClCompile>
@@ -635,9 +632,6 @@
     <ClInclude Include="..\src\framework\graphics\graphics.h">
       <Filter>Header Files\framework\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\framework\graphics\hardwarebuffer.h">
-      <Filter>Header Files\framework\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\framework\graphics\image.h">
       <Filter>Header Files\framework\graphics</Filter>
     </ClInclude>
@@ -801,9 +795,6 @@
       <Filter>Header Files\framework\sound</Filter>
     </ClInclude>
     <ClInclude Include="..\src\framework\stdext\any.h">
-      <Filter>Header Files\framework\stdext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\framework\stdext\boolean.h">
       <Filter>Header Files\framework\stdext</Filter>
     </ClInclude>
     <ClInclude Include="..\src\framework\stdext\cast.h">
@@ -1055,7 +1046,7 @@
     <ClInclude Include="..\src\client\animator.h">
       <Filter>Header Files\client</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\client\config.h">
+    <ClInclude Include="..\src\client\features.h">
       <Filter>Header Files\client</Filter>
     </ClInclude>
     <ClInclude Include="..\src\framework\graphics\drawpool.h">
@@ -1064,7 +1055,7 @@
     <ClInclude Include="..\src\framework\graphics\pool.h">
       <Filter>Header Files\framework\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\gitinfo.h">
+    <ClInclude Include="..\src\framework\stdext\hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

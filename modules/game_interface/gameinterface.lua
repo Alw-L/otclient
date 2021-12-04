@@ -390,7 +390,7 @@ function tryLogout(prompt)
             end
         end
     else
-        msg = 'Are you sure you want to leave Cypbia?'
+        msg = 'Are you sure you want to leave Delvine?'
 
         yesCallback = function()
             g_game.safeLogout()

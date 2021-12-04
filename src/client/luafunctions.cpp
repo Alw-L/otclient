@@ -766,10 +766,8 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("setDrawHealthBars", &UIMap::setDrawHealthBars);
     g_lua.bindClassMemberFunction<UIMap>("setDrawLights", &UIMap::setDrawLights);
     g_lua.bindClassMemberFunction<UIMap>("setDrawViewportEdge", &UIMap::setDrawViewportEdge);
-    g_lua.bindClassMemberFunction<UIMap>("setDrawManaBar", &UIMap::setDrawManaBar);
     g_lua.bindClassMemberFunction<UIMap>("setKeepAspectRatio", &UIMap::setKeepAspectRatio);
     g_lua.bindClassMemberFunction<UIMap>("setMapShader", &UIMap::setMapShader);
-    g_lua.bindClassMemberFunction<UIMap>("setMinimumAmbientLight", &UIMap::setMinimumAmbientLight);
     g_lua.bindClassMemberFunction<UIMap>("setShadowFloorIntensity", &UIMap::setShadowFloorIntensity);
     g_lua.bindClassMemberFunction<UIMap>("setLimitVisibleRange", &UIMap::setLimitVisibleRange);
     g_lua.bindClassMemberFunction<UIMap>("isMultifloor", &UIMap::isMultifloor);
@@ -797,8 +795,6 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("getVisibleCreatures", &UIMap::getVisibleCreatures);
     g_lua.bindClassMemberFunction<UIMap>("getSpectators", &UIMap::getSpectators);
     g_lua.bindClassMemberFunction<UIMap>("getSightSpectators", &UIMap::getSightSpectators);
-    g_lua.bindClassMemberFunction<UIMap>("setCrosshairTexture", &UIMap::setCrosshairTexture);
-    g_lua.bindClassMemberFunction<UIMap>("setDrawHighlightTarget", &UIMap::setDrawHighlightTarget);
     g_lua.bindClassMemberFunction<UIMap>("setAntiAliasing", &UIMap::setAntiAliasing);
     g_lua.bindClassMemberFunction<UIMap>("setRenderScale", &UIMap::setRenderScale);
 

@@ -3,7 +3,7 @@ local defaultOptions = {
     showFps = true,
     showPing = true,
     fullscreen = false,
-    classicControl = false,
+    classicControl = true,
     smartWalk = false,
     preciseControl = false,
     autoChaseOverride = true,
@@ -23,10 +23,8 @@ local defaultOptions = {
     enableAudio = false,
     enableMusicSound = false,
     musicSoundVolume = 100,
-    enableLights = true,
     drawViewportEdge = false,
     floatingEffect = false,
-    ambientLight = 0,
     displayNames = true,
     displayHealth = true,
     displayMana = true,
@@ -34,11 +32,8 @@ local defaultOptions = {
     dontStretchShrink = false,
     turnDelay = 30,
     hotkeyDelay = 30,
-    crosshair = 'default',
-    enableHighlightMouseTarget = true,
     antiAliasing = true,
     renderScale = 100,
-    shadowFloorIntensity = 15,
     walkingKeysRepeatDelay = 10,
     smoothWalk = true,
     precisionWalk = false
@@ -62,44 +57,6 @@ local chooseSkillComboBox
 skillsLoaded = false
 
 local function setupGraphicsEngines()
-    local enginesRadioGroup = UIRadioGroup.create()
-    local ogl1 = graphicsPanel:getChildById('opengl1')
-    local ogl2 = graphicsPanel:getChildById('opengl2')
-    local dx9 = graphicsPanel:getChildById('directx9')
-    enginesRadioGroup:addWidget(ogl1)
-    enginesRadioGroup:addWidget(ogl2)
-    enginesRadioGroup:addWidget(dx9)
-
-    if g_window.getPlatformType() == 'WIN32-EGL' then
-        enginesRadioGroup:selectWidget(dx9)
-        ogl1:setEnabled(false)
-        ogl2:setEnabled(false)
-        dx9:setEnabled(true)
-    else
-        ogl1:setEnabled(g_graphics.isPainterEngineAvailable(1))
-        ogl2:setEnabled(g_graphics.isPainterEngineAvailable(2))
-        dx9:setEnabled(false)
-        if g_graphics.getPainterEngine() == 2 then
-            enginesRadioGroup:selectWidget(ogl2)
-        else
-            enginesRadioGroup:selectWidget(ogl1)
-        end
-
-        if not dx9:isEnabled() then
-            dx9:hide()
-        end
-
-        if g_app.getOs() ~= 'windows' then dx9:hide() end
-    end
-
-    enginesRadioGroup.onSelectionChange =
-        function(self, selected)
-            if selected == ogl1 then
-                setOption('painterEngine', 1)
-            elseif selected == ogl2 then
-                setOption('painterEngine', 2)
-            end
-        end
 end
 
 function init()
@@ -154,7 +111,7 @@ function init()
     --     toggleOption('enableAudio')
     -- end)
 
-    addEvent(function() setup() end)
+    --addEvent(function() setup() end)
 end
 
 function terminate()
@@ -167,34 +124,12 @@ function terminate()
 end
 
 function setupComboBox()
-    crosshairCombobox = miscPanel:recursiveGetChildById('crosshair')
-
-    crosshairCombobox:addOption('Disabled', 'disabled')
-    crosshairCombobox:addOption('Default', 'default')
-    crosshairCombobox:addOption('Full', 'full')
-
-    crosshairCombobox.onOptionChange = function(comboBox, option)
-        setOption('crosshair', comboBox:getCurrentOption().data)
-    end
-
-    renderScaleCombobox = graphicsPanel:recursiveGetChildById('renderScale')
-
-    renderScaleCombobox:addOption('50%', 50)
-    renderScaleCombobox:addOption('75%', 75)
-    renderScaleCombobox:addOption('100%', 100)
-    renderScaleCombobox:addOption('150%', 150)
-    renderScaleCombobox:addOption('200%', 200)
-
-    renderScaleCombobox.onOptionChange =
-        function(comboBox, option)
-            setOption('renderScale', comboBox:getCurrentOption().data)
-        end
 end
 
 
 function setup()
-    setupComboBox()
-    setupGraphicsEngines()
+    --setupComboBox()
+    --setupGraphicsEngines()
 
     -- load options
     for k, v in pairs(defaultOptions) do
@@ -230,13 +165,11 @@ function toggleDisplays()
         setOption('displayNames', false)
     elseif options['displayHealth'] then
         setOption('displayHealth', false)
-        setOption('displayMana', false)
     else
         if not options['displayNames'] and not options['displayHealth'] then
             setOption('displayNames', true)
         else
             setOption('displayHealth', true)
-            setOption('displayMana', true)
         end
     end
 end
@@ -288,21 +221,6 @@ function setOption(key, value, force)
                                                                            'Game framerate limit: %s',
                                                                            text))
         g_app.setMaxFps(v)
-    elseif key == 'enableLights' then
-        gameMapPanel:setDrawLights(value and options['ambientLight'] < 100)
-        graphicsPanel:getChildById('ambientLight'):setEnabled(value)
-        graphicsPanel:getChildById('ambientLightLabel'):setEnabled(value)
-    elseif key == 'ambientLight' then
-        graphicsPanel:getChildById('ambientLightLabel'):setText(tr(
-                                                                    'Ambient light: %s%%',
-                                                                    value))
-        gameMapPanel:setMinimumAmbientLight(value / 100)
-        gameMapPanel:setDrawLights(options['enableLights'])
-    elseif key == 'shadowFloorIntensity' then
-        graphicsPanel:getChildById('shadowFloorIntensityLevel'):setText(tr(
-                                                                            'Shadow floor Intensity: %s%%',
-                                                                            value))
-        gameMapPanel:setShadowFloorIntensity(1 - (value / 100))
     elseif key == 'drawViewportEdge' then
         gameMapPanel:setDrawViewportEdge(value)
     elseif key == 'floatingEffect' then
@@ -313,8 +231,6 @@ function setOption(key, value, force)
         gameMapPanel:setDrawNames(value)
     elseif key == 'displayHealth' then
         gameMapPanel:setDrawHealthBars(value)
-    elseif key == 'displayMana' then
-        gameMapPanel:setDrawManaBar(value)
     elseif key == 'displayText' then
         gameMapPanel:setDrawTexts(value)
     elseif key == 'dontStretchShrink' then
@@ -365,13 +281,6 @@ function setOption(key, value, force)
                 smoothButton:setChecked(true)
             end
         end
-    elseif key == 'crosshair' then
-        local crossPath = '/images/game/crosshair/'
-        local newValue = value
-        if newValue == 'disabled' then newValue = nil end
-        gameMapPanel:setCrosshairTexture(
-            newValue and crossPath .. newValue or nil)
-        crosshairCombobox:setCurrentOptionByData(newValue, true)
     elseif key == 'enableHighlightMouseTarget' then
         gameMapPanel:setDrawHighlightTarget(value)
     elseif key == 'floorShadowing' then

@@ -9,7 +9,7 @@ local enterGameButton
 local clientBox
 local protocolLogin
 local motdEnabled = true
-local SERVER_IP = "62.171.163.70"
+local SERVER_IP = "127.0.0.1"
 
 -- private functions
 local function onError(protocol, message, errorCode)

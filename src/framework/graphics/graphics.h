@@ -92,7 +92,7 @@ private:
         m_useMipmaps{ true },
         m_useHardwareMipmaps{ true },
         m_useClampToEdge{ true },
-        m_shouldUseShaders{ true },
+        m_shouldUseShaders{ false },
         m_cacheBackbuffer{ true };
 
     PainterEngine m_prefferedPainterEngine;

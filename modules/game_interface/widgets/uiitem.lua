@@ -19,7 +19,7 @@ local getRightDownSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x+2, y 
 local getRightTopSlot = rootWidget:recursiveGetChildByPos({x = mousePos.x+2, y = mousePos.y+2})
 local WindowContents = rootWidget:recursiveGetChildByPos(mousePos)
 
-  if WindowContents:getStyleName() == "ContainerWindow" then
+  if WindowContents ~= nil and WindowContents:getStyleName() == "ContainerWindow" then
     if getLeftTopSlot:getStyleName() == "Item" then
       local item = self.currentDragThing
       if item:isItem() then

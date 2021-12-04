@@ -208,11 +208,6 @@ void MapView::drawFloor()
             }
         }
 
-        if(m_crosshairTexture && m_mousePosition.isValid()) {
-            const Point& point = transformPositionTo2D(m_mousePosition, cameraPosition);
-            const auto crosshairRect = Rect(point, m_tileSize, m_tileSize);
-            g_drawPool.addTexturedRect(crosshairRect, m_crosshairTexture);
-        }
     }
 }
 

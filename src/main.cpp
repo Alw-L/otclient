@@ -42,6 +42,7 @@ int main(int argc, const char* argv[])
 #ifdef WIN32
         MessageBoxA(NULL, "Encryption complete", "Success", 0);
 #endif
+
         return 0;
     }
 #endif
@@ -51,9 +52,23 @@ int main(int argc, const char* argv[])
     g_client.init(args);
 
     // find script init.lua and run it
-    if(!g_resources.discoverWorkDir("init.lua"))
+
+    if (!g_resources.discoverWorkDir(g_app.getCompactName() + ".exe"))
         g_logger.fatal("Unable to find work directory, the application cannot be initialized.");
 
+#if ENABLE_ENCRYPTION == 1
+    if (!g_resources.addSearchPath(g_resources.getWorkDir() + "tibia.dat", true))
+        g_logger.fatal("Unable to add data to the search path");
+
+    if (!g_resources.addSearchPath(g_resources.getWorkDir() + "tibia.spr", true))
+        g_logger.fatal("Unable to add modules to the search path");
+#else
+    if (!g_resources.addSearchPath(g_resources.getWorkDir() + "data", true))
+        g_logger.fatal("Unable to add data to the search path");
+
+    if (!g_resources.addSearchPath(g_resources.getWorkDir() + "modules", true))
+        g_logger.fatal("Unable to add modules to the search path");
+#endif
     if(!g_lua.safeRunScript("init.lua"))
         g_logger.fatal("Unable to run script init.lua!");
 
