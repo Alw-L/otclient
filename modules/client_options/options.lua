@@ -124,8 +124,18 @@ function terminate()
 end
 
 function setupComboBox()
-end
+    antialiasingModeCombobox = graphicsPanel:recursiveGetChildById(
+                                   'antialiasingMode')
 
+    antialiasingModeCombobox:addOption('None', 0)
+    antialiasingModeCombobox:addOption('Antialiasing', 1)
+    antialiasingModeCombobox:addOption('Smooth Retro', 2)
+
+    antialiasingModeCombobox.onOptionChange =
+        function(comboBox, option)
+            setOption('antialiasingMode', comboBox:getCurrentOption().data)
+        end
+end
 
 function setup()
     --setupComboBox()
@@ -184,7 +194,13 @@ function setOption(key, value, force)
     if key == 'vsync' then
         g_window.setVerticalSync(value)
     elseif key == 'showFps' then
-        modules.game_interface.setFpsVisible(value)
+        modules.client_topmenu.setFpsVisible(value)
+    elseif key == 'optimizeFps' then
+        g_app.optimize(value)
+    elseif key == 'forceEffectOptimization' then
+        g_app.forceEffectOptimization(value)
+    elseif key == 'drawEffectOnTop' then
+        g_app.setDrawEffectOnTop(value)
     elseif key == 'showPing' then
         modules.game_interface.setPingVisible(value)
     elseif key == 'fullscreen' then
@@ -286,15 +302,9 @@ function setOption(key, value, force)
     elseif key == 'floorShadowing' then
         gameMapPanel:setFloorShadowingFlag(value)
         floorShadowingComboBox:setCurrentOptionByData(value, true)
-    elseif key == 'antiAliasing' then
-        gameMapPanel:setAntiAliasing(value)
-    elseif key == 'renderScale' then
-        gameMapPanel:setRenderScale(value)
-        renderScaleCombobox:setCurrentOptionByData(value, true)
-        if not force and value > 100 then
-            displayInfoBox(tr('Warning'), tr(
-                               'Rendering scale above 100%% will drop performance and visual bugs may occur.'))
-        end
+    elseif key == 'antialiasingMode' then
+        gameMapPanel:setAntiAliasingMode(value)
+        antialiasingModeCombobox:setCurrentOptionByData(value, true)
     end
     -- change value for keybind updates
     for _, panel in pairs(optionsTabBar:getTabsPanel()) do

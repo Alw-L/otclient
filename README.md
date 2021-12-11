@@ -12,12 +12,11 @@
 - C++20
 - Refactored/Optimized Rendering System
 - New Light System
-- Render Scale System (FAKE ONE)
 - Idle Animation Support
 - Highlight Mouse Target (press shift to select any object)
 - Crosshair
 - Floor Shadowing
-- Anti-Aliasing Option
+- Anti-Aliasing Mode Options (Note: Smooth Retro will consume a little more GPU)
 - Floating Effects Option
 - Adjusted Path Finding
 - Optimized Terminal

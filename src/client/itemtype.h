@@ -25,7 +25,6 @@
 
 #include <framework/core/declarations.h>
 #include <framework/luaengine/luaobject.h>
-#include <framework/xml/tinyxml.h>
 
 enum ItemCategory : uint8 {
     ItemCategoryInvalid = 0,
@@ -129,8 +128,6 @@ enum ClientVersion
 class ItemType : public LuaObject
 {
 public:
-    ItemType();
-
     void unserialize(const BinaryTreePtr& node);
 
     void setServerId(uint16 serverId) { m_attribs.set(ItemTypeAttrServerId, serverId); }
@@ -152,7 +149,7 @@ public:
     bool isWritable() { return m_attribs.get<bool>(ItemTypeAttrWritable); }
 
 private:
-    ItemCategory m_category;
+    ItemCategory m_category{ ItemCategoryInvalid };
     bool m_null{ true };
 
     stdext::dynamic_storage<uint8> m_attribs;

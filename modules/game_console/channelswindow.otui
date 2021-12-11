@@ -47,7 +47,7 @@ MainWindow
     !text: tr('Open a private message channel') .. ':'
     color: #bbbbbb
     anchors.right: parent.right
-    anchors.left: prev.left
+    anchors.left: parent.left
     anchors.bottom: next.top
     text-align: left
     margin-bottom: 3

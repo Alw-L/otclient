@@ -24,7 +24,6 @@
 #define TILE_H
 
 #include <framework/luaengine/luaobject.h>
-#include "creature.h"
 #include "declarations.h"
 #include "effect.h"
 #include "item.h"
@@ -77,7 +76,7 @@ public:
 
     ThingPtr getTopLookThing();
     ThingPtr getTopUseThing();
-    CreaturePtr getTopCreature(const bool checkAround = false);
+    CreaturePtr getTopCreature(bool checkAround = false);
     ThingPtr getTopMoveThing();
     ThingPtr getTopMultiUseThing();
 
@@ -85,6 +84,7 @@ public:
     const Position& getPosition() { return m_position; }
     const std::vector<CreaturePtr>& getWalkingCreatures() { return m_walkingCreatures; }
     const std::vector<ThingPtr>& getThings() { return m_things; }
+    const std::vector<EffectPtr>& getEffects() { return m_effects; }
     std::vector<CreaturePtr> getCreatures();
 
     std::vector<ItemPtr> getItems();
@@ -114,6 +114,7 @@ public:
     bool limitsFloorsView(bool isFreeView = false);
     bool canErase();
 
+    bool hasEffect() { return !m_effects.empty(); }
     bool hasGround() { return (m_ground && m_ground->isSingleGround()) || m_countFlag.hasGroundBorder; };
     bool hasTopGround() { return (m_ground && m_ground->isTopGround()) || m_countFlag.hasTopGroundBorder; }
     bool hasSurface() { return m_countFlag.hasTopItem || !m_effects.empty() || m_countFlag.hasBottomItem || m_countFlag.hasCommonItem || m_countFlag.hasCreature || !m_walkingCreatures.empty() || hasTopGround(); }
@@ -136,7 +137,7 @@ public:
     uint32 getHouseId() { return m_houseId; }
     bool isHouseTile() { return m_houseId != 0 && (m_flags & TILESTATE_HOUSE) == TILESTATE_HOUSE; }
 
-    void select(const bool noFilter = false);
+    void select(bool noFilter = false);
     void unselect();
     bool isSelected() { return m_highlight.enabled; }
 
@@ -149,7 +150,7 @@ public:
 
     void analyzeThing(const ThingPtr& thing, bool add);
 
-    bool canRender(const bool drawViewportEdge, const Position& cameraPosition, const AwareRange viewPort, LightView* lightView);
+    bool canRender(bool drawViewportEdge, const Position& cameraPosition, AwareRange viewPort, LightView* lightView);
 
 private:
     struct CountFlag {
@@ -190,10 +191,8 @@ private:
 
     Position m_position;
 
-    uint8 m_drawElevation, m_minimapColor,
-        m_currentFirstVisibleFloor{ UINT8_MAX };
-
-    uint32 m_flags, m_houseId;
+    uint8 m_drawElevation{ 0 }, m_minimapColor{ 0 };
+    uint32 m_flags{ 0 }, m_houseId{ 0 };
 
     std::array<Position, 8> m_positionsAround;
     std::vector<std::pair<Otc::Direction, Position>> m_positionsBorder;

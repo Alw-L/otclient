@@ -29,13 +29,8 @@
  //@bindsingleton g_sprites
 class SpriteManager
 {
-    enum {
-        SPRITE_DATA_SIZE = SPRITE_SIZE * SPRITE_SIZE * 4
-    };
-
 public:
-    SpriteManager();
-
+    void init();
     void terminate();
 
     bool loadSpr(std::string file);
@@ -49,10 +44,22 @@ public:
     ImagePtr getSpriteImage(int id);
     bool isLoaded() { return m_loaded; }
 
+    const TexturePtr& getLightTexture() const { return m_lightTexture; }
+    const TexturePtr& getShadeTexture() const { return m_shadeTexture; }
+
 private:
+    enum {
+        SPRITE_DATA_SIZE = SPRITE_SIZE * SPRITE_SIZE * 4
+    };
+
+    void generateLightTexture(),
+        generateShadeTexture();
+
+    TexturePtr m_lightTexture, m_shadeTexture;
+
     bool m_loaded{ false };
-    uint32 m_signature;
-    int m_spritesCount;
+    uint32 m_signature{ 0 };
+    int m_spritesCount{ 0 };
     int m_spritesOffset;
     FileStreamPtr m_spritesFile;
 };

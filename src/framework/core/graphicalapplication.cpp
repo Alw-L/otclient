@@ -23,15 +23,13 @@
 #include "graphicalapplication.h"
 #include <framework/core/clock.h>
 #include <framework/core/eventdispatcher.h>
-#include <framework/platform/platformwindow.h>
-#include <framework/ui/uimanager.h>
+#include <framework/graphics/drawpool.h>
 #include <framework/graphics/graphics.h>
 #include <framework/graphics/particlemanager.h>
 #include <framework/graphics/texturemanager.h>
-#include <framework/graphics/painter.h>
 #include <framework/input/mouse.h>
-#include <framework/graphics/framebuffermanager.h>
-#include <framework/graphics/drawpool.h>
+#include <framework/platform/platformwindow.h>
+#include <framework/ui/uimanager.h>
 
 #include "framework/stdext/time.h"
 
@@ -52,8 +50,6 @@ void GraphicalApplication::init(std::vector<std::string>& args)
     g_window.setOnInputEvent([this](auto&& PH1) { inputEvent(std::forward<decltype(PH1)>(PH1)); });
     g_window.setOnClose([this] { close(); });
 
-    m_foregroundFramed = g_drawPool.createPoolF(PoolType::FOREGROUND);
-
     g_mouse.init();
 
     // initialize ui
@@ -61,6 +57,9 @@ void GraphicalApplication::init(std::vector<std::string>& args)
 
     // initialize graphics
     g_graphics.init();
+    g_drawPool.init();
+
+    m_foregroundFramed = g_drawPool.createPoolF(FOREGROUND);
 
     // fire first resize event
     resize(g_window.getSize());
@@ -69,8 +68,6 @@ void GraphicalApplication::init(std::vector<std::string>& args)
     // initialize sound
     g_sounds.init();
 #endif
-
-    g_drawPool.init();
 }
 
 void GraphicalApplication::deinit()

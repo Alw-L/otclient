@@ -21,10 +21,7 @@
  */
 
 #include "client.h"
-#include <framework/core/configmanager.h>
-#include <framework/core/modulemanager.h>
 #include <framework/core/resourcemanager.h>
-#include <framework/graphics/graphics.h>
 #include "game.h"
 #include "map.h"
 #include "minimap.h"
@@ -42,6 +39,7 @@ void Client::init(std::vector<std::string>& /*args*/)
     g_minimap.init();
     g_game.init();
     g_shaders.init();
+    g_sprites.init();
     g_things.init();
 
     //TODO: restore options

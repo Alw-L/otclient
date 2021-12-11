@@ -26,20 +26,6 @@
 #include <framework/core/clock.h>
 #include <framework/core/filestream.h>
 
-Animator::Animator()
-{
-    m_animationPhases = 0;
-    m_startPhase = 0;
-    m_loopCount = 0;
-    m_async = false;
-    m_currentDuration = 0;
-    m_currentDirection = AnimDirForward;
-    m_currentLoop = 0;
-    m_lastPhaseTicks = 0;
-    m_isComplete = false;
-    m_phase = 0;
-}
-
 void Animator::unserialize(int animationPhases, const FileStreamPtr& fin)
 {
     m_animationPhases = animationPhases;
@@ -65,9 +51,9 @@ void Animator::serialize(const FileStreamPtr& fin)
     fin->add32(m_loopCount);
     fin->add8(m_startPhase);
 
-    for(std::tuple<int, int> phase : m_phaseDurations) {
-        fin->addU32(std::get<0>(phase));
-        fin->addU32(std::get<1>(phase));
+    for(const auto& phase : m_phaseDurations) {
+        fin->addU32(phase.first);
+        fin->addU32(phase.second);
     }
 }
 
@@ -123,13 +109,15 @@ int Animator::getPhase()
     return m_phase;
 }
 
-int Animator::getPhaseAt(ticks_t time)
+int Animator::getPhaseAt(Timer& timer)
 {
+    const ticks_t time = timer.ticksElapsed();
+
     int index = 0;
     ticks_t total = 0;
 
     for(const auto& pair : m_phaseDurations) {
-        total += std::get<1>(pair);
+        total += pair.first + (pair.second - pair.first);
 
         if(time < total) {
             return index;
@@ -138,6 +126,7 @@ int Animator::getPhaseAt(ticks_t time)
         ++index;
     }
 
+    timer.restart();
     return std::min<int>(index, m_animationPhases - 1);
 }
 
@@ -145,6 +134,7 @@ int Animator::getStartPhase() const
 {
     if(m_startPhase > -1)
         return m_startPhase;
+
     return static_cast<int>(stdext::random_range(0, static_cast<long>(m_animationPhases)));
 }
 
@@ -188,11 +178,10 @@ int Animator::getPhaseDuration(int phase)
 {
     assert(phase < static_cast<int>(m_phaseDurations.size()));
 
-    std::tuple<int, int> data = m_phaseDurations.at(phase);
-    const int min = std::get<0>(data);
-    const int max = std::get<1>(data);
-    if(min == max) return min;
-    return static_cast<int>(stdext::random_range(static_cast<long>(min), static_cast<long>(max)));
+    const auto& data = m_phaseDurations.at(phase);
+    if(data.first == data.second) return data.first;
+
+    return static_cast<int>(stdext::random_range(static_cast<long>(data.first), static_cast<long>(data.second)));
 }
 
 void Animator::calculateSynchronous()
@@ -220,8 +209,8 @@ ticks_t Animator::getTotalDuration()
 {
     ticks_t time = 0;
     for(const auto& pair : m_phaseDurations) {
-        time += std::get<1>(pair);
+        time += pair.first + (pair.second - pair.first);
     }
 
-    return time;
+    return time * m_loopCount;
 }

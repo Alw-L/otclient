@@ -50,7 +50,12 @@ Panel
   OptionCheckBox
     id: optimizeFps
     !text: tr('Optimize FPS')
-    !tooltip: tr('try to optimize when the frame rate is below 60. VISUAL PROBLEMS MAY OCCUR')
+    !tooltip: tr('Try to optimize when the frame rate is below 60. VISUAL PROBLEMS MAY OCCUR')
+
+  OptionCheckBox
+    id: forceEffectOptimization
+    !text: tr('Force Effect Optimization')
+    !tooltip: tr('Will avoid drawing effects on certain occasions.')
 
   OptionCheckBox
     id: enableLights
@@ -62,6 +67,11 @@ Panel
     anchors.right: prev.right
     margin-top: -5
     margin-left: -7
+
+  OptionCheckBox
+    id: drawEffectOnTop
+    !text: tr('Draw Effect On Top')
+    !tooltip: tr('Draw effect after drawing the entire floor.')
 
   OptionCheckBox
     id: drawViewportEdge
@@ -120,15 +130,15 @@ Panel
     margin-left: -7
 
   Label
-    id: renderScaleLabel
-    !text: tr('Render Scale')..':'
+    id: antialiasingModeLabel
+    !text: tr('Antialiasing Mode')..':'
     phantom: false
     anchors.left: prev.left
     anchors.top: prev.bottom
     margin-top: 13
 
   ComboBox
-    id: renderScale
+    id: antialiasingMode
     width: 120
     anchors.left: prev.right
     anchors.top: prev.top

@@ -86,16 +86,22 @@ MainWindow
     margin-top: -5
     margin-left: -7
     
-  OptionCheck
-    id: antiAliasing
-    !text: tr('Anti-Aliasing')
-
-  OptionsBroder
-    anchors.top: prev.top
+  Label
+    id: antialiasingModeLabel
+    !text: tr('Antialiasing Mode')..':'
+    phantom: false
     anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
+    anchors.top: prev.bottom
+    margin-top: 13
+
+  ComboBox
+    id: antialiasingMode
+    width: 120
+    anchors.left: prev.right
+    anchors.top: prev.top
+    margin-top: -4
+    margin-left: 5
+    mouse-scroll: false
 
   Label
     id: backgroundFrameRateLabel

@@ -24,11 +24,8 @@
 #define FRAMEBUFFER_H
 
 #include "declarations.h"
-#include "texture.h"
 #include "painter.h"
-#include <framework/core/scheduledevent.h>
-#include <framework/core/timer.h>
-#include <client/const.h>
+#include "texture.h"
 
 enum class DrawMethodType {
     DRAW_FILL_COORDS,
@@ -89,6 +86,9 @@ private:
         m_smooth{ true },
         m_useAlphaWriting{ false },
         m_disableBlend{ false };
+
+    Rect m_dest, m_src;
+    CoordsBuffer m_coordsBuffer;
 };
 
 #endif

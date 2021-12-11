@@ -38,7 +38,7 @@ public:
     ItemPtr getItem(int slot);
     std::deque<ItemPtr> getItems() { return m_items; }
     int getItemsCount() { return m_items.size(); }
-    Position getSlotPosition(int slot) { return Position(0xffff, m_id | 0x40, slot); }
+    Position getSlotPosition(int slot) { return { 0xffff, m_id | 0x40, static_cast<uint8>(slot) }; }
     int getId() { return m_id; }
     int getCapacity() { return m_capacity; }
     ItemPtr getContainerItem() { return m_containerItem; }
@@ -69,7 +69,7 @@ private:
     ItemPtr m_containerItem;
     std::string m_name;
     bool m_hasParent;
-    bool m_closed;
+    bool m_closed{ false };
     bool m_unlocked;
     bool m_hasPages;
     int m_size;

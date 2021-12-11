@@ -11,7 +11,7 @@ MainWindow
     anchors.top: parent.top
     anchors.left: parent.left
     padding: 8 8 8 8
-    size: 71 71
+    size: 72 72
     
 
 
@@ -127,7 +127,8 @@ MainWindow
     id: addon2
     !text: tr('Addon 2')
     width: 72
-    anchors.top: prev.top
+    margin-top: 8
+    anchors.top: colorBoxPanel.bottom
     anchors.right: colorBoxPanel.right
     enabled: false
     margin-right: 40

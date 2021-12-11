@@ -795,8 +795,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("getVisibleCreatures", &UIMap::getVisibleCreatures);
     g_lua.bindClassMemberFunction<UIMap>("getSpectators", &UIMap::getSpectators);
     g_lua.bindClassMemberFunction<UIMap>("getSightSpectators", &UIMap::getSightSpectators);
-    g_lua.bindClassMemberFunction<UIMap>("setAntiAliasing", &UIMap::setAntiAliasing);
-    g_lua.bindClassMemberFunction<UIMap>("setRenderScale", &UIMap::setRenderScale);
+    g_lua.bindClassMemberFunction<UIMap>("setAntiAliasingMode", &UIMap::setAntiAliasingMode);
 
     g_lua.registerClass<UIMinimap, UIWidget>();
     g_lua.bindClassStaticFunction<UIMinimap>("create", [] { return UIMinimapPtr(new UIMinimap); });

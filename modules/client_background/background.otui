@@ -47,7 +47,7 @@ Panel
     anchors.left: accessAccount.left
     margin-top: 10
     width: 88
-    @onClick: modules.client_options.toggle()
+    @onClick: modules.client_options_revamp.toggle()
 
   Button
     id: info

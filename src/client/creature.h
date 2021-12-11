@@ -24,14 +24,11 @@
 #define CREATURE_H
 
 #include <framework/core/declarations.h>
-#include <framework/core/scheduledevent.h>
 #include <framework/core/timer.h>
 #include <framework/graphics/cachedtext.h>
-#include <framework/graphics/fontmanager.h>
 #include "mapview.h"
 #include "outfit.h"
 #include "thing.h"
-#include "tile.h"
 
  // @bindclass
 class Creature : public Thing
@@ -48,8 +45,8 @@ public:
 
     void internalDrawOutfit(Point dest, float scaleFactor, bool animateWalk, TextureType textureType, Otc::Direction direction, Color color);
 
-    void drawOutfit(const Rect& destRect, bool resize, const Color color = Color::white);
-    void drawInformation(const Rect& parentRect, const Point& dest, float scaleFactor, Point drawOffset, const float horizontalStretchFactor, const float verticalStretchFactor, int drawFlags);
+    void drawOutfit(const Rect& destRect, bool resize, Color color = Color::white);
+    void drawInformation(const Rect& parentRect, const Point& dest, float scaleFactor, const Point& drawOffset, float horizontalStretchFactor, float verticalStretchFactor, int drawFlags);
 
     void setId(uint32 id) override { m_id = id; }
     void setName(const std::string& name);
@@ -148,29 +145,29 @@ protected:
     void updateWalkingTile();
     virtual void updateWalkAnimation();
     virtual void updateWalkOffset(int totalPixelsWalked);
-    virtual void updateWalk(const bool isPreWalking = false);
+    virtual void updateWalk(bool isPreWalking = false);
     virtual void nextWalkUpdate();
     virtual void terminateWalk();
 
     void updateOutfitColor(Color color, Color finalColor, Color delta, int duration);
     void updateJump();
 
-    uint32 m_id;
+    uint32 m_id{ 0 };
     std::string m_name;
-    Otc::Direction m_direction;
+    Otc::Direction m_direction{ Otc::South };
     Outfit m_outfit;
     Light m_light;
 
-    int m_speed;
+    int m_speed{ 200 };
     int m_calculatedStepSpeed;
 
     double m_baseSpeed;
-    uint8 m_healthPercent;
-    uint8 m_skull;
-    uint8 m_shield;
-    uint8 m_emblem;
+    uint8 m_healthPercent{ 101 };
+    uint8 m_skull{ Otc::SkullNone };
+    uint8 m_shield{ Otc::ShieldNone };
+    uint8 m_emblem{ Otc::EmblemNone };
     uint8 m_type;
-    uint8 m_icon;
+    uint8 m_icon{ Otc::NpcIconNone };
     TexturePtr m_skullTexture;
     TexturePtr m_shieldTexture;
     TexturePtr m_emblemTexture;
@@ -188,7 +185,7 @@ protected:
     Color m_timedSquareColor;
     Color m_staticSquareColor;
     Color m_informationColor;
-    Color m_outfitColor;
+    Color m_outfitColor{ Color::white };
     CachedText m_nameCache;
     ScheduledEventPtr m_outfitColorUpdateEvent;
     Timer m_outfitColorTimer;
@@ -196,9 +193,9 @@ protected:
     std::array<double, Otc::LastSpeedFormula> m_speedFormula;
 
     // walk related
-    int m_walkAnimationPhase;
-    int m_walkedPixels;
-    uint m_footStep;
+    int m_walkAnimationPhase{ 0 };
+    int m_walkedPixels{ 0 };
+    uint m_footStep{ 0 };
     Timer m_walkTimer;
     Timer m_footTimer;
     TilePtr m_walkingTile;
@@ -208,8 +205,8 @@ protected:
     ScheduledEventPtr m_walkFinishAnimEvent;
     EventPtr m_disappearEvent;
     Point m_walkOffset;
-    Otc::Direction m_walkTurnDirection;
-    Otc::Direction m_lastStepDirection;
+    Otc::Direction m_walkTurnDirection{ Otc::InvalidDirection };
+    Otc::Direction m_lastStepDirection{ Otc::InvalidDirection };
     Position m_lastStepFromPosition;
     Position m_lastStepToPosition;
     Position m_oldPosition;

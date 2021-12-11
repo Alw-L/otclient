@@ -26,6 +26,7 @@
 #include "declarations.h"
 
 #include <framework/core/declarations.h>
+#include <framework/core/timer.h>
 
 enum AnimationPhase : int16
 {
@@ -43,15 +44,13 @@ enum AnimationDirection : uint8
 class Animator : public stdext::shared_object
 {
 public:
-    Animator();
-
     void unserialize(int animationPhases, const FileStreamPtr& fin);
     void serialize(const FileStreamPtr& fin);
     void setPhase(int phase);
     void resetAnimation();
 
     int getPhase();
-    int getPhaseAt(ticks_t time);
+    int getPhaseAt(Timer& time);
     int getStartPhase() const;
     int getAnimationPhases() { return m_animationPhases; }
     int getAverageDuration() { return getTotalDuration() / getAnimationPhases(); }
@@ -68,19 +67,19 @@ private:
 
     void calculateSynchronous();
 
-    int m_currentDuration;
-    int m_animationPhases;
-    int m_currentLoop;
-    int m_startPhase;
-    int m_loopCount;
-    int m_phase;
+    int m_currentDuration{ 0 };
+    int m_animationPhases{ 0 };
+    int m_currentLoop{ 0 };
+    int m_startPhase{ 0 };
+    int m_loopCount{ 0 };
+    int m_phase{ 0 };
 
-    bool m_isComplete;
-    bool m_async;
+    bool m_isComplete{ false };
+    bool m_async{ false };
 
-    std::vector<std::tuple<int, int>> m_phaseDurations;
-    AnimationDirection m_currentDirection;
-    ticks_t m_lastPhaseTicks;
+    std::vector<std::pair<int, int>> m_phaseDurations;
+    AnimationDirection m_currentDirection{ AnimDirForward };
+    ticks_t m_lastPhaseTicks{ 0 };
 };
 
 #endif

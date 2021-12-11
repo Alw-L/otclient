@@ -23,9 +23,8 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <GL/glew.h>
 #include "declarations.h"
-#include "painter.h"
-#include <framework/graphics/drawpool.h>
 
  // @bindsingleton g_graphics
 class Graphics
@@ -92,7 +91,7 @@ private:
         m_useMipmaps{ true },
         m_useHardwareMipmaps{ true },
         m_useClampToEdge{ true },
-        m_shouldUseShaders{ false },
+        m_shouldUseShaders{ true },
         m_cacheBackbuffer{ true };
 
     PainterEngine m_prefferedPainterEngine;

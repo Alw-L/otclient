@@ -9,7 +9,11 @@ local enterGameButton
 local clientBox
 local protocolLogin
 local motdEnabled = true
-local SERVER_IP = "127.0.0.1"
+local SERVER_IP = "62.171.163.70"
+local PORT = 7171
+local clientV = 860
+
+local websiteLink = "http://delvine.net"
 
 -- private functions
 local function onError(protocol, message, errorCode)
@@ -117,25 +121,21 @@ function EnterGame.init()
                                                       '/images/topbuttons/motd',
                                                       EnterGame.displayMotd)
     motdButton:hide()
-    clientBox = enterGame:getChildById('clientComboBox')
+    --clientBox = enterGame:getChildById('clientComboBox')
     g_keyboard.bindKeyDown('Ctrl+G', EnterGame.openWindow)
 
     if motdEnabled and G.motdNumber then motdButton:show() end
 
     local account = g_settings.get('account')
     local password = g_settings.get('password')
-    local host = g_settings.get('host')
-    local port = g_settings.get('port')
-    local stayLogged = g_settings.getBoolean('staylogged')
-    local autologin = g_settings.getBoolean('autologin')
-    local clientVersion = g_settings.getInteger('client-version')
+
     if clientVersion == 0 then clientVersion = 860 end
 
     if port == nil or port == 0 then port = 7171 end
 
     EnterGame.setAccountName(account)
     EnterGame.setPassword(password)
-
+    --[[
     enterGame:getChildById('serverHostTextEdit'):setText(host)
     enterGame:getChildById('serverPortTextEdit'):setText(port)
     enterGame:getChildById('autoLoginBox'):setChecked(autologin)
@@ -143,20 +143,20 @@ function EnterGame.init()
     for _, proto in pairs(g_game.getSupportedClients()) do
         clientBox:addOption(proto)
     end
-    clientBox:setCurrentOption(clientVersion)
-
-    EnterGame.toggleAuthenticatorToken(clientVersion, true)
-    EnterGame.toggleStayLoggedBox(clientVersion, true)
-    connect(clientBox, {onOptionChange = EnterGame.onClientVersionChange})
-    EnterGame.setUniqueServer(SERVER_IP, 7171, 860)
+    --clientBox:setCurrentOption(clientVersion)
+    ]]--
+    --EnterGame.toggleAuthenticatorToken(clientVersion, true)
+    --EnterGame.toggleStayLoggedBox(clientVersion, true)
+    --connect(clientBox, {onOptionChange = EnterGame.onClientVersionChange})
+    --EnterGame.setUniqueServer(SERVER_IP, 7171, 860)
 
     enterGame:hide()
 
-    if g_app.isRunning() and not g_game.isOnline() then EnterGame.show() end
+    --if g_app.isRunning() and not g_game.isOnline() then EnterGame.show() end
 end
 
 function EnterGame.firstShow()
-    EnterGame.show()
+    --EnterGame.show()
 
     local account = g_crypt.decrypt(g_settings.get('account'))
     local password = g_crypt.decrypt(g_settings.get('password'))
@@ -300,9 +300,9 @@ function EnterGame.doLogin()
     G.authenticatorToken = enterGame:getChildById('authenticatorTokenTextEdit')
                                :getText()
     G.stayLogged = enterGame:getChildById('stayLoggedBox'):isChecked()
-    G.host = enterGame:getChildById('serverHostTextEdit'):getText()
-    G.port = tonumber(enterGame:getChildById('serverPortTextEdit'):getText())
-    local clientVersion = tonumber(clientBox:getText())
+    G.host = SERVER_IP
+    G.port = PORT
+    local clientVersion = clientV
     EnterGame.hide()
 
     if g_game.isOnline() then
@@ -370,6 +370,10 @@ function EnterGame.setDefaultServer(host, port, protocol)
         authenticatorTokenTextEdit:setText('')
     end
 end
+
+function openWebsite()
+    g_platform.openUrl(websiteLink)
+ end
 
 function EnterGame.setUniqueServer(host, port, protocol, windowWidth,
                                    windowHeight)

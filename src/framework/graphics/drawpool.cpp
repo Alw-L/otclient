@@ -21,24 +21,24 @@
  */
 
 #include "drawpool.h"
-#include "declarations.h"
-#include <framework/core/declarations.h>
 #include <framework/graphics/framebuffermanager.h>
-#include <framework/graphics/graphics.h>
+#include "declarations.h"
+
+#include <utility>
 #include "painter.h"
 
 DrawPool g_drawPool;
 
 void DrawPool::init()
 {
-    n_unknowPool = g_drawPool.createPool(PoolType::UNKNOW);
+    n_unknowPool = g_drawPool.createPool(UNKNOW);
     use(n_unknowPool);
 }
 
 void DrawPool::terminate()
 {
     m_currentPool = nullptr;
-    for(int8 i = -1; ++i <= PoolType::UNKNOW;)
+    for(int8 i = -1; ++i <= UNKNOW;)
         m_pools[i] = nullptr;
 }
 
@@ -48,8 +48,8 @@ PoolFramedPtr DrawPool::createPoolF(const PoolType type)
 
     pool->m_framebuffer = g_framebuffers.createFrameBuffer(true);
 
-    if(type == PoolType::MAP) pool->m_framebuffer->disableBlend();
-    else if(type == PoolType::LIGHT) pool->m_framebuffer->setCompositionMode(Painter::CompositionMode_Light);
+    if(type == MAP) pool->m_framebuffer->disableBlend();
+    else if(type == LIGHT) pool->m_framebuffer->setCompositionMode(Painter::CompositionMode_Light);
 
     m_pools[type] = pool;
 
@@ -157,26 +157,26 @@ void DrawPool::drawObject(Pool::DrawObject& obj)
 
     for(const auto& method : obj.drawMethods) {
         if(method.type == Pool::DrawMethodType::BOUNDING_RECT) {
-            m_coordsbuffer.addBoudingRect(method.rects.first, method.intValue);
+            m_coordsBuffer.addBoudingRect(method.rects.first, method.intValue);
         } else if(method.type == Pool::DrawMethodType::RECT) {
             if(obj.drawMode == Painter::DrawMode::Triangles)
-                m_coordsbuffer.addRect(method.rects.first, method.rects.second);
+                m_coordsBuffer.addRect(method.rects.first, method.rects.second);
             else
-                m_coordsbuffer.addQuad(method.rects.first, method.rects.second);
+                m_coordsBuffer.addQuad(method.rects.first, method.rects.second);
         } else if(method.type == Pool::DrawMethodType::TRIANGLE) {
-            m_coordsbuffer.addTriangle(std::get<0>(method.points), std::get<1>(method.points), std::get<2>(method.points));
+            m_coordsBuffer.addTriangle(std::get<0>(method.points), std::get<1>(method.points), std::get<2>(method.points));
         } else if(method.type == Pool::DrawMethodType::UPSIDEDOWN_RECT) {
             if(obj.drawMode == Painter::DrawMode::Triangles)
-                m_coordsbuffer.addUpsideDownRect(method.rects.first, method.rects.second);
+                m_coordsBuffer.addUpsideDownRect(method.rects.first, method.rects.second);
             else
-                m_coordsbuffer.addUpsideDownQuad(method.rects.first, method.rects.second);
+                m_coordsBuffer.addUpsideDownQuad(method.rects.first, method.rects.second);
         } else if(method.type == Pool::DrawMethodType::REPEATED_RECT) {
-            m_coordsbuffer.addRepeatedRects(method.rects.first, method.rects.second);
+            m_coordsBuffer.addRepeatedRects(method.rects.first, method.rects.second);
         }
     }
 
-    g_painter->drawCoords(m_coordsbuffer, obj.drawMode);
-    m_coordsbuffer.clear();
+    g_painter->drawCoords(m_coordsBuffer, obj.drawMode);
+    m_coordsBuffer.clear();
 }
 
 void DrawPool::addTexturedRect(const Rect& dest, const TexturePtr& texture, const Color color)
@@ -189,7 +189,7 @@ void DrawPool::addTexturedRect(const Rect& dest, const TexturePtr& texture, cons
     if(dest.isEmpty() || src.isEmpty())
         return;
 
-    Pool::DrawMethod method{
+    const Pool::DrawMethod method{
         Pool::DrawMethodType::RECT,
         std::make_pair(dest, src),
         {},
@@ -208,7 +208,7 @@ void DrawPool::addUpsideDownTexturedRect(const Rect& dest, const TexturePtr& tex
     if(dest.isEmpty() || src.isEmpty())
         return;
 
-    Pool::DrawMethod method{ Pool::DrawMethodType::UPSIDEDOWN_RECT, std::make_pair(dest, src) };
+    const Pool::DrawMethod method{ Pool::DrawMethodType::UPSIDEDOWN_RECT, std::make_pair(dest, src) };
 
     auto state = generateState();
     state.color = color;
@@ -222,7 +222,7 @@ void DrawPool::addTexturedRepeatedRect(const Rect& dest, const TexturePtr& textu
     if(dest.isEmpty() || src.isEmpty())
         return;
 
-    Pool::DrawMethod method{ Pool::DrawMethodType::REPEATED_RECT,std::make_pair(dest, src) };
+    const Pool::DrawMethod method{ Pool::DrawMethodType::REPEATED_RECT,std::make_pair(dest, src) };
 
     auto state = generateState();
     state.color = color;
@@ -236,7 +236,7 @@ void DrawPool::addFilledRect(const Rect& dest, const Color color)
     if(dest.isEmpty())
         return;
 
-    Pool::DrawMethod method{ Pool::DrawMethodType::RECT,std::make_pair(dest, Rect()) };
+    const Pool::DrawMethod method{ Pool::DrawMethodType::RECT,std::make_pair(dest, Rect()) };
 
     auto state = generateState();
     state.color = color;
@@ -249,7 +249,7 @@ void DrawPool::addFilledTriangle(const Point& a, const Point& b, const Point& c,
     if(a == b || a == c || b == c)
         return;
 
-    Pool::DrawMethod method{ Pool::DrawMethodType::TRIANGLE, {}, std::make_tuple(a, b, c) };
+    const Pool::DrawMethod method{ Pool::DrawMethodType::TRIANGLE, {}, std::make_tuple(a, b, c) };
 
     auto state = generateState();
     state.color = color;
@@ -262,11 +262,11 @@ void DrawPool::addBoundingRect(const Rect& dest, const Color color, int innerLin
     if(dest.isEmpty() || innerLineWidth == 0)
         return;
 
-    Pool::DrawMethod method{
+    const Pool::DrawMethod method{
         Pool::DrawMethodType::BOUNDING_RECT,
         std::make_pair(dest, Rect()),
         {},{},
-        (uint16)innerLineWidth
+        static_cast<uint16>(innerLineWidth)
     };
 
     auto state = generateState();
@@ -277,7 +277,7 @@ void DrawPool::addBoundingRect(const Rect& dest, const Color color, int innerLin
 
 void DrawPool::addAction(std::function<void()> action)
 {
-    m_currentPool->m_objects.push_back(Pool::DrawObject{ {}, Painter::DrawMode::None, {}, action });
+    m_currentPool->m_objects.push_back(Pool::DrawObject{ {}, Painter::DrawMode::None, {}, std::move(action) });
 }
 
 Painter::PainterState DrawPool::generateState()
@@ -309,6 +309,18 @@ void DrawPool::use(const PoolFramedPtr& pool, const Rect& dest, const Rect& src)
     pool->m_dest = dest;
     pool->m_src = src;
     pool->m_state.alphaWriting = false;
+}
+
+void DrawPool::drawTexturedRect(const Rect& dest, const TexturePtr& texture, const Rect& src)
+{
+    if(dest.isEmpty() || src.isEmpty() || texture->isEmpty())
+        return;
+
+    g_painter->setTexture(texture.get());
+
+    m_coordsBuffer.addQuad(dest, src);
+    g_painter->drawCoords(m_coordsBuffer, Painter::DrawMode::TriangleStrip);
+    m_coordsBuffer.clear();
 }
 
 void DrawPool::updateHash(const Painter::PainterState& state, const Pool::DrawMethod& method)
