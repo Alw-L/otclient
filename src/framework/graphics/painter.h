@@ -23,10 +23,9 @@
 #ifndef PAINTER_H
 #define PAINTER_H
 
-#include <framework/graphics/declarations.h>
 #include <framework/graphics/coordsbuffer.h>
+#include <framework/graphics/declarations.h>
 #include <framework/graphics/paintershaderprogram.h>
-#include <framework/graphics/texture.h>
 
 class Painter
 {
@@ -98,8 +97,6 @@ public:
     virtual void clear(const Color& color) = 0;
 
     virtual void drawCoords(CoordsBuffer& coordsBuffer, DrawMode drawMode = DrawMode::Triangles) = 0;
-    virtual void drawTexturedRect(const Rect& dest, const TexturePtr& texture, const Rect& src) = 0;
-    virtual void drawFilledRect(const Rect& dest) = 0;
 
     virtual void setTexture(Texture* texture) = 0;
     virtual void setClipRect(const Rect& clipRect) = 0;

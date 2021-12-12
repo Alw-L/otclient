@@ -23,7 +23,6 @@
 #ifndef STATICTEXT_H
 #define STATICTEXT_H
 
-#include <framework/core/timer.h>
 #include <framework/graphics/cachedtext.h>
 #include "thing.h"
 
@@ -59,8 +58,8 @@ private:
     bool m_yell{ false };
     std::deque<std::pair<std::string, ticks_t>> m_messages;
     std::string m_name;
-    Otc::MessageMode m_mode;
-    Color m_color;
+    Otc::MessageMode m_mode{ Otc::MessageNone };
+    Color m_color{ Color::white };
     CachedText m_cachedText;
     ScheduledEventPtr m_updateEvent;
 };

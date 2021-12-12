@@ -21,16 +21,10 @@
  */
 
 #include "game.h"
-#include "thingtype.h"
 #include "thingtypemanager.h"
 
 #include <framework/core/binarytree.h>
 #include <framework/core/filestream.h>
-
-ItemType::ItemType()
-{
-    m_category = ItemCategoryInvalid;
-}
 
 void ItemType::unserialize(const BinaryTreePtr& node)
 {

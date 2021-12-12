@@ -21,33 +21,21 @@
  */
 
 #include "tile.h"
-#include <framework/graphics/fontmanager.h>
+#include <framework/core/eventdispatcher.h>
 #include <framework/graphics/drawpool.h>
 #include "effect.h"
 #include "game.h"
 #include "item.h"
 #include "lightview.h"
-#include "localplayer.h"
-#include "protocolgame.h"
 #include "map.h"
-#include "thingtypemanager.h"
-#include <framework/core/eventdispatcher.h>
+#include "protocolgame.h"
 
-const static Color STATIC_SHADOWING_COLOR(static_cast<uint8>(215), static_cast<uint8>(1), 0.65f);
-
-Tile::Tile(const Position& position) :
-    m_position(position),
-    m_drawElevation(0),
-    m_minimapColor(0),
-    m_flags(0),
-    m_houseId(0)
+Tile::Tile(const Position& position) : m_position(position), m_positionsAround(position.getPositionsAround())
 {
     for(auto dir : { Otc::South, Otc::SouthEast, Otc::East }) {
-        auto pos = position;
-        m_positionsBorder.push_back(std::make_pair(dir, pos.translatedToDirection(dir)));
+        Position pos = position;
+        m_positionsBorder.emplace_back(dir, pos.translatedToDirection(dir));
     }
-
-    m_positionsAround = position.getPositionsAround();
 }
 
 void Tile::onAddVisibleTileList(const MapViewPtr& /*mapView*/)
@@ -198,8 +186,10 @@ void Tile::drawBottom(const Point& dest, float scaleFactor, LightView* lightView
 
 void Tile::drawTop(const Point& dest, float scaleFactor, LightView* lightView)
 {
-    for(const auto& effect : m_effects) {
-        drawThing(effect, dest - m_drawElevation * scaleFactor, scaleFactor, true, lightView);
+    if(!g_app.isDrawingEffectsOnTop()) {
+        for(const auto& effect : m_effects) {
+            drawThing(effect, dest - m_drawElevation * scaleFactor, scaleFactor, true, lightView);
+        }
     }
 
     if(m_countFlag.hasTopItem) {
@@ -231,6 +221,7 @@ void Tile::removeWalkingCreature(const CreaturePtr& creature)
         analyzeThing(creature, false);
         m_walkingCreatures.erase(it);
         m_ignoreCompletelyCoveredCheck = false;
+        checkForDetachableThing();
     }
 }
 
@@ -242,20 +233,25 @@ void Tile::addThing(const ThingPtr& thing, int stackPos)
         return;
 
     if(thing->isEffect()) {
-        const EffectPtr& effect = thing->static_self_cast<Effect>();
+        const EffectPtr& newEffect = thing->static_self_cast<Effect>();
 
-        // find the first effect equal and wait for it to finish.
-        const auto& itFind = std::find_if(m_effects.begin(), m_effects.end(), [&effect]
-        (const EffectPtr& currentEffect) { return effect->getId() == currentEffect->getId() || (g_app.canOptimize() && effect->getSize() >= currentEffect->getSize()); });
+        const bool canOptimize = g_app.canOptimize() || g_app.isForcedEffectOptimization();
 
-        if(itFind != m_effects.end()) {
-            effect->waitFor(*itFind);
+        for(const EffectPtr& prevEffect : m_effects) {
+            if(!prevEffect->canDraw())
+                continue;
+
+            if(canOptimize && newEffect->getSize() > prevEffect->getSize()) {
+                prevEffect->canDraw(false);
+            } else if(canOptimize || newEffect->getId() == prevEffect->getId()) {
+                newEffect->waitFor(prevEffect);
+            }
         }
 
-        if(effect->isTopEffect())
-            m_effects.insert(m_effects.begin(), effect);
+        if(newEffect->isTopEffect())
+            m_effects.insert(m_effects.begin(), newEffect);
         else
-            m_effects.push_back(effect);
+            m_effects.push_back(newEffect);
 
         analyzeThing(thing, true);
 
@@ -307,7 +303,7 @@ void Tile::addThing(const ThingPtr& thing, int stackPos)
         select();
     }
 
-    if(m_things.size() > MAX_THINGS)
+    if(size > MAX_THINGS)
         removeThing(m_things[MAX_THINGS]);
 
     thing->setPosition(m_position);
@@ -452,7 +448,7 @@ ThingPtr Tile::getTopLookThing()
     if(isEmpty())
         return nullptr;
 
-    for(auto thing : m_things) {
+    for(const auto& thing : m_things) {
         if(!thing->isIgnoreLook() && (!thing->isGround() && !thing->isGroundBorder() && !thing->isOnBottom() && !thing->isOnTop()))
             return thing;
     }
@@ -465,12 +461,12 @@ ThingPtr Tile::getTopUseThing()
     if(isEmpty())
         return nullptr;
 
-    for(auto thing : m_things) {
+    for(const auto& thing : m_things) {
         if(thing->isForceUse() || (!thing->isGround() && !thing->isGroundBorder() && !thing->isOnBottom() && !thing->isOnTop() && !thing->isCreature() && !thing->isSplash()))
             return thing;
     }
 
-    for(auto thing : m_things) {
+    for(const auto& thing : m_things) {
         if(!thing->isGround() && !thing->isGroundBorder() && !thing->isCreature() && !thing->isSplash())
             return thing;
     }
@@ -483,7 +479,7 @@ CreaturePtr Tile::getTopCreature(const bool checkAround)
     if(!hasCreature()) return nullptr;
 
     CreaturePtr creature;
-    for(auto thing : m_things) {
+    for(const auto& thing : m_things) {
         if(thing->isLocalPlayer()) // return local player if there is no other creature
             creature = thing->static_self_cast<Creature>();
         else if(thing->isCreature())
@@ -518,7 +514,7 @@ ThingPtr Tile::getTopMoveThing()
     if(isEmpty())
         return nullptr;
 
-    for(uint i = 0; i < m_things.size(); ++i) {
+    for(int8 i = -1, s = m_things.size(); ++i < s;) {
         const ThingPtr& thing = m_things[i];
         if(thing->isCommon()) {
             if(i > 0 && thing->isNotMoveable())
@@ -692,7 +688,7 @@ void Tile::checkTranslucentLight()
     Position downPos = m_position;
     if(!downPos.down()) return;
 
-    TilePtr tile = g_map.getOrCreateTile(downPos);
+    const TilePtr tile = g_map.getOrCreateTile(downPos);
     if(!tile)
         return;
 

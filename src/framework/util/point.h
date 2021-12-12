@@ -23,9 +23,10 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "../stdext/types.h"
-#include <sstream>
+#include <array>
 #include <cmath>
+#include <ostream>
+#include "../stdext/types.h"
 
 template<class T>
 class TSize;

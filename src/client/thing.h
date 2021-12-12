@@ -23,7 +23,6 @@
 #ifndef THING_H
 #define THING_H
 
-#include <framework/graphics/framebuffer.h>
 #include <framework/luaengine/luaobject.h>
 #include "declarations.h"
 #include "thingtype.h"
@@ -45,8 +44,7 @@ struct Highlight {
 class Thing : public LuaObject
 {
 public:
-    Thing();
-    virtual ~Thing() {}
+    ~Thing() override = default;
     virtual void draw(const Point& /*dest*/, float /*scaleFactor*/, bool /*animate*/, const Highlight& /*highLight*/, TextureType /*textureType*/ = TextureType::NONE, Color /* color */ = Color::white, LightView* /*lightView*/ = nullptr) {}
     virtual void setId(uint32 /*id*/) {}
 
@@ -159,7 +157,7 @@ public:
 
 protected:
     Position m_position;
-    uint16 m_datId;
+    uint16 m_datId{ 0 };
 
 private:
     bool m_canDraw{ true };

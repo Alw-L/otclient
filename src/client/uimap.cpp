@@ -21,24 +21,23 @@
  */
 
 #include "uimap.h"
-#include <framework/graphics/graphics.h>
 #include <framework/graphics/drawpool.h>
-#include <framework/otml/otml.h>
+#include <framework/graphics/graphics.h>
 #include "game.h"
-#include "localplayer.h"
 #include "map.h"
 #include "mapview.h"
 
 UIMap::UIMap()
 {
     m_draggable = true;
-    m_mapView = MapViewPtr(new MapView);
-    m_zoom = m_mapView->getVisibleDimension().height();
     m_keepAspectRatio = true;
     m_limitVisibleRange = false;
-    m_aspectRatio = m_mapView->getVisibleDimension().ratio();
     m_maxZoomIn = 3;
     m_maxZoomOut = 513;
+    m_mapView = MapViewPtr(new MapView);
+    m_zoom = m_mapView->getVisibleDimension().height();
+    m_aspectRatio = m_mapView->getVisibleDimension().ratio();
+
     m_mapRect.resize(1, 1);
     g_map.addMapView(m_mapView);
 }
@@ -134,7 +133,7 @@ void UIMap::setKeepAspectRatio(bool enable)
 Position UIMap::getPosition(const Point& mousePos)
 {
     if(!m_mapRect.contains(mousePos))
-        return Position();
+        return {};
 
     const Point relativeMousePos = mousePos - m_mapRect.topLeft();
     return m_mapView->getPosition(relativeMousePos, m_mapRect.size());
@@ -142,7 +141,7 @@ Position UIMap::getPosition(const Point& mousePos)
 
 TilePtr UIMap::getTile(const Point& mousePos)
 {
-    Position tilePos = getPosition(mousePos);
+    const Position tilePos = getPosition(mousePos);
     if(!tilePos.isValid())
         return nullptr;
 

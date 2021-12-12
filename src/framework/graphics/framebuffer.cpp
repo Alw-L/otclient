@@ -24,10 +24,10 @@
 #include "graphics.h"
 #include "texture.h"
 
-#include <framework/core/eventdispatcher.h>
-#include <framework/platform/platformwindow.h>
 #include <framework/core/application.h>
+#include <framework/core/eventdispatcher.h>
 #include <framework/graphics/drawpool.h>
+#include <framework/platform/platformwindow.h>
 
 uint FrameBuffer::boundFbo = 0;
 
@@ -104,9 +104,18 @@ void FrameBuffer::draw(const Rect& dest, const Rect& src)
     if(dest.isValid()) _dest = dest;
     if(src.isValid()) _src = src;
 
+    if(_src != m_src || _dest != m_dest) {
+        m_src = _src;
+        m_dest = _dest;
+
+        m_coordsBuffer.clear();
+        m_coordsBuffer.addQuad(m_dest, m_src);
+    }
+
     if(m_disableBlend) glDisable(GL_BLEND);
     g_painter->setCompositionMode(m_compositeMode);
-    g_painter->drawTexturedRect(_dest, m_texture, _src);
+    g_painter->setTexture(m_texture.get());
+    g_painter->drawCoords(m_coordsBuffer, Painter::DrawMode::TriangleStrip);
     g_painter->resetCompositionMode();
     if(m_disableBlend) glEnable(GL_BLEND);
 }
@@ -131,7 +140,7 @@ void FrameBuffer::internalRelease()
         glBindFramebuffer(GL_FRAMEBUFFER, m_prevBoundFbo);
         boundFbo = m_prevBoundFbo;
     } else {
-        Rect screenRect(0, 0, getSize());
+        const Rect screenRect(0, 0, getSize());
 
         // copy the drawn color buffer into the framebuffer texture
         m_texture->copyFromScreen(screenRect);
@@ -140,7 +149,7 @@ void FrameBuffer::internalRelease()
         if(m_backuping) {
             glDisable(GL_BLEND);
             g_painter->resetColor();
-            g_painter->drawTexturedRect(screenRect, m_screenBackup, screenRect);
+            g_drawPool.drawTexturedRect(screenRect, m_screenBackup, screenRect);
             glEnable(GL_BLEND);
         }
     }
@@ -150,8 +159,10 @@ Size FrameBuffer::getSize()
 {
     if(m_fbo == 0) {
         // the buffer size is limited by the window size
-        return Size(std::min<int>(m_texture->getWidth(), g_window.getWidth()),
-                    std::min<int>(m_texture->getHeight(), g_window.getHeight()));
+        return {
+            std::min<int>(m_texture->getWidth(), g_window.getWidth()),
+                    std::min<int>(m_texture->getHeight(), g_window.getHeight())
+        };
     }
 
     return m_texture->getSize();

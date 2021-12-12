@@ -8,7 +8,7 @@ local websiteLink = "http://delvine.net"
 
 local infoTexts = {
  [1] = "Delvine Client",
- [2] = "Version 1.0",
+ [2] = "Version 0.8.4",
  [3] = "Copyright (C) 2021",
  [4] = "",
  [5] = "All rights reserved.",

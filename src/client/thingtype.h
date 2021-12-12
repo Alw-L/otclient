@@ -23,12 +23,6 @@
 #ifndef THINGTYPE_H
 #define THINGTYPE_H
 
-enum class TextureType {
-    NONE,
-    SMOOTH,
-    ALL_BLANK
-};
-
 #include "animator.h"
 #include "declarations.h"
 
@@ -38,8 +32,11 @@ enum class TextureType {
 #include <framework/net/server.h>
 #include <framework/otml/declarations.h>
 
-#include <framework/core/declarations.h>
-#include <framework/core/scheduledevent.h>
+enum class TextureType {
+    NONE,
+    SMOOTH,
+    ALL_BLANK
+};
 
 enum FrameGroupType : uint8 {
     FrameGroupDefault = 0,
@@ -134,8 +131,6 @@ struct Light {
 class ThingType : public LuaObject
 {
 public:
-    ThingType();
-
     void unserialize(uint16 clientId, ThingCategory category, const FileStreamPtr& fin);
     void unserializeOtml(const OTMLNodePtr& node);
 
@@ -229,7 +224,7 @@ public:
     bool isNotPreWalkable() { return m_attribs.has(ThingAttrNotPreWalkable); }
     void setPathable(bool var);
     int getExactHeight();
-    const TexturePtr& getTexture(int animationPhase, const TextureType txtType = TextureType::NONE);
+    const TexturePtr& getTexture(int animationPhase, TextureType txtType = TextureType::NONE);
 
 private:
     bool hasTexture() const { return !m_textures.empty(); }
@@ -238,9 +233,12 @@ private:
     uint getSpriteIndex(int w, int h, int l, int x, int y, int z, int a);
     uint getTextureIndex(int l, int x, int y, int z);
 
-    ThingCategory m_category;
-    uint16 m_id;
-    bool m_null, m_opaque{ false };
+    ThingCategory m_category{ ThingInvalidCategory };
+    uint16 m_id{ 0 };
+
+    bool m_null{ true },
+        m_opaque{ false };
+
     stdext::dynamic_storage<uint8> m_attribs;
 
     Size m_size;
@@ -248,13 +246,13 @@ private:
     AnimatorPtr m_animator;
     AnimatorPtr m_idleAnimator;
     int m_animationPhases;
-    int m_exactSize;
-    int m_realSize;
-    int m_numPatternX, m_numPatternY, m_numPatternZ;
-    int m_layers;
-    int m_elevation;
-    int m_exactHeight;
-    float m_opacity;
+    int m_exactSize{ 0 };
+    int m_realSize{ 0 };
+    int m_numPatternX{ 0 }, m_numPatternY{ 0 }, m_numPatternZ{ 0 };
+    int m_layers{ 0 };
+    int m_elevation{ 0 };
+    int m_exactHeight{ 0 };
+    float m_opacity{ 1.f };
     std::string m_customImage;
 
     std::vector<int> m_spritesIndex;
@@ -266,9 +264,6 @@ private:
     std::vector<std::vector<Rect>> m_texturesFramesRects;
     std::vector<std::vector<Rect>> m_texturesFramesOriginRects;
     std::vector<std::vector<Point>> m_texturesFramesOffsets;
-
-    uint_fast8_t m_countPainterListeningRef;
-    ScheduledEventPtr m_painterListeningEvent;
 };
 
 #endif

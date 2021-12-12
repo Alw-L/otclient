@@ -26,21 +26,22 @@
 #include "game.h"
 #include "map.h"
 
-Effect::Effect() : m_timeToStartDrawing(0) {}
-
 void Effect::drawEffect(const Point& dest, float scaleFactor, LightView* lightView)
 {
-    if(m_id == 0) return;
+    if(m_id == 0 || !canDraw()) return;
 
     // It only starts to draw when the first effect as it is about to end.
     if(m_animationTimer.ticksElapsed() < m_timeToStartDrawing)
         return;
 
     int animationPhase;
-
     if(g_game.getFeature(Otc::GameEnhancedAnimations)) {
+        const auto& animator = rawGetThingType()->getIdleAnimator();
+        if(!animator)
+            return;
+
         // This requires a separate getPhaseAt method as using getPhase would make all magic effects use the same phase regardless of their appearance time
-        animationPhase = rawGetThingType()->getIdleAnimator()->getPhaseAt(m_animationTimer.ticksElapsed());
+        animationPhase = rawGetThingType()->getIdleAnimator()->getPhaseAt(m_animationTimer);
     } else {
         // hack to fix some animation phases duration, currently there is no better solution
         int ticks = EFFECT_TICKS_PER_FRAME;
@@ -59,10 +60,12 @@ void Effect::drawEffect(const Point& dest, float scaleFactor, LightView* lightVi
 
 void Effect::onAppear()
 {
-    m_animationTimer.restart();
-
     if(g_game.getFeature(Otc::GameEnhancedAnimations)) {
-        m_duration = getThingType()->getIdleAnimator()->getTotalDuration();
+        const auto& animator = getThingType()->getIdleAnimator();
+        if(!animator)
+            return;
+
+        m_duration = animator->getTotalDuration();
     } else {
         m_duration = EFFECT_TICKS_PER_FRAME;
 
@@ -74,6 +77,8 @@ void Effect::onAppear()
         m_duration *= getAnimationPhases();
     }
 
+    m_animationTimer.restart();
+
     // schedule removal
     const auto self = asEffect();
     g_dispatcher.scheduleEvent([self]() { g_map.removeThing(self); }, m_duration);
@@ -81,9 +86,7 @@ void Effect::onAppear()
 
 void Effect::waitFor(const EffectPtr& effect)
 {
-    const float duration = g_app.canOptimize() ? .3 : .6;
-
-    m_timeToStartDrawing = effect->m_animationTimer.ticksElapsed() - (effect->m_duration * duration);
+    m_timeToStartDrawing = 0;//effect->m_duration * (g_app.canOptimize() || g_app.isForcedEffectOptimization() ? .7 : .5);
 }
 
 void Effect::setId(uint32 id)

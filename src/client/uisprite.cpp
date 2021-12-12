@@ -22,15 +22,10 @@
 
 #include "uisprite.h"
 #include <client/spritemanager.h>
-#include <framework/graphics/graphics.h>
 #include <framework/graphics/texturemanager.h>
-#include <framework/otml/otml.h>
 
-UISprite::UISprite() :
-    m_spriteId(0),
-    m_spriteColor(Color::white)
-{
-}
+#include "framework/graphics/drawpool.h"
+#include "framework/graphics/pool.h"
 
 void UISprite::drawSelf(Fw::DrawPane drawPane)
 {

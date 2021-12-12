@@ -34,12 +34,14 @@ local defaultOptions = {
     turnDelay = 30,
     hotkeyDelay = 30,
     antiAliasing = true,
+    antialiasingMode = 1,
     renderScale = 100,
     walkingKeysRepeatDelay = 10,
     smoothWalk = true,
     precisionWalk = false
 }
 local renderScaleCombobox
+local antialiasingModeCombobox
 local optionWindows = {}
 local actualOptions = {}
 
@@ -79,7 +81,6 @@ local function setupGraphicsEngines()
     enginesRadioGroup:addWidget(ogl1)
     enginesRadioGroup:addWidget(ogl2)
     enginesRadioGroup:addWidget(dx9)
-
     if g_window.getPlatformType() == 'WIN32-EGL' then
         enginesRadioGroup:selectWidget(dx9)
         ogl1:setEnabled(false)
@@ -111,9 +112,23 @@ local function setupGraphicsEngines()
             end
         end
 end
+function setupComboBox()
+    antialiasingModeCombobox = optionWindows['graphic']:recursiveGetChildById(
+                                   'antialiasingMode')
+
+    antialiasingModeCombobox:addOption('None', 0)
+    antialiasingModeCombobox:addOption('Antialiasing', 1)
+    antialiasingModeCombobox:addOption('Smooth Retro', 2)
+
+    antialiasingModeCombobox.onOptionChange =
+        function(comboBox, option)
+            setOption('antialiasingMode', comboBox:getCurrentOption().data)
+        end
+end
 
 function setup()
     setupGraphicsEngines()
+    setupComboBox()
     for k, v in pairs(defaultOptions) do
         if type(v) == 'boolean' then
             setOption(k, g_settings.getBoolean(k), true)
@@ -282,8 +297,9 @@ function setOption(key, value, force)
     elseif key == 'floorShadowing' then
         gameMapPanel:setFloorShadowingFlag(value)
         floorShadowingComboBox:setCurrentOptionByData(value, true)
-    elseif key == 'antiAliasing' then
-        gameMapPanel:setAntiAliasing(value)
+    elseif key == 'antialiasingMode' then
+        gameMapPanel:setAntiAliasingMode(value)
+        antialiasingModeCombobox:setCurrentOptionByData(value, true)
     elseif key == 'renderScale' then
     end
     -- change value for keybind updates

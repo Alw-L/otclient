@@ -41,9 +41,9 @@ enum HouseAttr : uint8
 class House : public LuaObject
 {
 public:
-    House();
+    House() = default;
     House(uint32 hId, const std::string& name = "", const Position& pos = Position());
-    ~House() { m_tiles.clear(); }
+    ~House() override { m_tiles.clear(); }
 
     void setTile(const TilePtr& tile);
     TilePtr getTile(const Position& pos);
