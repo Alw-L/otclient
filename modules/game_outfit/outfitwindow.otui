@@ -12,8 +12,6 @@ MainWindow
     anchors.left: parent.left
     padding: 8 8 8 8
     size: 72 72
-    
-
 
   Label
     id: outfitName
