@@ -52,18 +52,7 @@ MainWindow
     anchors.right: parent.right
     margin-top: 15
 
-  OptionCheck
-    id: showPing
-    !text: tr('Show connection ping')
-    !tooltip: tr('Display connection speed to the server (milliseconds)')
 
-  OptionsBroder
-    id: broder1
-    anchors.top: prev.top
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
 
   OptionCheck
     id: showLeftPanel

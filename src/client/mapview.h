@@ -212,7 +212,7 @@ private:
     float m_minimumAmbientLight{ 0 },
         m_fadeInTime{ 0 },
         m_fadeOutTime{ 0 },
-        m_shadowFloorIntensity{ 0.3 },
+        m_shadowFloorIntensity{ 0.2 },
         m_scaleFactor{ 1.f };
 
     Rect m_rectDimension;
