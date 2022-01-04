@@ -31,11 +31,11 @@ MainWindow
     anchors.right: prev.right
     margin-top: -5
     margin-left: -7
-    
+
   OptionCheck
-    id: moveStack
-    !text: tr('Move stacks directly')
-    
+    id: showPing
+    !text: tr('Show ping')
+
   OptionsBroder
     anchors.top: prev.top
     anchors.left: prev.left
@@ -44,11 +44,11 @@ MainWindow
     margin-left: -7
 
   OptionCheck
-    id: smartWalk
-    !text: tr('Enable smart walking')
-    !tooltip: tr('Will detect when to use diagonal step based on the\nkeys you are pressing')
-    
+    id: displayNames
+    !text: tr('Display creature names')
+
   OptionsBroder
+    id: broder1
     anchors.top: prev.top
     anchors.left: prev.left
     anchors.right: prev.right
@@ -56,46 +56,24 @@ MainWindow
     margin-left: -7
 
   OptionCheck
-    id: preciseControl
-    !text: tr('Enable precise control')
-    !tooltip: tr('You will have more precision over the character walking,\nbut it can feel more abrupt or unnatural')
-    
+    id: displayHealth
+    !text: tr('Display creature health bars')
+
   OptionsBroder
+    id: broder1
     anchors.top: prev.top
     anchors.left: prev.left
     anchors.right: prev.right
     margin-top: -5
     margin-left: -7
 
-  OptionCheck
-    id: smoothWalk
-    !text: tr('Smooth Walking')
-    
-  OptionsBroder
-    anchors.top: prev.top
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
-
-  OptionCheck
-    id: precisionWalk
-    !text: tr('Precision Walking')
-    
-  OptionsBroder
-    anchors.top: prev.top
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
-  
   HorizontalSeparator
     anchors.top: prev.bottom
     anchors.left: parent.left
     anchors.right: parent.right
     margin-left: -7
     margin-top: 20
-
+    
   Button
     !text: tr('Ok')
     width: 45

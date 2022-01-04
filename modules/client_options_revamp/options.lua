@@ -24,24 +24,24 @@ local defaultOptions = {
     enableAudio = false,
     enableMusicSound = false,
     musicSoundVolume = 0,
-    drawViewportEdge = false,
+    drawViewportEdge = true,
     floatingEffect = false,
     displayNames = true,
     displayHealth = true,
     displayMana = true,
     displayText = true,
     dontStretchShrink = false,
-    turnDelay = 30,
     hotkeyDelay = 30,
     antiAliasing = true,
     antialiasingMode = 1,
     renderScale = 100,
-    walkingKeysRepeatDelay = 10,
-    smoothWalk = true,
-    precisionWalk = false
+    floorViewMode = 1,
+    floorFading = 500
 }
 local renderScaleCombobox
 local antialiasingModeCombobox
+local floorViewModeCombobox
+
 local optionWindows = {}
 local actualOptions = {}
 
@@ -123,6 +123,18 @@ function setupComboBox()
     antialiasingModeCombobox.onOptionChange =
         function(comboBox, option)
             setOption('antialiasingMode', comboBox:getCurrentOption().data)
+        end
+        floorViewModeCombobox = optionWindows['graphic']:recursiveGetChildById('floorViewMode')
+
+    floorViewModeCombobox:addOption('Normal', 0)
+    floorViewModeCombobox:addOption('Fade', 1)
+    floorViewModeCombobox:addOption('Locked', 2)
+    floorViewModeCombobox:addOption('Always', 3)
+    floorViewModeCombobox:addOption('Always with transparency', 4)
+
+    floorViewModeCombobox.onOptionChange =
+        function(comboBox, option)
+            setOption('floorViewMode', comboBox:getCurrentOption().data)
         end
 end
 
@@ -230,6 +242,11 @@ function setOption(key, value, force)
                                                                            'Game framerate limit: %s',
                                                                            text))
         g_app.setMaxFps(v)
+    elseif key == 'floorFading' then
+        optionWindows['graphic']:getChildById('floorFadingLabel'):setText(tr(
+                                                                   'Floor Fading: %s ms',
+                                                                   value))
+        gameMapPanel:setFloorFading(tonumber(value))
     elseif key == 'drawViewportEdge' then
         gameMapPanel:setDrawViewportEdge(value)
     elseif key == 'floatingEffect' then
@@ -244,9 +261,10 @@ function setOption(key, value, force)
         gameMapPanel:setDrawTexts(value)
     elseif key == 'dontStretchShrink' then
         addEvent(function() modules.game_interface.updateStretchShrink() end)
+        --[[
     elseif key == 'preciseControl' then
         g_game.setScheduleLastWalk(not value)
-    --[[
+    
     elseif key == 'turnDelay' then
         optionWindows['general']:getChildById('turnDelayLabel'):setText(tr(
                                                                 'Turn delay: %sms',
@@ -263,7 +281,7 @@ function setOption(key, value, force)
             local gameRootPanel = modules.game_interface.getRootPanel()
             gameRootPanel:setAutoRepeatDelay(value)
         end
-        ]]--
+        
     elseif key == 'smoothWalk' then
         local gameRootPanel = modules.game_interface.getRootPanel()
         local precButton = optionWindows['general']:getChildById('precisionWalk')
@@ -292,6 +310,7 @@ function setOption(key, value, force)
                 smoothButton:setChecked(true)
             end
         end
+        ]]--
     elseif key == 'enableHighlightMouseTarget' then
         gameMapPanel:setDrawHighlightTarget(value)
     elseif key == 'floorShadowing' then
@@ -301,6 +320,13 @@ function setOption(key, value, force)
         gameMapPanel:setAntiAliasingMode(value)
         antialiasingModeCombobox:setCurrentOptionByData(value, true)
     elseif key == 'renderScale' then
+    elseif key == 'floorViewMode' then
+        gameMapPanel:setFloorViewMode(value)
+        floorViewModeCombobox:setCurrentOptionByData(value, true)
+
+        local fadeMode = value == 1
+        optionWindows['graphic']:getChildById('floorFading'):setEnabled(fadeMode)
+        optionWindows['graphic']:getChildById('floorFadingLabel'):setEnabled(fadeMode)
     end
     -- change value for keybind updates
     for _, panel in pairs(optionWindows) do

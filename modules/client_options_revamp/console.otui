@@ -11,30 +11,6 @@ MainWindow
   @onEscape: modules.client_options_revamp.hideOption('console')
 
   OptionCheck
-    id: displayNames
-    !text: tr('Display creature names')
-
-  OptionsBroder
-    id: broder1
-    anchors.top: prev.top
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
-
-  OptionCheck
-    id: displayHealth
-    !text: tr('Display creature health bars')
-
-  OptionsBroder
-    id: broder1
-    anchors.top: prev.top
-    anchors.left: prev.left
-    anchors.right: prev.right
-    margin-top: -5
-    margin-left: -7
-
-  OptionCheck
     id: displayText
     !text: tr('Display text messages')
 

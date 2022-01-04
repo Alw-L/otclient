@@ -116,6 +116,10 @@ void Creature::internalDrawOutfit(Point dest, float scaleFactor, bool animateWal
 
         auto* datType = rawGetThingType();
 
+        // Hack for fix outfit glitching on walk (#177)
+        if(isLocalPlayer() && datType->getDisplacementY() < 3)
+            dest.y -= 3;
+
         // yPattern => creature addon
         for(int yPattern = 0; yPattern < getNumPatternY(); ++yPattern) {
             // continue if we dont have this addon
@@ -184,14 +188,8 @@ void Creature::drawOutfit(const Rect& destRect, bool resize, const Color color)
     internalDrawOutfit(dest, scaleFactor, false, TextureType::NONE, Otc::South, color);
 }
 
-void Creature::drawInformation(const Rect& parentRect, const Point& dest, float scaleFactor, const Point& drawOffset, const float horizontalStretchFactor, const float verticalStretchFactor, int drawFlags)
+void Creature::drawInformation(const Rect& parentRect, const Point& dest, float scaleFactor, const Point& drawOffset, bool useGray, const float horizontalStretchFactor, const float verticalStretchFactor, int drawFlags)
 {
-    if(isDead() || !canBeSeen())
-        return;
-
-    const auto& tile = getTile();
-    if(!tile) return;
-
     const PointF jumpOffset = getJumpOffset() * scaleFactor;
     const auto creatureOffset = Point(16 - getDisplacementX(), -getDisplacementY() - 2);
 
@@ -201,7 +199,6 @@ void Creature::drawInformation(const Rect& parentRect, const Point& dest, float 
     p.y *= verticalStretchFactor;
     p += parentRect.topLeft();
 
-    const bool useGray = tile->isCovered();
     auto fillColor = Color(96, 96, 96);
 
     if(!useGray) {

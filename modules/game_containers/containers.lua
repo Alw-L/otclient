@@ -173,7 +173,7 @@ function onContainerOpen(container, previousContainer)
         local panel = modules.game_interface.findContentPanelAvailable(containerWindow, cellSize.height)
         panel:addChild(containerWindow)
 
-        if modules.client_options.getOption('openMaximized') then
+        if modules.client_options_revamp.getOption('openMaximized') then
             containerWindow:setContentHeight(cellSize.height*layout:getNumLines())
         else
             local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)

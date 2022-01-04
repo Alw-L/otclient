@@ -755,12 +755,10 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("setCameraPosition", &UIMap::setCameraPosition);
     g_lua.bindClassMemberFunction<UIMap>("setMaxZoomIn", &UIMap::setMaxZoomIn);
     g_lua.bindClassMemberFunction<UIMap>("setMaxZoomOut", &UIMap::setMaxZoomOut);
-    g_lua.bindClassMemberFunction<UIMap>("setMultifloor", &UIMap::setMultifloor);
     g_lua.bindClassMemberFunction<UIMap>("lockVisibleFloor", &UIMap::lockVisibleFloor);
     g_lua.bindClassMemberFunction<UIMap>("unlockVisibleFloor", &UIMap::unlockVisibleFloor);
     g_lua.bindClassMemberFunction<UIMap>("setVisibleDimension", &UIMap::setVisibleDimension);
-    g_lua.bindClassMemberFunction<UIMap>("setViewMode", &UIMap::setViewMode);
-    g_lua.bindClassMemberFunction<UIMap>("setAutoViewMode", &UIMap::setAutoViewMode);
+    g_lua.bindClassMemberFunction<UIMap>("setFloorViewMode", &UIMap::setFloorViewMode);
     g_lua.bindClassMemberFunction<UIMap>("setDrawTexts", &UIMap::setDrawTexts);
     g_lua.bindClassMemberFunction<UIMap>("setDrawNames", &UIMap::setDrawNames);
     g_lua.bindClassMemberFunction<UIMap>("setDrawHealthBars", &UIMap::setDrawHealthBars);
@@ -770,8 +768,6 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("setMapShader", &UIMap::setMapShader);
     g_lua.bindClassMemberFunction<UIMap>("setShadowFloorIntensity", &UIMap::setShadowFloorIntensity);
     g_lua.bindClassMemberFunction<UIMap>("setLimitVisibleRange", &UIMap::setLimitVisibleRange);
-    g_lua.bindClassMemberFunction<UIMap>("isMultifloor", &UIMap::isMultifloor);
-    g_lua.bindClassMemberFunction<UIMap>("isAutoViewModeEnabled", &UIMap::isAutoViewModeEnabled);
     g_lua.bindClassMemberFunction<UIMap>("isDrawingTexts", &UIMap::isDrawingTexts);
     g_lua.bindClassMemberFunction<UIMap>("isDrawingNames", &UIMap::isDrawingNames);
     g_lua.bindClassMemberFunction<UIMap>("isDrawingHealthBars", &UIMap::isDrawingHealthBars);
@@ -782,7 +778,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("isKeepAspectRatioEnabled", &UIMap::isKeepAspectRatioEnabled);
     g_lua.bindClassMemberFunction<UIMap>("isInRange", &UIMap::isInRange);
     g_lua.bindClassMemberFunction<UIMap>("getVisibleDimension", &UIMap::getVisibleDimension);
-    g_lua.bindClassMemberFunction<UIMap>("getViewMode", &UIMap::getViewMode);
+    g_lua.bindClassMemberFunction<UIMap>("getFloorViewMode", &UIMap::getFloorViewMode);
     g_lua.bindClassMemberFunction<UIMap>("getFollowingCreature", &UIMap::getFollowingCreature);
     g_lua.bindClassMemberFunction<UIMap>("getCameraPosition", &UIMap::getCameraPosition);
     g_lua.bindClassMemberFunction<UIMap>("getPosition", &UIMap::getPosition);
@@ -796,6 +792,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<UIMap>("getSpectators", &UIMap::getSpectators);
     g_lua.bindClassMemberFunction<UIMap>("getSightSpectators", &UIMap::getSightSpectators);
     g_lua.bindClassMemberFunction<UIMap>("setAntiAliasingMode", &UIMap::setAntiAliasingMode);
+    g_lua.bindClassMemberFunction<UIMap>("setFloorFading", &UIMap::setFloorFading);
 
     g_lua.registerClass<UIMinimap, UIWidget>();
     g_lua.bindClassStaticFunction<UIMinimap>("create", [] { return UIMinimapPtr(new UIMinimap); });
