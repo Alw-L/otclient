@@ -201,7 +201,7 @@ function bindTurnKey(key, dir)
 
         bindTurnKeyCheck = dir
         if g_clock.millis() - lastDirTime >=
-            modules.client_options.getOption('turnDelay') then
+            10 then
             g_game.turn(dir)
             changeWalkDir(dir)
 
@@ -284,9 +284,7 @@ function show()
         end
     end)
     addEvent(function()
-        if modules.client_options.getOption('showPing') and
-            (g_game.getFeature(GameClientPing) or
-                g_game.getFeature(GameExtendedClientPing)) then
+        if modules.client_options_revamp.getOption('showPing') then
             pingLabel:show()
         else
             pingLabel:hide()
@@ -423,7 +421,7 @@ function stopSmartWalk()
 end
 
 function onWalkKeyDown(dir)
-    if modules.client_options.getOption('autoChaseOverride') then
+    if modules.client_options_revamp.getOption('autoChaseOverride') then
         if g_game.isAttacking() and g_game.getChaseMode() == ChaseOpponent then
             g_game.setChaseMode(DontChase)
         end
@@ -450,7 +448,7 @@ function changeWalkDir(dir, pop)
     end
 
     smartWalkDir = smartWalkDirs[1]
-    if modules.client_options.getOption('smartWalk') and #smartWalkDirs > 1 then
+    if modules.client_options_revamp.getOption('smartWalk') and #smartWalkDirs > 1 then
         for _, d in pairs(smartWalkDirs) do
             if (smartWalkDir == North and d == West) or
                 (smartWalkDir == West and d == North) then
@@ -489,7 +487,7 @@ function smartWalk(dir)
 end
 
 function updateStretchShrink()
-    if modules.client_options.getOption('dontStretchShrink') and
+    if modules.client_options_revamp.getOption('dontStretchShrink') and
         not alternativeView then
         gameMapPanel:setVisibleDimension({width = 15, height = 11})
 
@@ -530,13 +528,14 @@ function onUseWith(clickedWidget, mousePosition)
                 g_game.useWith(selectedThing, tile:getTopUseThing())
             end
         end
-    elseif clickedWidget:getClassName() == 'UIItem' and
-        not clickedWidget:isVirtual() then
+    elseif clickedWidget:getClassName() == 'UIItem' and not clickedWidget:isVirtual() then
         g_game.useWith(selectedThing, clickedWidget:getItem())
     elseif clickedWidget:getClassName() == 'UICreatureButton' then
         local creature = clickedWidget:getCreature()
-        if creature then g_game.useWith(selectedThing, creature) end
-    end
+        if not creature:isPlayer() then
+            g_game.useWith(selectedThing, creature)
+        end
+      end
 end
 
 function onTradeWith(clickedWidget, mousePosition)
@@ -611,7 +610,7 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
     local menu = g_ui.createWidget('PopupMenu')
     menu:setGameMenu(true)
 
-    local classic = modules.client_options.getOption('classicControl')
+    local classic = modules.client_options_revamp.getOption('classicControl')
     local shortcut = nil
 
     if not classic then
@@ -866,7 +865,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing,
                             useThing, creatureThing, attackCreature)
     local keyboardModifiers = g_keyboard.getModifiers()
 
-    if not modules.client_options.getOption('classicControl') then
+    if not modules.client_options_revamp.getOption('classicControl') then
         if keyboardModifiers == KeyboardNoModifier and mouseButton ==
             MouseRightButton then
             createThingMenu(menuPosition, lookThing, useThing, creatureThing)
@@ -981,7 +980,7 @@ function moveStackableItem(item, toPos)
     if g_keyboard.isShiftPressed() then
         g_game.move(item, toPos, 1)
         return
-    elseif g_keyboard.isCtrlPressed() ~= modules.client_options.getOption('moveStack') or g_keyboard.isKeyPressed("Enter") then
+    elseif g_keyboard.isCtrlPressed() ~= modules.client_options_revamp.getOption('moveStack') or g_keyboard.isKeyPressed("Enter") then
         g_game.move(item, toPos, item:getCount())
         return
     end
@@ -1158,8 +1157,8 @@ function setupViewMode(mode)
         gameMapPanel:addAnchor(AnchorRight, 'gameRightExtraPanel', AnchorLeft)
         gameMapPanel:addAnchor(AnchorBottom, 'gameBottomPanel', AnchorTop)
         gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
-        gameLeftPanel:setOn(modules.client_options.getOption('showLeftPanel'))
-        gameRightExtraPanel:setOn(modules.client_options.getOption('showRightExtraPanel'))
+        gameLeftPanel:setOn(modules.client_options_revamp.getOption('showLeftPanel'))
+        gameRightExtraPanel:setOn(modules.client_options_revamp.getOption('showRightExtraPanel'))
         gameLeftPanel:setImageColor('white')
         gameRightPanel:setImageColor('white')
         gameRightExtraPanel:setImageColor('white')
@@ -1176,13 +1175,13 @@ function setupViewMode(mode)
         gameMapPanel:setLimitVisibleRange(false)
         gameMapPanel:setZoom(11)
         gameMapPanel:setVisibleDimension({width = 15, height = 11})
-        modules.client_options.setOption('drawViewportEdge', false)
+        modules.client_options_revamp.setOption('drawViewportEdge', false)
     elseif mode == 1 then
         gameMapPanel:setKeepAspectRatio(false)
         gameMapPanel:setLimitVisibleRange(true)
         gameMapPanel:setZoom(11)
         gameMapPanel:setVisibleDimension({width = 15, height = 11})
-        modules.client_options.setOption('drawViewportEdge', false)
+        modules.client_options_revamp.setOption('drawViewportEdge', false)
     elseif mode == 2 then
         local limit = limitedZoom and not g_game.isGM()
         gameMapPanel:setLimitVisibleRange(limit)
@@ -1206,7 +1205,7 @@ function setupViewMode(mode)
         modules.client_topmenu.getTopMenu():setImageColor('#ffffff66')
         if not limit then g_game.changeMapAwareRange(24, 20) end
 
-        modules.client_options.setOption('drawViewportEdge', true)
+        modules.client_options_revamp.setOption('drawViewportEdge', true)
     end
 
     currentViewMode = mode

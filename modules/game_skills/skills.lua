@@ -102,16 +102,8 @@ function setSkillBase(id, value, baseValue)
     local skill = skillsWindow:recursiveGetChildById(id)
     local widget = skill:getChildById('value')
 
-    if value > baseValue then
-        widget:setColor('#008b00') -- green
-        skill:setTooltip(baseValue .. ' +' .. (value - baseValue))
-    elseif value < baseValue then
-        widget:setColor('#b22222') -- red
-        skill:setTooltip(baseValue .. ' ' .. (value - baseValue))
-    else
-        widget:setColor('#bbbbbb') -- default
-        skill:removeTooltip()
-    end
+    widget:setColor('#bbbbbb') -- default
+    skill:removeTooltip()
 end
 
 function setSkillValue(id, value)
@@ -145,35 +137,9 @@ function setSkillPercent(id, percent, tooltip, color)
 end
 
 function checkAlert(id, value, maxValue, threshold, greaterThan)
-    if greaterThan == nil then greaterThan = false end
-    local alert = false
 
-    -- maxValue can be set to false to check value and threshold
-    -- used for regeneration checking
-    if type(maxValue) == 'boolean' then
-        if maxValue then return end
+     resetSkillColor(id)
 
-        if greaterThan then
-            if value > threshold then alert = true end
-        else
-            if value < threshold then alert = true end
-        end
-    elseif type(maxValue) == 'number' then
-        if maxValue < 0 then return end
-
-        local percent = math.floor((value / maxValue) * 100)
-        if greaterThan then
-            if percent > threshold then alert = true end
-        else
-            if percent < threshold then alert = true end
-        end
-    end
-
-    if alert then
-        setSkillColor(id, '#b22222') -- red
-    else
-        resetSkillColor(id)
-    end
 end
 
 function update()
@@ -355,16 +321,6 @@ end
 
 function onExperienceChange(localPlayer, value)
     local postFix = ""
-    if value > 1e15 then
-      postFix = "B"
-      value = math.floor(value / 1e9)
-    elseif value > 1e12 then
-      postFix = "M"
-      value = math.floor(value / 1e6)
-    elseif value > 1e9 then
-      postFix = "K"
-      value = math.floor(value / 1e3)
-    end
     setSkillValue('experience', comma_value(value) .. postFix)
 end
 
@@ -407,7 +363,7 @@ end
 --function onSoulChange(localPlayer, soul) setSkillValue('soul', comma_value(soul)) end
 
 function onFreeCapacityChange(localPlayer, freeCapacity)
-    setSkillValue('capacity', comma_value(freeCapacity))
+    setSkillValue('capacity', comma_value(math.floor(freeCapacity)))
     checkAlert('capacity', freeCapacity, localPlayer:getTotalCapacity(), 20)
 end
 
@@ -416,64 +372,10 @@ function onTotalCapacityChange(localPlayer, totalCapacity)
 end
 
 function onStaminaChange(localPlayer, stamina)
-    local hours = math.floor(stamina / 60)
-    local minutes = stamina % 60
-    if minutes < 10 then minutes = '0' .. minutes end
-    local percent = math.floor(100 * stamina / (42 * 60)) -- max is 42 hours --TODO not in all client versions
-
-    setSkillValue('stamina', hours .. ":" .. minutes)
-
-    -- TODO not all client versions have premium time
-    if stamina > 2400 and g_game.getClientVersion() >= 1038 and
-        localPlayer:isPremium() then
-        local text =
-            tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
-                tr("Premium bonus of 50%% more experience is enabled.")
-        setSkillPercent('stamina', percent, text, 'green')
-    elseif stamina > 2400 and g_game.getClientVersion() >= 1038 and
-        not localPlayer:isPremium() then
-        local text =
-            tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
-                tr(
-                    "You will not gain 50%% as a free account player.")
-        setSkillPercent('stamina', percent, text, '#89F013')
-    elseif stamina >= 2400 and g_game.getClientVersion() < 1038 then
-        local text =
-            tr("You have %s hours and %s minutes left", hours, minutes) .. '\n' ..
-                tr(
-                    "Premium accounts gain 50%% more experience.")
-        setSkillPercent('stamina', percent, text, 'green')
-    elseif stamina < 2400 and stamina > 840 then
-        setSkillPercent('stamina', percent, tr(
-                            "You have %s hours and %s minutes left", hours,
-                            minutes), 'orange')
-    elseif stamina <= 840 and stamina > 0 then
-        local text =
-            tr("You have %s hours and %s minutes left", hours, minutes) .. "\n" ..
-                tr(
-                    "Your stamina is low. You're gaining less exp and no loot.")
-        setSkillPercent('stamina', percent, text, 'red')
-    elseif stamina == 0 then
-        local text =
-            tr("You have %s hours and %s minutes left", hours, minutes) .. "\n" ..
-                tr("Your stamina is empty. You need rest.")
-        setSkillPercent('stamina', percent, text, 'black')
-    end
 end
 
 function onOfflineTrainingChange(localPlayer, offlineTrainingTime)
-    if not g_game.getFeature(GameOfflineTrainingTime) then return end
-    local hours = math.floor(offlineTrainingTime / 60)
-    local minutes = offlineTrainingTime % 60
-    if minutes < 10 then minutes = '0' .. minutes end
-    local percent = math.floor(100 * offlineTrainingTime / (12 * 60)) -- max is 12 hours
 
-    setSkillValue('offlineTraining', hours .. ":" .. minutes)
-    if hours > 0 then
-        setSkillPercent('offlineTraining', percent, tr('You have %d hours and %d minutes left of offline training.', hours, minutes))
-    else
-        setSkillPercent('offlineTraining', percent, tr('You have %d minutes left of offline training.', minutes))
-    end
 end
 
 function onRegenerationChange(localPlayer, regenerationTime)

@@ -1,5 +1,9 @@
+OptionScrollbar < HorizontalScrollBar
+  step: 1
+  @onValueChange: modules.client_options_revamp.setOption(self:getId(), self:getValue())
+  
 OptionCheck < CheckBox
-  @onCheckChange: modules.client_options.setOption(self:getId(), self:isChecked())
+  @onCheckChange: modules.client_options_revamp.setOption(self:getId(), self:isChecked())
   height: 14
   margin-bottom: 2
 

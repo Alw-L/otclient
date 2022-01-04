@@ -529,7 +529,7 @@ function addPrivateText(text, speaktype, name, isPrivateCommand, creatureName)
 
   local privateTab = getTab(name)
   if privateTab == nil then
-    if (modules.client_options.getOption('showPrivateMessagesInConsole') and not focus) or (isPrivateCommand and not privateTab) then
+    if (modules.client_options_revamp.getOption('showPrivateMessagesInConsole') and not focus) or (isPrivateCommand and not privateTab) then
       privateTab = defaultTab
     else
       privateTab = addTab(name, focus)
@@ -597,7 +597,7 @@ end
 function addTabText(text, speaktype, tab, creatureName)
   if not tab or tab.locked or not text or #text == 0 then return end
 
-  if modules.client_options.getOption('showTimestampsInConsole') then
+  if modules.client_options_revamp.getOption('showTimestampsInConsole') then
     text = os.date('%H:%M') .. ' ' .. text
   end
 
@@ -1163,7 +1163,7 @@ function onTalk(name, level, mode, message, channelId, creaturePos)
     addText(composedMessage, speaktype, name .. '\'...', name)
   elseif speaktype.private then
     addPrivateText(composedMessage, speaktype, name, false, name)
-    if modules.client_options.getOption('showPrivateMessagesOnScreen') and speaktype ~= SpeakTypesSettings.privateNpcToPlayer then
+    if modules.client_options_revamp.getOption('showPrivateMessagesOnScreen') and speaktype ~= SpeakTypesSettings.privateNpcToPlayer then
       modules.game_textmessage.displayPrivateMessage(name .. ':\n' .. message)
     end
   else

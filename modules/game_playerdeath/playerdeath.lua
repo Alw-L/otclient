@@ -19,7 +19,7 @@ local deathTexts = {
 }
 
 function init()
-    g_ui.importStyle('deathwindow')
+    --g_ui.importStyle('deathwindow')
 
     connect(g_game, {onDeath = display, onGameEnd = reset})
 end
@@ -39,7 +39,7 @@ end
 
 function display(deathType, penalty)
     displayDeadMessage()
-    openWindow(deathType, penalty)
+    --openWindow(deathType, penalty)
 end
 
 function displayDeadMessage()

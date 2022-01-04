@@ -31,7 +31,7 @@ Panel
     anchors.top: prev.bottom
     margin-top: 12
     @onSetup: |
-      local value = modules.client_options.getOption('musicSoundVolume')
+      local value = modules.client_options_revamp.getOption('musicSoundVolume')
       self:setText(tr('Music volume: %d', value))
 
   OptionScrollbar

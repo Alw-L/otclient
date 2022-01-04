@@ -23,20 +23,15 @@ local defaultOptions = {
     enableAudio = false,
     enableMusicSound = false,
     musicSoundVolume = 100,
-    drawViewportEdge = false,
+    drawViewportEdge = true,
     floatingEffect = false,
     displayNames = true,
     displayHealth = true,
     displayMana = true,
     displayText = true,
     dontStretchShrink = false,
-    turnDelay = 30,
-    hotkeyDelay = 30,
-    antiAliasing = true,
-    renderScale = 100,
-    walkingKeysRepeatDelay = 10,
-    smoothWalk = true,
-    precisionWalk = false
+    floorViewMode = 1,
+    floorFading = 500
 }
 
 local optionsWindow
@@ -51,8 +46,8 @@ local graphicsPanel
 -- local audioButton
 
 local crosshairCombobox
-local renderScaleCombobox
-local chooseSkillComboBox
+local antialiasingModeCombobox
+local floorViewModeCombobox
 
 skillsLoaded = false
 
@@ -134,6 +129,19 @@ function setupComboBox()
     antialiasingModeCombobox.onOptionChange =
         function(comboBox, option)
             setOption('antialiasingMode', comboBox:getCurrentOption().data)
+        end
+
+    floorViewModeCombobox = graphicsPanel:recursiveGetChildById('floorViewMode')
+
+    floorViewModeCombobox:addOption('Normal', 0)
+    floorViewModeCombobox:addOption('Fade', 1)
+    floorViewModeCombobox:addOption('Locked', 2)
+    floorViewModeCombobox:addOption('Always', 3)
+    floorViewModeCombobox:addOption('Always with transparency', 4)
+
+    floorViewModeCombobox.onOptionChange =
+        function(comboBox, option)
+            setOption('floorViewMode', comboBox:getCurrentOption().data)
         end
 end
 
@@ -237,6 +245,26 @@ function setOption(key, value, force)
                                                                            'Game framerate limit: %s',
                                                                            text))
         g_app.setMaxFps(v)
+    elseif key == 'enableLights' then
+        gameMapPanel:setDrawLights(value and options['ambientLight'] < 100)
+        graphicsPanel:getChildById('ambientLight'):setEnabled(value)
+        graphicsPanel:getChildById('ambientLightLabel'):setEnabled(value)
+    elseif key == 'ambientLight' then
+        graphicsPanel:getChildById('ambientLightLabel'):setText(tr(
+                                                                    'Ambient light: %s%%',
+                                                                    value))
+        gameMapPanel:setMinimumAmbientLight(value / 100)
+        gameMapPanel:setDrawLights(options['enableLights'])
+    elseif key == 'shadowFloorIntensity' then
+        graphicsPanel:getChildById('shadowFloorIntensityLevel'):setText(tr(
+                                                                            'Shadow floor Intensity: %s%%',
+                                                                            value))
+        gameMapPanel:setShadowFloorIntensity(1 - (value / 100))
+    elseif key == 'floorFading' then
+        graphicsPanel:getChildById('floorFadingLabel'):setText(tr(
+                                                                   'Floor Fading: %s ms',
+                                                                   value))
+        gameMapPanel:setFloorFading(tonumber(value))
     elseif key == 'drawViewportEdge' then
         gameMapPanel:setDrawViewportEdge(value)
     elseif key == 'floatingEffect' then
@@ -305,6 +333,13 @@ function setOption(key, value, force)
     elseif key == 'antialiasingMode' then
         gameMapPanel:setAntiAliasingMode(value)
         antialiasingModeCombobox:setCurrentOptionByData(value, true)
+    elseif key == 'floorViewMode' then
+        gameMapPanel:setFloorViewMode(value)
+        floorViewModeCombobox:setCurrentOptionByData(value, true)
+
+        local fadeMode = value == 1
+        graphicsPanel:getChildById('floorFading'):setEnabled(fadeMode)
+        graphicsPanel:getChildById('floorFadingLabel'):setEnabled(fadeMode)
     end
     -- change value for keybind updates
     for _, panel in pairs(optionsTabBar:getTabsPanel()) do

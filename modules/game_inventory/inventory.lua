@@ -315,7 +315,7 @@ function update()
 end
 
 function check()
-    if modules.client_options.getOption('autoChaseOverride') then
+    if modules.client_options_revamp.getOption('autoChaseOverride') then
         if g_game.isAttacking() and g_game.getChaseMode() == ChaseOpponent then
             chaseModeRadioGroup:selectWidget(standModeBox)
             g_game.setChaseMode(DontChase)

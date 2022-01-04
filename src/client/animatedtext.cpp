@@ -51,15 +51,7 @@ void AnimatedText::drawText(const Point& dest, const Rect& visibleRect)
     const Rect rect(p, textSize);
 
     if(visibleRect.contains(rect)) {
-        //TODO: cache into a framebuffer
-        const float t0 = tf / 1.2;
-
-        Color color = m_color;
-        if(t > t0) {
-            color.setAlpha(static_cast<float>(1 - (t - t0) / (tf - t0)));
-        }
-
-        m_cachedText.draw(rect, color);
+        m_cachedText.draw(rect, m_color);
     }
 }
 
