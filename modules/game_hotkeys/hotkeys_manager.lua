@@ -435,27 +435,21 @@ function addKeyCombo(keyCombo, keySettings, focus)
 end
 
 function doKeyCombo(keyCombo)
+    print(keyCombo)
     if not g_game.isOnline() then return end
+    print(keyCombo)
     if not canPerformKeyCombo(keyCombo) then return end
+    print(keyCombo)
     local hotKey = hotkeyList[keyCombo]
-    if not hotKey then return end
+    print(keyCombo)
+    print(hotKey.value)
 
+    if not hotKey then return end
     if g_clock.millis() - lastHotkeyTime <
         200 then return end
     lastHotkeyTime = g_clock.millis()
 
-    if hotKey.action then
-        if hotKey.action == HOTKEY_ACTION_TOGGLE_WASD then
-            modules.game_console.toggleChat()
-        elseif hotKey.action == HOTKEY_ACTION_ATTACK_NEXT then
-            modules.game_battle.attackNext()
-        elseif hotKey.action == HOTKEY_ACTION_ATTACK_PREV then
-            modules.game_battle.attackNext(true)
-        elseif hotKey.action == HOTKEY_ACTION_TOGGLE_CHASE then
-            modules.game_inventory.toggleChaseMode()
-        end
-
-    elseif hotKey.itemId == nil then
+    if hotKey.itemId == nil then
         if not hotKey.value or #hotKey.value == 0 then return end
         if hotKey.autoSend then
             modules.game_console.sendMessage(hotKey.value)
@@ -467,8 +461,6 @@ function doKeyCombo(keyCombo)
                 modules.game_console.setTextEditText(hotKey.value)
             end,1)
         end
-    else
-        executeHotkeyItem(hotKey.useType, hotKey.itemId, hotKey.subType)
     end
 end
 
@@ -688,9 +680,5 @@ end
 -- Even if hotkeys are enabled, only the hotkeys containing Ctrl or Alt or F1-F12 will be enabled when
 -- chat is opened (no WASD mode). This is made to prevent executing hotkeys while typing...
 function canPerformKeyCombo(keyCombo)
-    return disableHotkeysCount == 0 and (modules.game_console.consoleToggleChat:isChecked() or
-        string.match(keyCombo, "F%d%d?") or
-        string.match(keyCombo, "Ctrl%+") or
-        string.match(keyCombo, "Shift%+..+") or
-        string.match(keyCombo, "Alt%+"))
+    return disableHotkeysCount == 0 and (modules.game_console.consoleToggleChat:isOn() or #keyCombo > 1)
 end

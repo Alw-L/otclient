@@ -93,7 +93,7 @@ public:
     uint8 getMinimapColorByte();
     int getThingCount() { return m_things.size() + m_effects.size(); }
     bool isPathable();
-    bool isWalkable(bool ignoreCreatures = false);
+    bool isWalkable(bool ignoreCreatures = false, int lastElevation = 0);
     bool isFullGround();
     bool isFullyOpaque();
     bool isSingleDimension();

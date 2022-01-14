@@ -138,13 +138,11 @@ void ProtocolGame::sendLogout()
 
 void ProtocolGame::sendPing()
 {
-    if(g_game.getFeature(Otc::GameExtendedClientPing))
-        sendExtendedOpcode(2, "");
-    else {
-        const OutputMessagePtr msg(new OutputMessage);
-        msg->addU8(Proto::ClientPing);
-        Protocol::send(msg);
-    }
+
+    const OutputMessagePtr msg(new OutputMessage);
+    msg->addU8(Proto::ClientPing);
+    Protocol::send(msg);
+    
 }
 
 void ProtocolGame::sendPingBack()

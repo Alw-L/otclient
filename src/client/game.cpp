@@ -242,9 +242,10 @@ void Game::processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMo
     g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
 }
 
-void Game::processPing()
+void Game::processPing(int ping)
 {
-    g_lua.callGlobalField("g_game", "onPing");
+    m_ping = ping;
+    g_lua.callGlobalField("g_game", "onPing", m_ping);
     enableBotCall();
     m_protocolGame->sendPingBack();
     disableBotCall();
@@ -601,9 +602,10 @@ bool Game::walk(const Otc::Direction direction, bool isKeyDown /*= false*/)
 
     const Position toPos = m_localPlayer->getPosition().translatedToDirection(direction);
     const TilePtr toTile = g_map.getTile(toPos);
+    int elevation = g_map.getTile(m_localPlayer->m_position)->getElevation();
 
     // only do prewalks to walkable tiles (like grounds and not walls)
-    if(toTile && toTile->isWalkable()) {
+    if(toTile && toTile->isWalkable(false, elevation)) {
         m_localPlayer->preWalk(direction);
     } else {
         // check if can walk to a lower floor
@@ -631,7 +633,7 @@ bool Game::walk(const Otc::Direction direction, bool isKeyDown /*= false*/)
 
                 return false;
             const TilePtr toTile = g_map.getTile(pos);
-            if(!toTile || !toTile->isWalkable())
+            if(!toTile || !toTile->isWalkable(false, -1))
                 return false;
 
             return true;
@@ -679,7 +681,8 @@ void Game::autoWalk(std::vector<Otc::Direction> dirs)
 
     if(!m_localPlayer->isWalking()) {
         const TilePtr toTile = g_map.getTile(m_localPlayer->getPosition().translatedToDirection(direction));
-        if(toTile && toTile->isWalkable()) {
+        int elevation = g_map.getTile(m_localPlayer->m_position)->getElevation();
+        if(toTile && toTile->isWalkable(false, elevation)) {
             m_localPlayer->preWalk(direction);
 
             if(getFeature(Otc::GameForceFirstAutoWalkStep)) {
@@ -1429,9 +1432,9 @@ void Game::openTransactionHistory(int entriesPerPage)
 
 void Game::ping()
 {
+
     if(!m_protocolGame || !m_protocolGame->isConnected())
         return;
-
     if(m_pingReceived != m_pingSent)
         return;
 
@@ -1543,6 +1546,7 @@ void Game::setClientVersion(int version)
 
     if(version >= 860) {
         enableFeature(Otc::GameAttackSeq);
+        //enableFeature(Otc::GameClientPing);
     }
 
     if(version >= 862) {

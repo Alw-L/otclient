@@ -563,9 +563,14 @@ ThingPtr Tile::getTopMultiUseThing()
     return m_things[0];
 }
 
-bool Tile::isWalkable(bool ignoreCreatures)
+bool Tile::isWalkable(bool ignoreCreatures, int lastElevation)
 {
-    if(m_countFlag.notWalkable > 0 || !getGround()) {
+    int mElevation = m_countFlag.elevation > 5 ? 5 : m_countFlag.elevation;
+    if(lastElevation > -1 && ((mElevation > 1 && mElevation > lastElevation + 1))) {
+        return false;
+    }
+
+    if (m_countFlag.notWalkable > 0 || !getGround()) {
         return false;
     }
 

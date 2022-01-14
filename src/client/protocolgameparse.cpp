@@ -704,9 +704,10 @@ void ProtocolGame::parseLoginToken(const InputMessagePtr& msg)
     g_game.processLoginToken(unknown);
 }
 
-void ProtocolGame::parsePing(const InputMessagePtr&)
+void ProtocolGame::parsePing(const InputMessagePtr& msg)
 {
-    g_game.processPing();
+    const int ping = msg->getU8();
+    g_game.processPing(ping);
 }
 
 void ProtocolGame::parsePingBack(const InputMessagePtr&)

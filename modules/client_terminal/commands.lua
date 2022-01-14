@@ -117,21 +117,7 @@ local function pingBack(ping)
     pcolored(g_game.getWorldName() .. ' => ' .. ping .. ' ms', color)
 end
 function ping()
-    if pinging then
-        pcolored('Ping stopped.')
-        g_game.setPingDelay(1000)
-        disconnect(g_game, 'onPingBack', pingBack)
-    else
-        if not g_game.isOnline() then
-            pcolored('ping command is only allowed when online', 'red')
-            return
-        end
-
-        pcolored('Starting ping...')
-        g_game.setPingDelay(0)
-        connect(g_game, 'onPingBack', pingBack)
-    end
-    pinging = not pinging
+  
 end
 
 function clear() modules.client_terminal.clear() end

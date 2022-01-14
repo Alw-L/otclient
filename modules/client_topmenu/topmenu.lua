@@ -40,7 +40,7 @@ function init()
     connect(g_game, {
         onGameStart = online,
         onGameEnd = offline,
-        onPingBack = updatePing
+        --onPingBack = updatePing
     })
 
     topMenu = g_ui.displayUI('topmenu')

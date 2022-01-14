@@ -188,13 +188,12 @@ end
 
 local function tabBlink(tab, step)
     local step = step or 0
-    tab:setOn(not tab:isOn())
-
-    removeEvent(tab.blinkEvent)
-    if step < 4 then
+    tab:setColor('e9e9e9')
+    if step == 0 then
         tab.blinkEvent = scheduleEvent(function() tabBlink(tab, step + 1) end,
                                        500)
     else
+        tab:setFocusable(false)
         tab:setOn(true)
         tab.blinkEvent = nil
     end
@@ -384,6 +383,9 @@ function UIMoveableTabBar:selectTab(tab)
     updateNavigation(self)
 end
 
+function UIMoveableTabBar:getSelected()
+    return self.currentTab == tab
+end
 function UIMoveableTabBar:selectNextTab()
     if self.currentTab == nil then return end
 

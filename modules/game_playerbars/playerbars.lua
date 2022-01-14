@@ -2,6 +2,7 @@ playerBarsWindow = nil
 skillsButton = nil
 battleButton = nil
 vipButton = nil
+logoutButton = nil
 
 function init()
 
@@ -16,11 +17,13 @@ connect(g_game, {
   skillsButton = playerBarsWindow:recursiveGetChildById('SkillsButton')
   battleButton = playerBarsWindow:recursiveGetChildById('BattleButton')
   vipButton = playerBarsWindow:recursiveGetChildById('VipButton')
+  logoutButton = playerBarsWindow:recursiveGetChildById('logoutButton')
 
   connect(skillsButton, {onClick = onClickSkills})
   connect(battleButton, {onClick = onClickBattle})
   connect(vipButton, {onClick = onClickVip})
-  
+
+
   playerBarsWindow:getChildById('contentsPanel'):setMarginTop(3)
   
   playerBarsWindow:setup()
@@ -99,4 +102,3 @@ end
 function onClickVip()
   modules.game_viplist.toggle()
 end
-

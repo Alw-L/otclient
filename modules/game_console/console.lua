@@ -239,7 +239,7 @@ function disableChat()
 
   consoleTextEdit:setEnabled(false)
   consolePanel:setBackgroundColor('#1200054f')
-  consoleTextEdit:setText("")
+  --consoleTextEdit:setText("")
 
   g_keyboard.bindKeyUp("Space", disableWasd)
   g_keyboard.bindKeyUp("Escape", disableWasd)
@@ -887,18 +887,21 @@ function processMessageMenu(mousePos, mouseButton, creatureName, text, label, ta
 end
 
 function sendCurrentMessage()
-  disableWasd()
-
-  local message = consoleTextEdit:getText()
-  if #message == 0 then return end
-  consoleTextEdit:clearText()
-
-  -- send message
-  sendMessage(message)
   if(wasWASD) then
     wasWASD = false
     toggleChat()
+  else 
+      disableWasd()
   end
+
+  local message = consoleTextEdit:getText()
+  if #message ~= 0 then 
+    consoleTextEdit:clearText()
+
+    -- send message
+    sendMessage(message)
+  end
+ 
 end
 
 function addFilter(filter)
@@ -1166,6 +1169,7 @@ function onTalk(name, level, mode, message, channelId, creaturePos)
     if modules.client_options_revamp.getOption('showPrivateMessagesOnScreen') and speaktype ~= SpeakTypesSettings.privateNpcToPlayer then
       modules.game_textmessage.displayPrivateMessage(name .. ':\n' .. message)
     end
+    channelId = name
   else
     local channel = tr('Default')
     if not defaultMessage then

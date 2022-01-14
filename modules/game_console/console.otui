@@ -71,15 +71,17 @@ ConsoleTabBarButton < MoveableTabBarButton
     image-clip: 0 36 96 22
     margin-top: 3
     height: 22
-    color: white
+    color: #e9e9e9
+  $focus:
+    color: #e9e9e9
   $!checked:
     text-offset: 0 2
     image-clip: 0 0 96 15
     height: 15
     margin-top: 3
     color: #7f7f7f
-  $on !checked:
-    color: #7f7f7f
+  $on:
+    color: #f75f5f
 
 Panel
   id: consolePanel

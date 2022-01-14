@@ -30,7 +30,7 @@ function init()
         onGameStart = onGameStart,
         onGameEnd = onGameEnd,
         onLoginAdvice = onLoginAdvice,
-        onPingBack = updatePing
+        onPing = updatePing,
     }, true)
     connect(g_app, {onFps = updateFps})
 
@@ -200,8 +200,7 @@ function bindTurnKey(key, dir)
         end
 
         bindTurnKeyCheck = dir
-        if g_clock.millis() - lastDirTime >=
-            10 then
+        if g_clock.millis() - lastDirTime >= 1 then
             g_game.turn(dir)
             changeWalkDir(dir)
 
@@ -233,7 +232,7 @@ function terminate()
         onGameStart = onGameStart,
         onGameEnd = onGameEnd,
         onLoginAdvice = onLoginAdvice,
-        onPingBack = updatePing
+        onPing = updatePing,
     })
     disconnect(g_app, {onFps = updateFps})
 
@@ -391,6 +390,7 @@ function tryLogout(prompt)
         msg = 'Are you sure you want to leave Delvine?'
 
         yesCallback = function()
+            modules.game_playerbars.logoutButton:setChecked(false)
             g_game.safeLogout()
             if logoutWindow then
                 logoutWindow:destroy()
@@ -400,11 +400,14 @@ function tryLogout(prompt)
     end
 
     local noCallback = function()
+        modules.game_playerbars.logoutButton:setChecked(false)
         logoutWindow:destroy()
+       
         logoutWindow = nil
     end
 
     if prompt then
+        modules.game_playerbars.logoutButton:setChecked(true)
         logoutWindow = displayGeneralBox(tr('Logout'), tr(msg), {
             {text = tr('Yes'), callback = yesCallback},
             {text = tr('No'), callback = noCallback},
@@ -1221,7 +1224,7 @@ end
 function updatePing(ping)
     local text = 'Ping: '
     local color
-    if ping < 0 then
+    if ping <= 0 then
         text = text .. "??"
         color = 'yellow'
     else

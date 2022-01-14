@@ -199,7 +199,7 @@ void Creature::drawInformation(const Rect& parentRect, const Point& dest, float 
     p.y *= verticalStretchFactor;
     p += parentRect.topLeft();
 
-    auto fillColor = Color(96, 96, 96);
+    auto fillColor = Color(191, 191, 191);
 
     if(!useGray) {
         if(g_game.getFeature(Otc::GameBlueNpcNameColor) && isNpc() && isFullHealth())
@@ -565,6 +565,9 @@ void Creature::updateWalk(const bool isPreWalking)
 
 void Creature::terminateWalk()
 {
+    if (isLocalPlayer()) {
+        g_map.notificateCameraMove(m_walkOffset);
+    }
     // remove any scheduled walk update
     if(m_walkUpdateEvent) {
         m_walkUpdateEvent->cancel();
@@ -604,17 +607,17 @@ void Creature::setHealthPercent(uint8 healthPercent)
     if(m_healthPercent == healthPercent) return;
 
     if(healthPercent > 92)
-        m_informationColor = Color(0x00, 0xBC, 0x00);
+        m_informationColor = Color(0x00, 0xBF, 0x00);
     else if(healthPercent > 60)
-        m_informationColor = Color(0x50, 0xA1, 0x50);
+        m_informationColor = Color(0x5F, 0xBF, 0x5F);
     else if(healthPercent > 30)
-        m_informationColor = Color(0xA1, 0xA1, 0x00);
-    else if(healthPercent > 8)
-        m_informationColor = Color(0xBF, 0x0A, 0x0A);
+        m_informationColor = Color(0xBF, 0xBF, 0x00);
+    else if(healthPercent > 10)
+        m_informationColor = Color(0xBF, 0x2F, 0x2F);
     else if(healthPercent > 3)
-        m_informationColor = Color(0x91, 0x0F, 0x0F);
+        m_informationColor = Color(0xBF, 0x00, 0x00);
     else
-        m_informationColor = Color(0x85, 0x0C, 0x0C);
+        m_informationColor = Color(0x5F, 0x00, 0x00);
 
     const uint8 oldHealthPercent = m_healthPercent;
     m_healthPercent = healthPercent;

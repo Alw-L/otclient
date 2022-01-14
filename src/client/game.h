@@ -69,7 +69,7 @@ private:
 protected:
     void processConnectionError(const boost::system::error_code& ec);
     void processDisconnect();
-    void processPing();
+    void processPing(int ping);
     void processPingBack();
 
     static void processUpdateNeeded(const std::string& signature);
