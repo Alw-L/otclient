@@ -195,29 +195,19 @@ end
 
 function bindTurnKey(key, dir)
     local function callback(widget, code, repeatTicks)
-        if(bindTurnKeyCheck ~= nil and bindTurnKeyCheck ~= dir) then
-            return
-        end
 
-        bindTurnKeyCheck = dir
-        if g_clock.millis() - lastDirTime >= 1 then
+        if g_clock.millis() - lastDirTime >= 50 then
             g_game.turn(dir)
             changeWalkDir(dir)
-
             lastDirTime = g_clock.millis()
         end
     end
-    local function callback_up(widget, code, repeatTicks)
-        bindTurnKeyCheck = nil
-    end
 
-    g_keyboard.bindKeyUp(key, callback_up, gameRootPanel)
     g_keyboard.bindKeyPress(key, callback, gameRootPanel)
 end
 
 function unbindTurnKey(key)
   --g_keyboard.unbindKeyDown(key, gameRootPanel)
-  g_keyboard.unbindKeyUp(key, gameRootPanel)
   g_keyboard.unbindKeyPress(key, gameRootPanel)
 end
 
@@ -1238,7 +1228,7 @@ function updatePing(ping)
         end
     end
     pingLabel:setColor(color)
-    pingLabel:setText(text)
+    pingLabel:setText('')
 end
 
 function setPingVisible(enable) pingLabel:setVisible(enable) end

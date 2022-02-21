@@ -1,7 +1,7 @@
 MainWindow
   id: mainWindow
   !text: tr('Console Options')
-  size: 290 550
+  size: 290 480
   padding-bottom: 9
   padding-right: 18
   padding-top: 32

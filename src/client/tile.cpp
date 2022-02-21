@@ -159,8 +159,8 @@ void Tile::drawBottom(const Point& dest, float scaleFactor, LightView* lightView
             drawThing(item, dest - m_drawElevation * scaleFactor, scaleFactor, true, lightView);
 
             if(item->isLyingCorpse()) {
-                redrawPreviousTopW = std::max<int>(item->getWidth(), redrawPreviousTopW);
-                redrawPreviousTopH = std::max<int>(item->getHeight(), redrawPreviousTopH);
+                redrawPreviousTopW = 1;
+                redrawPreviousTopH = 1;
             }
         }
     }
@@ -172,7 +172,7 @@ void Tile::drawBottom(const Point& dest, float scaleFactor, LightView* lightView
                 if(x == 0 && y == 0)
                     continue;
                 const TilePtr& tile = g_map.getTile(m_position.translated(x, y));
-                if(tile) {
+                if(tile && !tile->hasTopItem()) {
                     const auto& newDest = dest + (Point(x, y) * SPRITE_SIZE) * scaleFactor;
                     tile->drawCreature(newDest, scaleFactor);
                     tile->drawTop(newDest, scaleFactor);
@@ -183,7 +183,9 @@ void Tile::drawBottom(const Point& dest, float scaleFactor, LightView* lightView
 
     drawCreature(dest, scaleFactor, lightView);
 }
-
+bool Tile::hasTopItem() {
+    return m_countFlag.hasTopItem;
+}
 void Tile::drawTop(const Point& dest, float scaleFactor, LightView* lightView)
 {
     if(!g_app.isDrawingEffectsOnTop()) {

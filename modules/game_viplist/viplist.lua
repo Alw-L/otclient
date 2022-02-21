@@ -292,30 +292,29 @@ function onAddVip(id, name, state, description, iconId, notify)
     label:setId('vip' .. id)
     label:setText(name)
 
-    if not g_game.getFeature(GameAdditionalVipInfo) then
-        local tmpVipInfo = vipInfo[name]
-        label.iconId = 0
-        label.notifyLogin = false
-        if tmpVipInfo then
-            if tmpVipInfo.iconId then
-                label:setImageClip(
-                    torect((tmpVipInfo.iconId * 12) .. ' 0 12 12'))
-                label.iconId = tmpVipInfo.iconId
-            end
-            if tmpVipInfo.description then
-                label:setTooltip(tmpVipInfo.description)
-            end
-            label.notifyLogin = tmpVipInfo.notifyLogin or false
+    local tmpVipInfo = vipInfo[name]
+    label.iconId = 0
+    label.notifyLogin = false
+    if tmpVipInfo then
+        if tmpVipInfo.iconId then
+            label:setImageClip(
+                torect((tmpVipInfo.iconId * 12) .. ' 0 12 12'))
+            label.iconId = tmpVipInfo.iconId
         end
-    else
-        label:setTooltip(description)
-        label:setImageClip(torect((iconId * 12) .. ' 0 12 12'))
-        label.iconId = iconId
-        label.notifyLogin = notify
+        if tmpVipInfo.description then
+            label:setTooltip(tmpVipInfo.description)
+        end
+        label.notifyLogin = tmpVipInfo.notifyLogin or false
     end
 
+
     if state == VipState.Online then
-        label:setColor('#5FF75F')
+        scheduleEvent(function() 
+            if(label.vipState == VipState.Online ) then
+                label:setColor('#5FF75F')
+            end
+        end, 1500)
+            
     elseif state == VipState.Pending then
         label:setColor('#ffca38')
     else

@@ -4,7 +4,7 @@ g_tooltip = {}
 -- private variables
 local toolTipLabel
 local currentHoveredWidget
-
+local event = nil
 -- private functions
 local function moveToolTip(first)
     if not first and
@@ -37,7 +37,8 @@ end
 local function onWidgetHoverChange(widget, hovered)
     if hovered then
         if widget.tooltip and not g_mouse.isPressed() then
-            g_tooltip.display(widget.tooltip)
+
+            event = scheduleEvent(function()g_tooltip.display(widget.tooltip)end, 1000)
             currentHoveredWidget = widget
         end
     else
@@ -83,6 +84,8 @@ function g_tooltip.terminate()
 end
 
 function g_tooltip.display(text)
+    if(event == nil) then return end
+    event = nil
     if text == nil or text:len() == 0 then return end
     if not toolTipLabel then return end
 
@@ -100,6 +103,9 @@ function g_tooltip.display(text)
 end
 
 function g_tooltip.hide()
+    if(event) then
+        removeEvent(event)
+    end
     g_effects.fadeOut(toolTipLabel, 100)
 
     disconnect(rootWidget, {onMouseMove = moveToolTip})

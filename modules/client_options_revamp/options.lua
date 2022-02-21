@@ -31,7 +31,7 @@ local defaultOptions = {
     displayMana = true,
     displayText = true,
     dontStretchShrink = false,
-    hotkeyDelay = 10,
+    hotkeyDelay = 0,
     antiAliasing = true,
     antialiasingMode = 1,
     renderScale = 100,
@@ -124,6 +124,8 @@ function setupComboBox()
         function(comboBox, option)
             setOption('antialiasingMode', comboBox:getCurrentOption().data)
         end
+    
+    --[[
         floorViewModeCombobox = optionWindows['graphic']:recursiveGetChildById('floorViewMode')
 
     floorViewModeCombobox:addOption('Normal', 0)
@@ -136,6 +138,7 @@ function setupComboBox()
         function(comboBox, option)
             setOption('floorViewMode', comboBox:getCurrentOption().data)
         end
+        ]]--
 end
 
 function setup()
@@ -243,10 +246,10 @@ function setOption(key, value, force)
                                                                            text))
         g_app.setMaxFps(v)
     elseif key == 'floorFading' then
-        optionWindows['graphic']:getChildById('floorFadingLabel'):setText(tr(
-                                                                   'Floor Fading: %s ms',
-                                                                   value))
-        gameMapPanel:setFloorFading(tonumber(value))
+        --optionWindows['graphic']:getChildById('floorFadingLabel'):setText(tr(
+                                                                   --'Floor Fading: %s ms',
+                                                                   --value))
+        --gameMapPanel:setFloorFading(tonumber(value))
     elseif key == 'drawViewportEdge' then
         gameMapPanel:setDrawViewportEdge(value)
     elseif key == 'floatingEffect' then
@@ -321,12 +324,12 @@ function setOption(key, value, force)
         antialiasingModeCombobox:setCurrentOptionByData(value, true)
     elseif key == 'renderScale' then
     elseif key == 'floorViewMode' then
-        gameMapPanel:setFloorViewMode(value)
-        floorViewModeCombobox:setCurrentOptionByData(value, true)
+        --gameMapPanel:setFloorViewMode(value)
+        --floorViewModeCombobox:setCurrentOptionByData(value, true)
 
-        local fadeMode = value == 1
-        optionWindows['graphic']:getChildById('floorFading'):setEnabled(fadeMode)
-        optionWindows['graphic']:getChildById('floorFadingLabel'):setEnabled(fadeMode)
+        --local fadeMode = value == 1
+        --optionWindows['graphic']:getChildById('floorFading'):setEnabled(fadeMode)
+        --optionWindows['graphic']:getChildById('floorFadingLabel'):setEnabled(fadeMode)
     end
     -- change value for keybind updates
     for _, panel in pairs(optionWindows) do

@@ -6,6 +6,14 @@ TextMessageLabel < UILabel
   margin-bottom: 2
   visible: false
 
+TextMessageLabel2 < UILabel
+  font: verdana-11px-rounded
+  text-align: center
+  text-wrap: true
+  text-auto-resize: true
+  margin-bottom: 40
+  visible: false
+
 Panel
   anchors.fill: gameMapPanel
   anchors.bottom: gameMapPanel.bottom
@@ -16,10 +24,10 @@ Panel
     layout:
       type: verticalBox
       fit-children: true
-    width: 360
+    width: 225
     anchors.centerIn: parent
 
-    TextMessageLabel
+    TextMessageLabel2
       id: highCenterLabel
     TextMessageLabel
       id: middleCenterLabel

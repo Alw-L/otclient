@@ -113,16 +113,17 @@ function displayMessage(mode, text)
         modules.game_console.addText(text, msgtype, tr(msgtype.consoleTab))
         -- TODO move to game_console
     end
-
-    if msgtype.screenTarget then
+    local extraShow = not g_game.getLocalPlayer():isDead() or mode == MessageModes.Game and text == 'You are dead.'
+    if msgtype.screenTarget and extraShow then
         local label = messagesPanel:recursiveGetChildById(msgtype.screenTarget)
         label:setText(text)
         label:setColor(msgtype.color)
         label:setVisible(true)
         removeEvent(label.hideEvent)
+        local extra = (mode == MessageModes.Game and text == 'You are dead.') and 4 or 1
         label.hideEvent = scheduleEvent(function()
             label:setVisible(false)
-        end, calculateVisibleTime(text))
+        end, calculateVisibleTime(text) * extra) 
     end
 end
 

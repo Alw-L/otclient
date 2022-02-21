@@ -1099,7 +1099,7 @@ void ProtocolGame::parseAnimatedText(const InputMessagePtr& msg)
     const Position position = getPosition(msg);
     const int color = msg->getU8();
     const std::string text = msg->getString();
-
+    
     const auto animatedText = AnimatedTextPtr(new AnimatedText);
     animatedText->setColor(color);
     animatedText->setText(text);

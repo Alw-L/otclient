@@ -593,7 +593,12 @@ void MapView::setVisibleDimension(const Size& visibleDimension)
 
 void MapView::setFloorViewMode(FloorViewMode floorViewMode)
 {
-    m_floorViewMode = floorViewMode;
+    if (CAN_HAVE_COOL_ROOF == 1) {
+        m_floorViewMode = floorViewMode;
+    }
+    else {
+        m_floorViewMode = FloorViewMode::NORMAL;
+    }
 
     resetLastCamera();
     requestVisibleTilesCacheUpdate();

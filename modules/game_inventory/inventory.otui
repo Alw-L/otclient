@@ -325,7 +325,6 @@ SpecialMiniWindow
   Button
     id: stopButton
     !text: tr('Stop')
-    !tooltip: tr('Stop current action (ESC)')
     anchors.top: parent.top
     anchors.right: parent.right
     margin-top: 81
@@ -337,7 +336,6 @@ SpecialMiniWindow
     id: optionsButton
     font: classicfont
     !text: tr('Options')
-    !tooltip: tr('Open options')
     anchors.top: parent.top
     anchors.right: parent.right
     margin-top: 105
@@ -349,7 +347,6 @@ SpecialMiniWindow
     id: exphButton
     font: classicfont
     !text: tr('Exp/h')
-    !tooltip: tr('Open exp/h calculator')
     anchors.top: parent.top
     anchors.right: parent.right
     margin-top: 127

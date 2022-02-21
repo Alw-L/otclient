@@ -47,12 +47,12 @@ function controller:onInit()
 
 	local minimapWindow = g_ui.loadUI('minimap')
 
-	--minimapWindow:setContentMinimumHeight(110)
-	--minimapWindow:setContentMaximumHeight(110)
+	minimapWindow:setContentMinimumHeight(120)
+	minimapWindow:setContentMaximumHeight(120)
   	--minimapWindow:getChildById('minimizeButton'):hide()
  	--minimapWindow:getChildById('closeButton'):hide()
  	--minimapWindow:getChildById('miniwindowTopBar'):hide()
- 	--minimapWindow:getChildById('bottomResizeBorder'):hide()
+ 	minimapWindow:getChildById('bottomResizeBorder'):hide()
 
 	local minimapWidget = minimapWindow:recursiveGetChildById('minimap')
 
@@ -120,4 +120,8 @@ end
 function onMiniWindowClose()
 	--controller.widgets.minimapButton:setOn(false)
 	localPlayerEvent:disconnect()
+end
+
+function onResize()
+	print('h')
 end

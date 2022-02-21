@@ -180,7 +180,7 @@ private:
         int hasGroundBorder = 0;
         int hasTopGroundBorder = 0;
     };
-
+    bool hasTopItem();
     void drawTop(const Point& dest, float scaleFactor, LightView* lightView = nullptr);
     void drawBottom(const Point& dest, float scaleFactor, LightView* lightView = nullptr);
     void drawCreature(const Point& dest, float scaleFactor, LightView* lightView = nullptr);

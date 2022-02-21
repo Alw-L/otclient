@@ -86,4 +86,4 @@ HeadlessMiniWindow
       anchors.top: prev.bottom
       anchors.right: prev.right
       margin-top: 2
-      @onClick: self:getParent():getChildById('minimap'):doReset()
+      @onClick: self:getParent():getChildById('minimap'):reset()

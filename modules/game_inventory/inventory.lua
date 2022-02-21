@@ -397,7 +397,7 @@ end
 
 local excessIcons = {}
 function toggleIcon(bitChanged)
-    if(bitChanged == PlayerStates.Pz) then
+    if(bitChanged == PlayerStates.Pz or bitChanged == PlayerStates.PzBlock) then
         return
     end
 
